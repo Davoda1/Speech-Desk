@@ -61,7 +61,7 @@ cmake --build build --parallel 4
 ctest --test-dir build --output-on-failure --timeout 90
 ```
 
-This builds the application and fixture tests. Local dictation additionally requires the pinned recognition assets and the audio helper. On a Linux build host, run `python3 vendor/tools/bootstrap_native.py --platform all`, then `cmake --build build --target stage_resources`. [Native engines](docs/Native-Engines.md) describes acquisition, source reconstruction and staging. Build and packaging scripts live in `packaging/` and `vendor/tools/`; release workflows are defined in `.github/workflows/`. The manually dispatched **Release packages** workflow creates downloadable build artifacts without publishing a release.
+This builds the application and fixture tests. Local dictation additionally requires the pinned recognition assets and the audio helper. On a Linux build host, run `python3 vendor/tools/bootstrap_native.py --platform all`, then `cmake --build build --target stage_resources`. [Native engines](docs/Native-Engines.md) describes acquisition, source reconstruction and staging. Build and packaging scripts live in `packaging/` and `vendor/tools/`; release workflows are defined in `.github/workflows/`. The manually dispatched **Release packages** workflow creates application packages, complete model add-ons, source archives, and one checksum manifest, then attaches them to a draft release for review.
 
 ## Privacy, compatibility and support
 
