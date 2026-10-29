@@ -4,7 +4,7 @@
 
 SpeechDesk 1.0.0 brings typing, text files, microphone dictation and speech playback into one editor. Choose OpenAI, ElevenLabs, OpenRouter or a compatible speech server; listen inside the application, follow the highlighted passage and save the completed reading as WAV.
 
-[Releases](https://github.com/Davoda1/Speech-Desk/releases) · [User guide](docs/User-Guide.md) · [Speech providers](docs/Server-Profiles.md) · [Optional models](docs/Optional-Models.md)
+[Releases](https://github.com/Davoda1/Speech-Desk/releases) · [Online manual](https://davoda1.github.io/Speech-Desk-Manual/) · [User guide](docs/User-Guide.md) · [Speech providers](docs/Server-Profiles.md) · [Optional models](docs/Optional-Models.md)
 
 | Dark theme | Light theme |
 | --- | --- |
