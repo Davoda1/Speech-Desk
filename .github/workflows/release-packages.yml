@@ -99,18 +99,23 @@ jobs:
       - name: Install Linux packaging tools
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y patchelf libxcb-cursor0
-      - name: Configure and build
+      - name: Configure
         shell: bash
-        run: |
-          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ -DSPEECHDESK_BUILD_TESTS=ON
-          cmake --build build --parallel 3
-          ctest --test-dir build --output-on-failure --timeout 90
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ -DSPEECHDESK_BUILD_TESTS=ON
+      - name: Build
+        run: cmake --build build --parallel 3
+      # Use the native Windows shell so Git Bash's DLL directories cannot
+      # shadow the MinGW runtime installed with Qt when tests start.
+      - name: Focused transport, text and model-pack tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: ctest --test-dir build --output-on-failure --timeout 90
       - name: Generate release documentation
         run: python packaging/create_documents.py --source . --output dist --screenshots docs/extras
       - name: Stage Windows portable runtime
         if: runner.os == 'Windows'
-        shell: bash
-        run: python packaging/package_windows.py --binary build/SpeechDesk.exe --qt "$QT_ROOT_DIR" --assets vendor/assets --output staging/windows --compiler g++ --objdump objdump
+        shell: pwsh
+        run: python packaging/package_windows.py --binary build/SpeechDesk.exe --qt "$env:QT_ROOT_DIR" --assets vendor/assets --output staging/windows --compiler g++ --objdump objdump
       - name: Stage Linux portable runtime
         if: runner.os == 'Linux'
         shell: bash
