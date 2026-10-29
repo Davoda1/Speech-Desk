@@ -1,0 +1,20 @@
+{
+  "component": "SpeechDesk native audio helper",
+  "version": "1.0.0",
+  "license": "MIT",
+  "miniaudio": "0.11.25",
+  "source": "vendor/native/whistle_audio.c",
+  "source_sha256": "364c92096abe4d000563290ad922c8d579b940bea1633a3b1e50164865012073",
+  "source_bytes": 21543,
+  "miniaudio_sha256": "ac7af4de748b7e26b777f37e01cee313a308a7296a3eb080e2906b320cc55c89",
+  "build_script": "vendor/native/build_audio.py",
+  "compiler_options": [
+    "-std=c11",
+    "-O2",
+    "-DNDEBUG"
+  ],
+  "cross_compiler": "Zig 0.14.1",
+  "linux_cross_target": "x86_64-linux-gnu.2.31",
+  "windows_cross_target": "x86_64-windows-gnu",
+  "note": "The helper is built from the included source. Output checksums depend on the compiler and target; release checksums identify distributed artifacts."
+}

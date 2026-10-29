@@ -1,0 +1,30 @@
+[
+  {
+    "file": "models/whistle.cact",
+    "url": "https://huggingface.co/Cactus-Compute/whistle/resolve/741118687e1f008f06d1351a402a731274789790/whistle.cact",
+    "sha256": "b6e02f048568ac5d01a2042556c658061e699acbc0aa2a1439f52f3d461dffeb",
+    "size": 16919407,
+    "license": "Apache-2.0"
+  },
+  {
+    "file": "linux-x64/needle",
+    "url": "https://huggingface.co/Cactus-Compute/needle3/resolve/d6c7d6a2e9655505e0f8e23339356dd1705900eb/linux-x86_64/needle",
+    "sha256": "77cd35ee75c53df8532b397e11ed7cf94a45d89a9f14f50881fd9c68ba54a2d0",
+    "size": 1550176,
+    "license": "Apache-2.0"
+  },
+  {
+    "file": "win-x64/needle.exe",
+    "url": "https://huggingface.co/Cactus-Compute/needle3/resolve/d6c7d6a2e9655505e0f8e23339356dd1705900eb/windows-x86_64/needle.exe",
+    "sha256": "dff1af6a52c20c962946931326f25d7b8d09fa45c55f79ff1b86f1438916ea1c",
+    "size": 1571840,
+    "license": "Apache-2.0",
+    "upstream_sha256": "0d4bc1da8c51f5600f5c4f4bb4a92e0abe142fae7b69e695ccab93e6745c883d",
+    "upstream_size": 1570816,
+    "modification": "Embedded RT_MANIFEST ID1, language0x0409, activeCodePage=UTF-8; original sections and native instructions unchanged",
+    "transformation_script": "tools/patch_needle_manifest.py",
+    "manifest_source": "native/needle-utf8.manifest",
+    "manifest_sha256": "60c80dfd650efbe6d193ccea35c87fa3387049002301510a5872945d2116971c",
+    "windows_minimum": "Windows10 version1903 or Windows11, x64"
+  }
+]

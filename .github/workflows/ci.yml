@@ -1,0 +1,59 @@
+name: Build and focused tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.os }} / Qt 6.8.3
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            arch: linux_gcc_64
+            tools: ''
+          - os: windows-2022
+            arch: win64_mingw
+            tools: 'tools_mingw1310,qt.tools.win64_mingw1310'
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Install Qt and compiler
+        uses: jurplel/install-qt-action@v4.5.0
+        with:
+          version: '6.8.3'
+          arch: ${{ matrix.arch }}
+          modules: 'qtmultimedia qtshadertools'
+          tools: ${{ matrix.tools }}
+          cache: true
+          setup-python: false
+          add-tools-to-path: true
+      - name: Configure
+        shell: bash
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ -DSPEECHDESK_BUILD_TESTS=ON
+      - name: Build
+        run: cmake --build build --parallel 3
+      - name: Focused transport, text and model-pack tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: ctest --test-dir build --output-on-failure --timeout 90
+      - name: Validate packaging scripts
+        run: python -m compileall -q packaging vendor/tools vendor/native/build_audio.py

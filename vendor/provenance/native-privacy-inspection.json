@@ -1,0 +1,227 @@
+{
+  "scope": "Static strings and import inspection of the exact pinned upstream recognition engines listed below. The native audio helper is available as source; rebuilt helper binaries are outside this binary-inspection record. No dynamic network tracing performed.",
+  "date": "2026-10-29",
+  "methods": [
+    "strings -a",
+    "readelf --wide --dyn-syms for Linux files",
+    "x86_64-w64-mingw32-objdump -p for Windows executables",
+    "Read native audio helper source and compile-time backend selection"
+  ],
+  "conclusion": "No telemetry/analytics SDK identifiers or remote telemetry destination strings found. Needle includes optional loopback HTTP server support that SpeechDesk does not enable. This static inspection is not an exhaustive proof of all binary behavior.",
+  "helper_source": {
+    "file": "vendor/native/whistle_audio.c",
+    "sha256": "364c92096abe4d000563290ad922c8d579b940bea1633a3b1e50164865012073",
+    "direct_network_api_calls": [],
+    "backends": [
+      "WASAPI",
+      "DirectSound",
+      "WinMM",
+      "PulseAudio",
+      "ALSA"
+    ],
+    "note": "OS audio services can have their own configuration; their behavior is separate from application telemetry."
+  },
+  "files": [
+    {
+      "file": "engines/linux/libggml-base.so.0",
+      "sha256": "8cd57970d5ba71529442758c0b42cb820ed319e03be0691aead74ef298d3f51f",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/libggml-cpu-alderlake.so",
+      "sha256": "d33aa9c10d716534dff77655da446f09516ee4583b695e8cc1aa447e57848dac",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/libggml-cpu-cannonlake.so",
+      "sha256": "0cb6e59a34c9798a512398e820942ee18ce99c1e0b308ec593e78655759eaafe",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/libggml-cpu-cascadelake.so",
+      "sha256": "a0286798b10092eabaf5f81ce9ae664aa78d3c609ed2138fa8a7ca22da73ef7d",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/libggml-cpu-cooperlake.so",
+      "sha256": "4169f4b9c975e46ddc386b695f64fb3a38a3dacd40bbb15465a2a5dbcabb9a1f",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/libggml-cpu-haswell.so",
+      "sha256": "a63377026e388671d7925e729fced52d9dd85d1bca780dce97bc2c74817053d4",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/libggml-cpu-icelake.so",
+      "sha256": "3f28f5a44dd3640cf179d4f678ea9bdacc536ad69b6b5fb5efd155b6b91c49c8",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/libggml-cpu-ivybridge.so",
+      "sha256": "8b22efecdde26d41d3d864f2d5f6e29c31e0951d6453465d1f4fbda50b9eaa4b",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/libggml-cpu-piledriver.so",
+      "sha256": "e04b72d641d4ae129c05a2ca167dae4843eb0ecae5d40a31a5d98ae480641b11",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/libggml-cpu-sandybridge.so",
+      "sha256": "806218b034614ad31dbe4fbae48bcc0282c966bbe9f0085380d1c49b6b0f7d0b",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/libggml-cpu-sapphirerapids.so",
+      "sha256": "d190abfe2ad900b24da89c883f633dc621f69ba12b2f5664659826374c1f4cfb",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/libggml-cpu-skylakex.so",
+      "sha256": "66d8e2a22ef39225eb2d80e3a1dd9c8a7dd2be41966760c27f22e79623611dd5",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/libggml-cpu-sse42.so",
+      "sha256": "58e6f62fa6bc2732c5a8b6323377ae62ba6cc1ebad9dfd298b6548819bd94375",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/libggml-cpu-x64.so",
+      "sha256": "c19a80e868a34bdb197e2901c8f785a77640d6e56055134514b5fa2807171af5",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/libggml-cpu-zen4.so",
+      "sha256": "42bb25dff93816eb12327a1b82c04ae436dd17eebf30da556143ec9acffd9582",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/libggml.so.0",
+      "sha256": "25406a47ddc7a6b45adb4995ad5efbc6a7ef6efbc43e64a506d978d11dd6fec8",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/libwhisper.so.1",
+      "sha256": "1517f17d5188f7ef70cbb66a2b8ce258c510d20c25018d18e2801351de13cd55",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/needle",
+      "sha256": "77cd35ee75c53df8532b397e11ed7cf94a45d89a9f14f50881fd9c68ba54a2d0",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [
+        "needle serving on http://127.0.0.1:%d  (POST /complete {\"input\":\"...\"}, POST /reset)"
+      ],
+      "network_import_matches": [
+        "socket",
+        "bind",
+        "listen",
+        "accept",
+        "recv",
+        "send"
+      ],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/linux/whisper-cli",
+      "sha256": "110a858e128d1fbc5a75899b42a1de8a7a4c10856bfe45dad1adc278f6459d14",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/windows/needle.exe",
+      "sha256": "0c1c174148369226604050787b8f470fee676bd25ea3215ac150d4f42804893b",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [
+        "needle serving on http://127.0.0.1:%d  (POST /complete {\"input\":\"...\"}, POST /reset)",
+        "      <activeCodePage xmlns=\"http://schemas.microsoft.com/SMI/2019/WindowsSettings\">UTF-8</activeCodePage>"
+      ],
+      "network_import_matches": [
+        "164f8e\t    0  accept",
+        "164f98\t    0  bind",
+        "164fbe\t    0  listen",
+        "164fc8\t    0  recv",
+        "164fd0\t    0  send",
+        "164fe6\t    0  socket"
+      ],
+      "network_dll_matches": [
+        "DLL Name: WS2_32.dll"
+      ]
+    },
+    {
+      "file": "engines/windows/whisper-cli-avx2.exe",
+      "sha256": "5afaa9a3668a103650876fa3499584775a5e9c881e50f17f9963b76ef5af31a0",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [
+        "<activeCodePage xmlns=\"http://schemas.microsoft.com/SMI/2019/WindowsSettings\">UTF-8</activeCodePage>"
+      ],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    },
+    {
+      "file": "engines/windows/whisper-cli.exe",
+      "sha256": "7a271de13c1d46c658c3adaf66d798d18e5ea928f189ab8c8ccfc4f8d27363fa",
+      "telemetry_sdk_string_matches": [],
+      "url_strings": [
+        "<activeCodePage xmlns=\"http://schemas.microsoft.com/SMI/2019/WindowsSettings\">UTF-8</activeCodePage>"
+      ],
+      "network_import_matches": [],
+      "network_dll_matches": []
+    }
+  ]
+}

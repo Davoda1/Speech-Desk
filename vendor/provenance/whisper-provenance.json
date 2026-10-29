@@ -1,0 +1,148 @@
+{
+  "component": "whisper.cpp",
+  "version": "1.9.5",
+  "commit": "d1be6fde11ac6e0407606b4e42fe72d34add8037",
+  "release": "b5454",
+  "upstream": "https://github.com/ggml-org/whisper.cpp",
+  "linux": {
+    "archive_url": "https://github.com/ggml-org/whisper.cpp/releases/download/b5454/whisper-bin-ubuntu-x64.tar.gz",
+    "archive_sha256": "a72becf15d7917f990f6313867a52638b82b7f9ef237fb0c980dac56a135781c",
+    "distribution": "Unmodified upstream CPU binaries; select CLI/Whisper/GGML files only. SONAME symlinks dereferenced into regular files.",
+    "minimum_glibc": "2.34",
+    "minimum_glibcxx": "3.4.29",
+    "runtime_libraries": [
+      "libc.so.6",
+      "libm.so.6",
+      "libstdc++.so.6",
+      "libgcc_s.so.1",
+      "libgomp.so.1"
+    ],
+    "rpath": "$ORIGIN",
+    "cpu": "Runtime-dispatched CPU variants with baseline x64 fallback"
+  },
+  "windows": {
+    "source_url": "https://api.github.com/repos/ggml-org/whisper.cpp/tarball/d1be6fde11ac6e0407606b4e42fe72d34add8037",
+    "source_archive_sha256": "be49b097b23e24283c1070e6df34337134757e9be05a6525e3c526d943051adb",
+    "compiler": "Zig0.14.1 / Clang19.1.7",
+    "compiler_archive_sha256": "24aeeec8af16c381934a6cd7d95c807a8cb2cf7df9fa40d359aa884195c4716c",
+    "build_tool": "CMake3.31.6",
+    "target": "x86_64-windows-gnu",
+    "linkage": "Static C++ runtime; system UniversalCRT + kernel32 + advapi32 only",
+    "inference_source_modifications": false,
+    "resource_addition": "UTF-8 activeCodePage manifest for Windows10 1903+ Unicode path support",
+    "common_options": {
+      "BUILD_SHARED_LIBS": false,
+      "GGML_NATIVE": false,
+      "GGML_OPENMP": false,
+      "WHISPER_BUILD_IS_DEV": false,
+      "WHISPER_BUILD_TESTS": false,
+      "WHISPER_BUILD_SERVER": false,
+      "CMAKE_BUILD_TYPE": "Release"
+    },
+    "baseline_features": "AVX,AVX2,FMA,F16C,BMI2 disabled",
+    "optimized_features": "AVX,AVX2,FMA,F16C,BMI2 enabled; caller must verify all required CPU features before selecting",
+    "native_windows_execution_tested": false
+  },
+  "files": [
+    {
+      "path": "vendor/linux-x64/libggml-base.so.0",
+      "bytes": 931232,
+      "sha256": "8cd57970d5ba71529442758c0b42cb820ed319e03be0691aead74ef298d3f51f"
+    },
+    {
+      "path": "vendor/linux-x64/libggml-cpu-alderlake.so",
+      "bytes": 1280320,
+      "sha256": "d33aa9c10d716534dff77655da446f09516ee4583b695e8cc1aa447e57848dac"
+    },
+    {
+      "path": "vendor/linux-x64/libggml-cpu-cannonlake.so",
+      "bytes": 1362352,
+      "sha256": "0cb6e59a34c9798a512398e820942ee18ce99c1e0b308ec593e78655759eaafe"
+    },
+    {
+      "path": "vendor/linux-x64/libggml-cpu-cascadelake.so",
+      "bytes": 1374344,
+      "sha256": "a0286798b10092eabaf5f81ce9ae664aa78d3c609ed2138fa8a7ca22da73ef7d"
+    },
+    {
+      "path": "vendor/linux-x64/libggml-cpu-cooperlake.so",
+      "bytes": 1374344,
+      "sha256": "4169f4b9c975e46ddc386b695f64fb3a38a3dacd40bbb15465a2a5dbcabb9a1f"
+    },
+    {
+      "path": "vendor/linux-x64/libggml-cpu-haswell.so",
+      "bytes": 1284416,
+      "sha256": "a63377026e388671d7925e729fced52d9dd85d1bca780dce97bc2c74817053d4"
+    },
+    {
+      "path": "vendor/linux-x64/libggml-cpu-icelake.so",
+      "bytes": 1374344,
+      "sha256": "3f28f5a44dd3640cf179d4f678ea9bdacc536ad69b6b5fb5efd155b6b91c49c8"
+    },
+    {
+      "path": "vendor/linux-x64/libggml-cpu-ivybridge.so",
+      "bytes": 1213104,
+      "sha256": "8b22efecdde26d41d3d864f2d5f6e29c31e0951d6453465d1f4fbda50b9eaa4b"
+    },
+    {
+      "path": "vendor/linux-x64/libggml-cpu-piledriver.so",
+      "bytes": 1209008,
+      "sha256": "e04b72d641d4ae129c05a2ca167dae4843eb0ecae5d40a31a5d98ae480641b11"
+    },
+    {
+      "path": "vendor/linux-x64/libggml-cpu-sandybridge.so",
+      "bytes": 1217200,
+      "sha256": "806218b034614ad31dbe4fbae48bcc0282c966bbe9f0085380d1c49b6b0f7d0b"
+    },
+    {
+      "path": "vendor/linux-x64/libggml-cpu-sapphirerapids.so",
+      "bytes": 1636576,
+      "sha256": "d190abfe2ad900b24da89c883f633dc621f69ba12b2f5664659826374c1f4cfb"
+    },
+    {
+      "path": "vendor/linux-x64/libggml-cpu-skylakex.so",
+      "bytes": 1362352,
+      "sha256": "66d8e2a22ef39225eb2d80e3a1dd9c8a7dd2be41966760c27f22e79623611dd5"
+    },
+    {
+      "path": "vendor/linux-x64/libggml-cpu-sse42.so",
+      "bytes": 950184,
+      "sha256": "58e6f62fa6bc2732c5a8b6323377ae62ba6cc1ebad9dfd298b6548819bd94375"
+    },
+    {
+      "path": "vendor/linux-x64/libggml-cpu-x64.so",
+      "bytes": 942168,
+      "sha256": "c19a80e868a34bdb197e2901c8f785a77640d6e56055134514b5fa2807171af5"
+    },
+    {
+      "path": "vendor/linux-x64/libggml-cpu-zen4.so",
+      "bytes": 1374344,
+      "sha256": "42bb25dff93816eb12327a1b82c04ae436dd17eebf30da556143ec9acffd9582"
+    },
+    {
+      "path": "vendor/linux-x64/libggml.so.0",
+      "bytes": 55184,
+      "sha256": "25406a47ddc7a6b45adb4995ad5efbc6a7ef6efbc43e64a506d978d11dd6fec8"
+    },
+    {
+      "path": "vendor/linux-x64/libwhisper.so.1",
+      "bytes": 615800,
+      "sha256": "1517f17d5188f7ef70cbb66a2b8ce258c510d20c25018d18e2801351de13cd55"
+    },
+    {
+      "path": "vendor/linux-x64/whisper-cli",
+      "bytes": 976312,
+      "sha256": "110a858e128d1fbc5a75899b42a1de8a7a4c10856bfe45dad1adc278f6459d14"
+    },
+    {
+      "path": "vendor/win-x64/whisper-cli-avx2.exe",
+      "bytes": 3505152,
+      "sha256": "5afaa9a3668a103650876fa3499584775a5e9c881e50f17f9963b76ef5af31a0"
+    },
+    {
+      "path": "vendor/win-x64/whisper-cli.exe",
+      "bytes": 3156480,
+      "sha256": "7a271de13c1d46c658c3adaf66d798d18e5ea928f189ab8c8ccfc4f8d27363fa"
+    }
+  ]
+}

@@ -1,0 +1,1919 @@
+SpeechDesk Linux runtime dependency notices
+
+Qt 6.8.3 runtime modules are dynamically linked under the LGPLv3 option.
+Matching Qt source: https://download.qt.io/archive/qt/6.8/6.8.3/single/
+FFmpeg 7.1 supplied by Qt: LGPLv2.1 or later. Source: https://github.com/FFmpeg/FFmpeg/tree/n7.1
+Bundled ICU 73 source: https://github.com/unicode-org/icu/tree/release-73-2
+
+Official Qt SPDX component copyright and license records follow. SDK-only entries may be included in these upstream inventories.
+
+GNU
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+qtbase
+License: NOASSERTION
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+GlobalConfig
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+GlobalConfigPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+Platform_Attribution_extra-cmake-modules
+License: NOASSERTION
+Copyright © 2011-2018 The KDE community
+Source: https://api.kde.org/ecm/
+
+Platform_Attribution_kwin
+License: NOASSERTION
+Copyright 2014 Alex Merry <alex.merry@kde.org>
+Copyright 2014 Martin Gräßlin <mgraesslin@kde.org>,
+Copyright (c) 2006,2007 Laurent Montel, <montel@kde.org>
+Source: https://www.kde.org/
+
+Platform
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+PlatformCommonInternal
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+PlatformModuleInternal
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+PlatformPluginInternal
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+PlatformAppInternal
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+PlatformToolInternal
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+syncqt
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+Bootstrap_Attribution_pcre2
+License: NOASSERTION
+Copyright (c) 1997-2024 University of Cambridge
+Copyright (c) 2010-2024 Zoltan Herczeg
+Source: https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.45/pcre2-10.45.tar.bz2
+
+Bootstrap_Attribution_pcre2-sljit
+License: NOASSERTION
+Copyright (c) 2009-2024 Zoltan Herczeg
+Source: https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.45/pcre2-10.45.tar.bz2
+
+Bootstrap
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+moc
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) 2013 Olivier Goffart <ogoffart@woboq.com>
+Copyright (C) 2014 Olivier Goffart <ogoffart@woboq.org>
+Copyright (C) 2016 Intel Corporation.
+Copyright (C) 2018 Intel Corporation.
+Copyright (C) 2018 The Qt Company Ltd.
+Copyright (C) 2019 Olivier Goffart <ogoffart@woboq.com>
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+rcc
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+tracepointgen
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+tracegen
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+cmake_automoc_parser
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+BundledPcre2_Attribution_pcre2-sljit
+License: NOASSERTION
+Copyright (c) 2009-2024 Zoltan Herczeg
+Source: https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.45/pcre2-10.45.tar.bz2
+
+BundledPcre2
+License: NOASSERTION
+Copyright (c) 1997-2024 University of Cambridge
+Copyright (c) 2010-2024 Zoltan Herczeg
+Source: https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.45/pcre2-10.45.tar.bz2
+
+Core_Attribution_unicode-character-database
+License: NOASSERTION
+Copyright (C) 1991-2022 Unicode, Inc.
+Source: https://www.unicode.org/ucd/
+
+Core_Attribution_unicode-cldr
+License: NOASSERTION
+Copyright (C) 2004-2023 Unicode, Inc.
+Source: https://cldr.unicode.org/
+
+Core_Attribution_siphash
+License: NOASSERTION
+Copyright (C) 2012-2014 Jean-Philippe Aumasson
+Copyright (C) 2012-2014 Daniel J. Bernstein <djb@cr.yp.to>
+Copyright (C) 2016 Intel Corporation
+Source: https://raw.githubusercontent.com/veorq/SipHash/adcbf09b1684a718f594faa650ffc56bacdb0777/siphash24.c
+
+Core_Attribution_blake2
+License: NOASSERTION
+Copyright 2012, Samuel Neves <sneves@dei.uc.pt>
+Source: https://github.com/BLAKE2/BLAKE2/tree/ed1974ea83433eba7b2d95c5dcd9ac33cb847913
+
+Core_Attribution_md4
+License: NOASSERTION
+Written by Alexander Peslyak - better known as Solar Designer <solar@openwall.com> - in 2001, and placed in the public domain. There's absolutely no warranty.
+Source: NOASSERTION
+
+Core_Attribution_md5
+License: NOASSERTION
+Written by Colin Plumb in 1993, no copyright is claimed. Ian Jackson <ian@chiark.greenend.org.uk>.
+Source: NOASSERTION
+
+Core_Attribution_sha1
+License: NOASSERTION
+Copyright (C) Dominik Reichl <dominik.reichl@t-online.de>
+Copyright (C) 2016 The Qt Company Ltd
+Source: http://www.dominik-reichl.de/projects/csha1/
+
+Core_Attribution_sha3_endian
+License: NOASSERTION
+Copyright (c) 1998-2013, Brian Gladman, Worcester, UK. All rights reserved.
+Source: NOASSERTION
+
+Core_Attribution_sha3_keccak
+License: NOASSERTION
+Guido Bertoni, Joan Daemen, Michaël Peeters and Gilles Van Assche.
+To the extent possible under law, the implementers have waived all copyright
+and related or neighboring rights to the source code in this file.
+Source: NOASSERTION
+
+Core_Attribution_rfc6234
+License: NOASSERTION
+Copyright (c) 2011 IETF Trust and the persons identified as authors of the code.
+Source: NOASSERTION
+
+Core_Attribution_tinycbor
+License: NOASSERTION
+Copyright (C) 2015-2021 Intel Corporation
+Source: https://github.com/intel/tinycbor/archive/v0.6.1/tinycbor-0.6.1.tar.gz
+
+Core_Attribution_doubleconversion
+License: NOASSERTION
+Copyright 2006-2012, the V8 project authors
+Source: https://github.com/google/double-conversion/releases/tag/v3.3.0
+
+Core_Attribution_easing
+License: NOASSERTION
+Copyright (c) 2001 Robert Penner
+Source: http://robertpenner.com/easing/
+
+Core_Attribution_forkfd
+License: NOASSERTION
+Copyright (C) 2016 Intel Corporation
+Copyright (C) 2015 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
+Source: NOASSERTION
+
+Core_Attribution_tika-mimetypes
+License: NOASSERTION
+Copyright 2024 The Apache Software Foundation
+Source: https://github.com/apache/tika/blob/5101bc7fb090ed7deffe56837d7633c9485a1e5d/tika-core/src/main/resources/org/apache/tika/mime/tika-mimetypes.xml
+
+Core
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+BundledLibpng
+License: NOASSERTION
+Copyright (c) 1995-2025 The PNG Reference Library Authors
+Copyright (c) 2000-2025 Cosmin Truta
+Copyright (c) 1998-2018 Glenn Randers-Pehrson
+Copyright (c) 1996-1997 Andreas Dilger
+Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
+Copyright (c) 2000-2017 Simon-Pierre Cadieux
+Copyright (c) 2000-2017 Eric S. Raymond
+Copyright (c) 2000-2017 Mans Rullgard
+Copyright (c) 2000-2017 Gilles Vollant
+Copyright (c) 2000-2017 James Yu
+Copyright (c) 2000-2017 Mandar Sahastrabuddhe
+Copyright (c) 1998-2000 Tom Lane
+Copyright (c) 1998-2000 Willem van Schaik
+Copyright (c) 1996-1997 John Bowler
+Copyright (c) 1996-1997 Kevin Bracey
+Copyright (c) 1996-1997 Sam Bushell
+Copyright (c) 1996-1997 Magnus Holmgren
+Copyright (c) 1996-1997 Greg Roelofs
+Copyright (c) 1996-1997 Tom Tanner
+Copyright (c) 1995-1996 Dave Martindale
+Copyright (c) 1995-1996 Paul Schmidt
+Copyright (c) 1995-1996 Tim Wegner
+Source: https://download.sourceforge.net/libpng/libpng-1.6.47.tar.xz
+
+PngPrivate
+License: NOASSERTION
+Copyright (c) 1995-2025 The PNG Reference Library Authors
+Copyright (c) 2000-2025 Cosmin Truta
+Copyright (c) 1998-2018 Glenn Randers-Pehrson
+Copyright (c) 1996-1997 Andreas Dilger
+Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
+Copyright (c) 2000-2017 Simon-Pierre Cadieux
+Copyright (c) 2000-2017 Eric S. Raymond
+Copyright (c) 2000-2017 Mans Rullgard
+Copyright (c) 2000-2017 Gilles Vollant
+Copyright (c) 2000-2017 James Yu
+Copyright (c) 2000-2017 Mandar Sahastrabuddhe
+Copyright (c) 1998-2000 Tom Lane
+Copyright (c) 1998-2000 Willem van Schaik
+Copyright (c) 1996-1997 John Bowler
+Copyright (c) 1996-1997 Kevin Bracey
+Copyright (c) 1996-1997 Sam Bushell
+Copyright (c) 1996-1997 Magnus Holmgren
+Copyright (c) 1996-1997 Greg Roelofs
+Copyright (c) 1996-1997 Tom Tanner
+Copyright (c) 1995-1996 Dave Martindale
+Copyright (c) 1995-1996 Paul Schmidt
+Copyright (c) 1995-1996 Tim Wegner
+Source: https://download.sourceforge.net/libpng/libpng-1.6.47.tar.xz
+
+BundledLibjpeg16bits
+License: NOASSERTION
+Copyright (C) 2009-2024 D. R. Commander
+Copyright (C) 2015, 2020 Google, Inc.
+Copyright (C) 2019-2020 Arm Limited
+Copyright (C) 2015-2016, 2018 Matthieu Darbois
+Copyright (C) 2011-2016 Siarhei Siamashka
+Copyright (C) 2015 Intel Corporation
+Copyright (C) 2013-2014 Linaro Limited
+Copyright (C) 2013-2014 MIPS Technologies, Inc.
+Copyright (C) 2009, 2012 Pierre Ossman for Cendio AB
+Copyright (C) 2009-2011 Nokia Corporation and/or its subsidiary(-ies)
+Copyright (C) 1999-2006 MIYASAKA Masaru
+Copyright (C) 1999 Ken Murchison
+Copyright (C) 1991-2020 Thomas G. Lane, Guido Vollbeding
+
+Source: https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/3.1.0/libjpeg-turbo-3.1.0.tar.gz
+
+BundledLibjpeg12bits
+License: NOASSERTION
+Copyright (C) 2009-2024 D. R. Commander
+Copyright (C) 2015, 2020 Google, Inc.
+Copyright (C) 2019-2020 Arm Limited
+Copyright (C) 2015-2016, 2018 Matthieu Darbois
+Copyright (C) 2011-2016 Siarhei Siamashka
+Copyright (C) 2015 Intel Corporation
+Copyright (C) 2013-2014 Linaro Limited
+Copyright (C) 2013-2014 MIPS Technologies, Inc.
+Copyright (C) 2009, 2012 Pierre Ossman for Cendio AB
+Copyright (C) 2009-2011 Nokia Corporation and/or its subsidiary(-ies)
+Copyright (C) 1999-2006 MIYASAKA Masaru
+Copyright (C) 1999 Ken Murchison
+Copyright (C) 1991-2020 Thomas G. Lane, Guido Vollbeding
+
+Source: https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/3.1.0/libjpeg-turbo-3.1.0.tar.gz
+
+BundledLibjpeg
+License: NOASSERTION
+Copyright (C) 2009-2024 D. R. Commander
+Copyright (C) 2015, 2020 Google, Inc.
+Copyright (C) 2019-2020 Arm Limited
+Copyright (C) 2015-2016, 2018 Matthieu Darbois
+Copyright (C) 2011-2016 Siarhei Siamashka
+Copyright (C) 2015 Intel Corporation
+Copyright (C) 2013-2014 Linaro Limited
+Copyright (C) 2013-2014 MIPS Technologies, Inc.
+Copyright (C) 2009, 2012 Pierre Ossman for Cendio AB
+Copyright (C) 2009-2011 Nokia Corporation and/or its subsidiary(-ies)
+Copyright (C) 1999-2006 MIYASAKA Masaru
+Copyright (C) 1999 Ken Murchison
+Copyright (C) 1991-2020 Thomas G. Lane, Guido Vollbeding
+
+Source: https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/3.1.0/libjpeg-turbo-3.1.0.tar.gz
+
+JpegPrivate
+License: NOASSERTION
+Copyright (C) 2009-2024 D. R. Commander
+Copyright (C) 2015, 2020 Google, Inc.
+Copyright (C) 2019-2020 Arm Limited
+Copyright (C) 2015-2016, 2018 Matthieu Darbois
+Copyright (C) 2011-2016 Siarhei Siamashka
+Copyright (C) 2015 Intel Corporation
+Copyright (C) 2013-2014 Linaro Limited
+Copyright (C) 2013-2014 MIPS Technologies, Inc.
+Copyright (C) 2009, 2012 Pierre Ossman for Cendio AB
+Copyright (C) 2009-2011 Nokia Corporation and/or its subsidiary(-ies)
+Copyright (C) 1999-2006 MIYASAKA Masaru
+Copyright (C) 1999 Ken Murchison
+Copyright (C) 1991-2020 Thomas G. Lane, Guido Vollbeding
+
+Source: https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/3.1.0/libjpeg-turbo-3.1.0.tar.gz
+
+BundledHarfbuzz
+License: NOASSERTION
+Copyright © 2010-2022  Google, Inc.
+Copyright © 2015-2020  Ebrahim Byagowi
+Copyright © 2019,2020  Facebook, Inc.
+Copyright © 2012,2015  Mozilla Foundation
+Copyright © 2011  Codethink Limited
+Copyright © 2008,2010  Nokia Corporation and/or its subsidiary(-ies)
+Copyright © 2009  Keith Stribley
+Copyright © 2011  Martin Hosken and SIL International
+Copyright © 2007  Chris Wilson
+Copyright © 2005,2006,2020,2021,2022,2023  Behdad Esfahbod
+Copyright © 2004,2007,2008,2009,2010,2013,2021,2022,2023  Red Hat, Inc.
+Copyright © 1998-2005  David Turner and Werner Lemberg
+Copyright © 2016  Igalia S.L.
+Copyright © 2022  Matthias Clasen
+Copyright © 2018,2021  Khaled Hosny
+Copyright © 2018,2019,2020  Adobe, Inc
+Copyright © 2013-2015  Alexei Podtelezhnikov
+Source: https://github.com/harfbuzz/harfbuzz/releases/tag/10.4.0
+
+HarfbuzzPrivate
+License: NOASSERTION
+Copyright © 2010-2022  Google, Inc.
+Copyright © 2015-2020  Ebrahim Byagowi
+Copyright © 2019,2020  Facebook, Inc.
+Copyright © 2012,2015  Mozilla Foundation
+Copyright © 2011  Codethink Limited
+Copyright © 2008,2010  Nokia Corporation and/or its subsidiary(-ies)
+Copyright © 2009  Keith Stribley
+Copyright © 2011  Martin Hosken and SIL International
+Copyright © 2007  Chris Wilson
+Copyright © 2005,2006,2020,2021,2022,2023  Behdad Esfahbod
+Copyright © 2004,2007,2008,2009,2010,2013,2021,2022,2023  Red Hat, Inc.
+Copyright © 1998-2005  David Turner and Werner Lemberg
+Copyright © 2016  Igalia S.L.
+Copyright © 2022  Matthias Clasen
+Copyright © 2018,2021  Khaled Hosny
+Copyright © 2018,2019,2020  Adobe, Inc
+Copyright © 2013-2015  Alexei Podtelezhnikov
+Source: https://github.com/harfbuzz/harfbuzz/releases/tag/10.4.0
+
+Concurrent
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+Sql
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+Network_Attribution_psl-data
+License: NOASSERTION
+The list was originally provided by Jo Hermans <jo.hermans@gmail.com>.
+It is now maintained on github (https://github.com/publicsuffix/list).
+Source: https://publicsuffix.org/list/public_suffix_list.dat
+
+Network_Attribution_libpsl
+License: NOASSERTION
+Copyright 2014-2016 The Chromium Authors. All rights reserved.
+Source: https://github.com/rockdaboot/libpsl
+
+Network
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+Xml
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+DBus_Attribution_libdbus-1-headers
+License: NOASSERTION
+Copyright (C) 2002, 2003 CodeFactory AB
+Copyright (C) 2004, 2005 Red Hat, Inc.
+Source: https://www.freedesktop.org/wiki/Software/dbus/
+
+DBus
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+uic
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+qdbuscpp2xml
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+qdbusxml2cpp
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+qlalr
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+qvkgen
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+qtpaths
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+androiddeployqt
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+androidtestrunner
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+Gui_Attribution_rhi-miniengine-d3d12-mipmap
+License: NOASSERTION
+Copyright (c) 2015 Microsoft
+Source: https://github.com/microsoft/DirectX-Graphics-Samples
+
+Gui_Attribution_opengl-headers
+License: NOASSERTION
+Copyright (c) 2013-2014 The Khronos Group Inc.
+Source: https://www.khronos.org/
+
+Gui_Attribution_opengl-es2-headers
+License: NOASSERTION
+Copyright (c) 2013-2014 The Khronos Group Inc.
+Source: https://www.khronos.org/
+
+Gui_Attribution_grayraster
+License: NOASSERTION
+Copyright 2000-2016 by David Turner, Robert Wilhelm, and Werner Lemberg.
+Source: http://www.freetype.org
+
+Gui_Attribution_smooth-scaling-algorithm
+License: NOASSERTION
+Copyright (C) 2004, 2005 Daniel M. Duley.
+(C) Carsten Haitzler and various contributors.
+(C) Willem Monsuwe <willem@stack.nl>
+Source: NOASSERTION
+
+Gui_Attribution_xserverhelper
+License: NOASSERTION
+Copyright (c) 1987, 1988 X Consortium
+Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts.
+Source: https://www.x.org/
+
+Gui_Attribution_aglfn
+License: NOASSERTION
+Copyright 2002, 2003, 2005, 2006, 2008, 2010, 2015 Adobe Systems
+Source: https://github.com/adobe-type-tools/agl-aglfn
+
+Gui_Attribution_vulkanmemoryallocator
+License: NOASSERTION
+Copyright (c) 2017-2024 Advanced Micro Devices, Inc. All rights reserved.
+Source: https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
+
+Gui_Attribution_webgradients
+License: NOASSERTION
+Copyright (c) 2017 itmeo
+Source: https://webgradients.com/
+
+Gui_Attribution_icc-srgb-color-profile
+License: NOASSERTION
+Copyright International Color Consortium, 2015
+Source: http://www.color.org/
+
+Gui_Attribution_md4c
+License: NOASSERTION
+Copyright © 2016-2024 Martin Mitáš
+Source: https://github.com/mity/md4c/releases/tag/release-0.5.2
+
+Gui_Attribution_pixman
+License: NOASSERTION
+Copyright © 2009 Nokia Corporation
+Source: http://www.pixman.org/
+
+Gui_Attribution_vulkan-xml-spec
+License: NOASSERTION
+Copyright (c) 2015-2022 The Khronos Group Inc.
+Source: https://www.khronos.org/
+
+Gui
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+ExampleIconsPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+ExamplesAssetDownloaderPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+OpenGL
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+Widgets
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+OpenGLWidgets
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+DeviceDiscoverySupportPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+FbSupportPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+InputSupportPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+KmsSupportPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+TestInternalsPrivate_Attribution_cmake-runcmake-test-modules
+License: NOASSERTION
+Copyright © 2000-2024 Kitware, Inc. and Contributors
+Source: https://cmake.org/
+
+TestInternalsPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+Test_Attribution_catch2
+License: NOASSERTION
+Copyright (c) 2022 Two Blue Cubes Ltd. All rights reserved.
+Source: https://github.com/catchorg/Catch2
+
+Test_Attribution_cycle
+License: NOASSERTION
+Copyright (c) 2003, 2007-14 Matteo Frigo
+Copyright (c) 2003, 2007-14 Massachusetts Institute of Technology
+Source: http://fftw.org/
+
+Test_Attribution_linuxperf
+License: NOASSERTION
+Copyright (C) 2008-2009, Thomas Gleixner <tglx@linutronix.de>
+Copyright (C) 2008-2011, Red Hat, Inc., Ingo Molnar
+Copyright (C) 2008-2011, Red Hat, Inc., Peter Zijlstra
+Source: https://www.kernel.org
+
+Test_Attribution_valgrind
+License: NOASSERTION
+Copyright (C) 2000-2017 Julian Seward
+Copyright (C) 2003-2017 Josef Weidendorfer.
+Source: http://valgrind.org/
+
+Test
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+PrintSupport
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QPSQLDriverPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QMYSQLDriverPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QODBCDriverPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QSQLiteDriverPlugin_Attribution_sqlite
+License: NOASSERTION
+The authors disclaim copyright to the source code. However, a license can be obtained if needed.
+Source: https://www.sqlite.org/2025/sqlite-amalgamation-3490100.zip
+
+QSQLiteDriverPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QMimerSQLDriverPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QMinimalIntegrationPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QOffscreenIntegrationPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QXcbEglIntegrationPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QXcbGlxIntegrationPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+XcbQpaPrivate_Attribution_xcb-xinput
+License: NOASSERTION
+Copyright (C) 2001-2006 Bart Massey, Jamey Sharp, and Josh Triplett.
+Copyright (C) 2006 Peter Hutterer
+Copyright (C) 2013 Daniel Martin
+Source: https://xcb.freedesktop.org/
+
+XcbQpaPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QXcbIntegrationPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QEglFSX11IntegrationPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+EglFsKmsSupportPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+EglFsKmsGbmSupportPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QEglFSKmsGbmIntegrationPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QEglFSKmsEglDeviceIntegrationPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QEglFSEmulatorIntegrationPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+EglFSDeviceIntegrationPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QEglFSIntegrationPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QMinimalEglIntegrationPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QLinuxFbIntegrationPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QVncIntegrationPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QVkKhrDisplayIntegrationPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QComposePlatformInputContextPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QIbusPlatformInputContextPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QXdgDesktopPortalThemePlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QGtk3ThemePlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QICOPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QJpegPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QGifPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QEvdevMousePlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QEvdevTouchScreenPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QEvdevKeyboardPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QEvdevTabletPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QTuioTouchPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QCupsPrinterSupportPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QNetworkManagerNetworkInformationPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QGlibNetworkInformationPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QTlsBackendOpenSSLPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QTlsBackendCertOnlyPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+QtLibraryInfo
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+qmake
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtbase.git@c07c2d5a527a644d36e7853d55132ae38921682f
+
+WrapZSTD
+License: NOASSERTION
+NOASSERTION
+Source: https://github.com/facebook/zstd
+
+WrapZLIB
+License: NOASSERTION
+NOASSERTION
+Source: https://github.com/madler/zlib
+
+WrapBacktrace
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+ICU
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+GLIB2
+License: NOASSERTION
+NOASSERTION
+Source: https://wiki.gnome.org/Projects/GLib
+
+WrapRt
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+WrapAtomic
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+WrapResolv
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+GSSAPI
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+WrapDBus1
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+EGL
+License: NOASSERTION
+NOASSERTION
+Source: https://www.khronos.org/egl/
+
+WrapFreetype
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+Fontconfig
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+X11
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+XKB
+License: NOASSERTION
+NOASSERTION
+Source: http://xkbcommon.org
+
+WrapOpenGL
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+Libdrm
+License: NOASSERTION
+NOASSERTION
+Source: https://wiki.freedesktop.org/dri/
+
+PostgreSQL
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+MySQL
+License: NOASSERTION
+NOASSERTION
+Source: https://www.mysql.com
+
+ODBC
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+Mimer
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+XCB
+License: NOASSERTION
+NOASSERTION
+Source: https://xcb.freedesktop.org/
+
+XKB_COMMON_X11
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+X11_XCB
+License: NOASSERTION
+NOASSERTION
+Source: http://xorg.freedesktop.org/
+
+gbm
+License: NOASSERTION
+NOASSERTION
+Source: http://www.mesa3d.org
+
+GTK3
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+Cups
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+EXEMPTION FOR BINARY LIBRARY-LIKE PACKAGES
+------------------------------------------
+
+The second condition in the BSD licence (covering binary redistributions) does not apply all the way down a chain of software. If binary package A includes PCRE2, it must respect the condition, but if package B is software that includes package A, the condition is not imposed on package B unless it uses PCRE2 independently.
+
+
+LicenseRef-ICC-License
+For the file sRGB2014.icc:
+
+Copyright International Color Consortium, 2015
+
+This profile is made available by the International Color Consortium, and may be copied,
+distributed, embedded, made, used, and sold without restriction. Altered versions of this
+profile shall have the original identification and copyright information removed and
+shall not be misrepresented as the original profile.
+
+(original source location: http://www.color.org/srgbprofiles.xalter)
+
+
+LicenseRef-Lcs-Telegraphics
+The text and information contained in this file may be freely used,
+copied, or distributed without compensation or licensing restrictions.
+
+
+LicenseRef-Qt-Commercial
+Licensees holding valid commercial Qt licenses may use this software in
+accordance with the the terms contained in a written agreement between
+you and The Qt Company. Alternatively, the terms and conditions that were
+accepted by the licensee when buying and/or downloading the
+software do apply.
+
+For the latest licensing terms and conditions, see https://www.qt.io/terms-conditions.
+For further information use the contact form at https://www.qt.io/contact-us.
+
+
+LicenseRef-SHA1-Public-Domain
+100% free public domain implementation of the SHA-1 algorithm
+by Dominik Reichl <dominik.reichl@t-online.de>
+Web: http://www.dominik-reichl.de/
+
+
+GNU
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+qtsvg
+License: NOASSERTION
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtsvg.git@c75099a75e81df35e7347a65e301bbf1011831a5
+
+Svg_Attribution_xsvg
+License: NOASSERTION
+Copyright 2002 USC/Information Sciences Institute
+Source: NOASSERTION
+
+Svg
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtsvg.git@c75099a75e81df35e7347a65e301bbf1011831a5
+
+QSvgIconPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtsvg.git@c75099a75e81df35e7347a65e301bbf1011831a5
+
+QSvgPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtsvg.git@c75099a75e81df35e7347a65e301bbf1011831a5
+
+SvgWidgets
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtsvg.git@c75099a75e81df35e7347a65e301bbf1011831a5
+
+WrapZLIB
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+LicenseRef-Qt-Commercial
+Licensees holding valid commercial Qt licenses may use this software in
+accordance with the the terms contained in a written agreement between
+you and The Qt Company. Alternatively, the terms and conditions that were
+accepted by the licensee when buying and/or downloading the
+software do apply.
+
+For the latest licensing terms and conditions, see https://www.qt.io/terms-conditions.
+For further information use the contact form at https://www.qt.io/contact-us.
+
+
+GNU
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+qtmultimedia
+License: NOASSERTION
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtmultimedia.git
+
+BundledResonanceAudio_Attribution_pffft
+License: NOASSERTION
+Copyright (c) 2013 Julien Pommier <pommier@modartt.com>
+Copyright (c) 2004 the University Corporation for Atmospheric Research 'UCAR'
+
+Source: https://bitbucket.org/jpommier/pffft/get/02fe7715a5bf.zip
+
+BundledResonanceAudio_Attribution_eigen
+License: NOASSERTION
+Copyright (c) 2012 Alexey Korepanov <kaikaikai@yandex.ru>
+Copyright (c) 2020 Antonio Sanchez <cantonios@google.com>
+Copyright (c) 2020 Arm Limited and Contributors
+Copyright (c) 2006-2011 Benoit Jacob <jacob.benoit.1@gmail.com>
+Copyright (c) 2014-2016 Benoit Steiner (benoit.steiner.goog@gmail.com)
+Copyright (c) 16 BfToF32Even (c) Packet4f
+Copyright (c) 16 BfToF32Odd (c) Packet4f
+Copyright (c) 2021 C. Antonio Sanchez <cantonios@google.com>
+Copyright (c) 2021 Chip Kerchner (chip.kerchner@ibm.com)
+Copyright (c) 2009 Claire Maurice
+Copyright (c) 2017 Codeplay Software Limited
+Copyright (c) 2016 Eugene Brevdo <ebrevdo@gmail.com>
+Copyright (c) 2020 Everton Constantino (everton.constantino@ibm.com)
+Copyright (c) 2016 Fabian Giesen
+Copyright (c) 2008-2019 Gael Guennebaud <gael.guennebaud@inria.fr>
+Copyright (c) 2013 Gauthier Brun <brun.gauthier@gmail.com>
+Copyright (c) 2010-2013 Hauke Heibel <hauke.heibel@gmail.com>
+Copyright (c) 2009 Hauke Heibel <hauke.heibel@gmail.com>
+Copyright (c) 2001, 2010, 2011 Intel Corporation
+Copyright (c) 2013 Jean Ceccato <jean.ceccato@ensimag.fr>
+Copyright (c) 2010-2012 Jitse Niesen <jitse@maths.leeds.ac.uk>
+Copyright (c) 2013 Jitse Niesen <jitse@maths.leeds.ac.uk>
+Copyright (c) 2007 Julien Pommier
+Copyright (c) 2009 Keir Mierle <mierle@gmail.com>
+Copyright (c) 2009 Kenneth Riddile <kfriddile@yahoo.com>
+Copyright (c) 2008-2016 Konstantinos Margaritis <markos@freevec.org>
+Copyright (c) 2009 Mathieu Gautier <mathieu.gautier@cea.fr>
+Copyright (c) 2007 Michael Olbrich <michael.olbrich@gmx.net>
+Copyright (c) 2021 NVIDIA CORPORATION.
+Copyright (c) 2013 Nicolas Carre <nicolas.carre@ensimag.fr>
+Copyright (c) 2014-2015 Open Source Robotics Foundation
+Copyright (c) 2013 Pavel Holoborodko <pavel@holoborodko.com>
+Copyright (c) 2014, 2016 Pedro Gonnet (pedro.gonnet@gmail.com)
+Copyright (c) 2013 Pierre Zoppitelli <pierre.zoppitelli@ensimag.fr>
+Copyright (c) 2016, 2018, 2019 Rasmus Munk Larsen (rmlarsen@google.com)
+Copyright (c) 2009 Ricard Marxer <email@ricardmarxer.com>
+Copyright (c) 2009 Rohit Garg <rpg.314@gmail.com>
+Copyright (c) 2017 The TensorFlow Authors
+Copyright (c) 2010 Thomas Capricelli <orzel@freehackers.org>
+Copyright (c) 2011 Timothy E. Holy tim.holy@gmail.com
+Copyright (c) 2016 Tobias Wood <tobias@spinicist.org.uk>
+Copyright (c) 2010 Vincent Lejeune
+Copyright (c) 2018 Wave Computing, Inc.
+Copyright (c) 2011-2014 Willow Garage, Inc.
+Copyright (c) 2014 yoco <peter.xiau@gmail.com>
+
+Source: https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2
+
+BundledResonanceAudio
+License: NOASSERTION
+Copyright (c) 2015, 2017, 2018 Google Inc.
+
+Source: https://github.com/resonance-audio/resonance-audio/tree/e225aedb5ec76ca6a0fe7079c0b84dbcbb490553
+
+Multimedia
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtmultimedia.git
+
+SpatialAudio
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtmultimedia.git
+
+MultimediaQuickPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtmultimedia.git
+
+quickmultimedia
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtmultimedia.git
+
+Quick3DSpatialAudioPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtmultimedia.git
+
+quick3dspatialaudio
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtmultimedia.git
+
+MultimediaWidgets
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtmultimedia.git
+
+FFmpegMediaPluginImplPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtmultimedia.git
+
+QFFmpegMediaPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtmultimedia.git
+
+MultimediaTestLibPrivate
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtmultimedia.git
+
+WrapPulseAudio
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+EGL
+License: NOASSERTION
+NOASSERTION
+Source: https://www.khronos.org/egl/
+
+FFmpeg
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+LicenseRef-Qt-Commercial
+Licensees holding valid commercial Qt licenses may use this software in
+accordance with the the terms contained in a written agreement between
+you and The Qt Company. Alternatively, the terms and conditions that were
+accepted by the licensee when buying and/or downloading the
+software do apply.
+
+For the latest licensing terms and conditions, see https://www.qt.io/terms-conditions.
+For further information use the contact form at https://www.qt.io/contact-us.
+
+
+GNU
+License: NOASSERTION
+NOASSERTION
+Source: NOASSERTION
+
+qtdeclarative
+License: NOASSERTION
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlToolingSettingsPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlTypeRegistrarPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlIntegration
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+Qml_Attribution_masm
+License: NOASSERTION
+Copyright (C) 2003-2018 Apple Inc. All rights reserved.
+Copyright (C) 2007 Justin Haygood (jhaygood@reaktix.com)
+Copyright (C) 2007-2009 Torch Mobile, Inc. All rights reserved. (http://www.torchmobile.com/)
+Copyright (C) 2009, 2010 University of Szeged
+Copyright (C) 2009-2011 STMicroelectronics. All rights reserved.
+Copyright (C) 2010 MIPS Technologies, Inc. All rights reserved.
+Copyright (C) 2010 Peter Varga (pvarga@inf.u-szeged.hu), University of Szeged
+Copyright (C) 2010 MIPS Technologies, Inc. All rights reserved.
+Copyright (C) 2010, 2011 Research In Motion Limited. All rights reserved.
+Copyright (C) 2011 Google Inc. All rights reserved.
+Copyright (C) 2013 Samsung Electronics. All rights reserved.
+Copyright (C) 2015 Cisco Systems, Inc. All rights reserved.
+Copyright (c) 2002-2009 Vivek Thampi
+Source: https://trac.webkit.org/wiki/JavaScriptCore
+
+Qml
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlModels
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+modelsplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlCore
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtqmlcoreplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlNetwork
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlNetworkplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlWorkerScript
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+workerscriptplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlMeta
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmlplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlLocalStorage
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmllocalstorageplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlXmlListModel
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmlxmllistmodelplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+quickwindow
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+Quick
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquick2plugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickLayouts
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qquicklayoutsplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickTest
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickTestplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickTestUtilsPrivate
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickParticlesPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+particlesplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickEffectsPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+effectsplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickShapesPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmlshapesplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickVectorImageGeneratorPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickVectorImage
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qquickvectorimageplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickWidgets
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickTemplates2
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquicktemplates2plugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickControls2Impl
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickcontrols2implplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickControls2BasicStyleImpl
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickcontrols2basicstyleimplplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickControls2Basic
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickcontrols2basicstyleplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickControls2FusionStyleImpl
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickcontrols2fusionstyleimplplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickControls2Fusion
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickcontrols2fusionstyleplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickControls2ImagineStyleImpl
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickcontrols2imaginestyleimplplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickControls2Imagine
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickcontrols2imaginestyleplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickControls2MaterialStyleImpl
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickcontrols2materialstyleimplplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickControls2Material_Attribution_shadow_angular_material
+License: NOASSERTION
+Copyright (c) 2014-2016 Google, Inc
+Source: https://angularjs.org/
+
+QuickControls2Material
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickcontrols2materialstyleplugin_Attribution_shadow_angular_material
+License: NOASSERTION
+Copyright (c) 2014-2016 Google, Inc
+Source: https://angularjs.org/
+
+qtquickcontrols2materialstyleplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickControls2UniversalStyleImpl
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickcontrols2universalstyleimplplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickControls2Universal
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickcontrols2universalstyleplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickControls2FluentWinUI3StyleImpl
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickcontrols2fluentwinui3styleimplplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickcontrols2fluentwinui3styleplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickControls2
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickcontrols2plugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickDialogs2Utils
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickDialogs2QuickImpl
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickdialogs2quickimplplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickDialogs2
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickdialogsplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qtquickcontrols2nativestyleplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickControlsTestUtilsPrivate
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QuickControlsTestUtilsPrivateplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+LabsSettings
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmlsettingsplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+LabsQmlModels
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+labsmodelsplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+LabsFolderListModel
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmlfolderlistmodelplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+LabsAnimation
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+labsanimationplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+LabsPlatform
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+LabsPlatformplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+LabsWavefrontMesh
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmlwavefrontmeshplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+LabsSharedImage
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+sharedimageplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlCompiler
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlDomPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmlaotstats
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmlcachegen
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlLSPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+PacketProtocolPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QQmlNativeDebugConnectorFactoryPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QDebugMessageServiceFactoryPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QQmlProfilerServiceFactoryPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QQmlDebuggerServiceFactoryPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QQmlNativeDebugServiceFactoryPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QQmlDebugServerFactoryPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QTcpServerConnectionFactoryPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QLocalClientConnectionFactoryPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QQmlInspectorServiceFactoryPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QQuickProfilerAdapterFactoryPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QQmlPreviewServiceFactoryPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlLintQuickPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlLSQuickPlugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+quicktooling
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlDebugPrivate
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlAssetDownloader
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+QmlAssetDownloaderplugin
+License: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmldom
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmllint
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmltc
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmltyperegistrar
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmljsrootgen
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmlimportscanner
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmlformat
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmlls
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qml
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmlprofiler
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmlpreview
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmlscene
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmltime
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmlplugindump
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmltestrunner
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+qmleasing
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+svgtoqml
+License: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+Copyright (C) The Qt Company Ltd. and other contributors.
+Source: git://code.qt.io/qt/qtdeclarative.git@2ec235a2235a119887683e55787b93f99dc5f12f
+
+LicenseRef-Qt-Commercial
+Licensees holding valid commercial Qt licenses may use this software in
+accordance with the the terms contained in a written agreement between
+you and The Qt Company. Alternatively, the terms and conditions that were
+accepted by the licensee when buying and/or downloading the
+software do apply.
+
+For the latest licensing terms and conditions, see https://www.qt.io/terms-conditions.
+For further information use the contact form at https://www.qt.io/contact-us.
+

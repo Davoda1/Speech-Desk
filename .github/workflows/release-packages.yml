@@ -1,0 +1,129 @@
+name: Release packages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-packages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native-assets:
+    name: Reconstruct pinned native dependencies
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Download verified models and build native engines
+        run: python vendor/tools/bootstrap_native.py --platform all --jobs 3
+      - name: Preserve executable modes for platform builds
+        run: tar -czf native-assets.tar.gz -C vendor assets
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: native-assets
+          path: native-assets.tar.gz
+          compression-level: 0
+          retention-days: 3
+  packages:
+    name: Package ${{ matrix.platform }}
+    needs: native-assets
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            platform: linux
+            arch: linux_gcc_64
+            tools: ''
+          - os: windows-2022
+            platform: windows
+            arch: win64_mingw
+            tools: 'tools_mingw1310,qt.tools.win64_mingw1310'
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Install Qt and compiler
+        uses: jurplel/install-qt-action@v4.5.0
+        with:
+          version: '6.8.3'
+          arch: ${{ matrix.arch }}
+          modules: 'qtmultimedia qtshadertools'
+          tools: ${{ matrix.tools }}
+          cache: true
+          setup-python: false
+          add-tools-to-path: true
+      - uses: actions/download-artifact@v8.0.2
+        with:
+          name: native-assets
+      - name: Extract verified assets
+        run: python -c "import tarfile; tarfile.open('native-assets.tar.gz').extractall('vendor', filter='data')"
+      - name: Install documentation tools
+        run: python -m pip install Markdown==3.7
+      - name: Install Linux packaging tools
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y patchelf libxcb-cursor0
+      - name: Configure and build
+        shell: bash
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ -DSPEECHDESK_BUILD_TESTS=ON
+          cmake --build build --parallel 3
+          ctest --test-dir build --output-on-failure --timeout 90
+      - name: Generate release documentation
+        run: python packaging/create_documents.py --source . --output dist --screenshots docs/extras
+      - name: Stage Windows portable runtime
+        if: runner.os == 'Windows'
+        shell: bash
+        run: python packaging/package_windows.py --binary build/SpeechDesk.exe --qt "$QT_ROOT_DIR" --assets vendor/assets --output staging/windows --compiler g++ --objdump objdump
+      - name: Stage Linux portable runtime
+        if: runner.os == 'Linux'
+        shell: bash
+        run: python packaging/package_linux.py --binary build/speechdesk --qt "$QT_ROOT_DIR" --assets vendor/assets --output staging/linux
+      - name: Archive packages and validate layout
+        run: python packaging/archive_release.py --platform ${{ matrix.platform }} --runtime staging/${{ matrix.platform }} --output dist
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: packages-${{ matrix.platform }}
+          path: dist/*
+          compression-level: 0
+          retention-days: 14
+  assemble:
+    name: Assemble source and one checksum manifest
+    needs: packages
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v8.0.2
+        with:
+          pattern: packages-*
+          path: dist
+          merge-multiple: true
+      - name: Source archives and checksums
+        run: |
+          python packaging/archive_release.py --platform source --output dist
+          python packaging/archive_release.py --platform checksums --output dist
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: SpeechDesk-1.0.0-release-files
+          path: dist/*
+          compression-level: 0
+          retention-days: 14

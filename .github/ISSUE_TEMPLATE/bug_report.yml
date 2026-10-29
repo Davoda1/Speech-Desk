@@ -1,0 +1,26 @@
+name: Bug report
+description: Report an application or packaging problem.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: Do not include API keys, private server addresses, personal text or unredacted logs.
+  - type: input
+    id: version
+    attributes:
+      label: SpeechDesk version and operating system
+      placeholder: 1.0.0, Windows 11 x64
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps and observed behavior
+      description: Include the expected behavior and a minimal example using non-sensitive text.
+    validations:
+      required: true
+  - type: textarea
+    id: provider
+    attributes:
+      label: Speech provider or local dictation model
+      description: Name the provider/model if relevant. Omit credentials and private endpoints.

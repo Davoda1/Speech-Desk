@@ -1,0 +1,27 @@
+Needle for Windows — modification notice
+
+Upstream component: Cactus Compute Needle, needle3 distribution
+License: Apache License 2.0 (see Needle-Apache-2.0.txt)
+Published binary:
+https://huggingface.co/Cactus-Compute/needle3/resolve/d6c7d6a2e9655505e0f8e23339356dd1705900eb/windows-x86_64/needle.exe
+
+This distribution embeds an RT_MANIFEST resource (ID 1, language 0x0409)
+with activeCodePage=UTF-8 for Unicode filesystem paths on Windows 10
+version 1903 and newer. The original sections, imported functions,
+entry point and native instructions are unchanged. The Linux Needle
+binary is the unmodified upstream binary.
+
+Original Windows binary:
+Size: 1570816 bytes
+SHA-256: 0d4bc1da8c51f5600f5c4f4bb4a92e0abe142fae7b69e695ccab93e6745c883d
+
+Adapted Windows binary:
+Size: 1571840 bytes
+SHA-256: 0c1c174148369226604050787b8f470fee676bd25ea3215ac150d4f42804893b
+
+Reconstruction materials:
+vendor/tools/patch_needle_manifest.py
+vendor/native/needle-utf8.manifest
+vendor/provenance/asset-provenance.json
+
+This modification does not imply endorsement by Cactus Compute.
