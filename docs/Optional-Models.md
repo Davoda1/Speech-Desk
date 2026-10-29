@@ -29,4 +29,6 @@ Packs use ZIP's stored method and contain exactly `manifest.json`, `LICENSE.txt`
 
 `vendor/optional-models.json` pins the two model weights. `packaging/create_model_packs.py` constructs complete ZIP packs from verified weights and adds distribution instructions and the model's MIT notice. The release's single `SHA256SUM.txt` records each finished ZIP's hash.
 
+The **Release packages** workflow builds both complete add-ons alongside the application packages. To recreate them on a build host, use `python3 packaging/create_model_packs.py --download --models .cache/optional-models --output dist`. Downloads are explicit build-time operations; the application does not download models. Existing weights are checked against the pinned sizes and SHA-256 hashes.
+
 Upstream weights: [ggerganov/whisper.cpp, revision 5359861c739e955e79d9a303bcbc70fb988958b1](https://huggingface.co/ggerganov/whisper.cpp/tree/5359861c739e955e79d9a303bcbc70fb988958b1).

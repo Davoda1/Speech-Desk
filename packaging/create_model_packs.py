@@ -1,19 +1,23 @@
 #!/usr/bin/env python3
 """Create SpeechDesk's optional model ZIPs from separately acquired, pinned weights.
 
-No download is performed. Default application/source packages do not include
-these weights. The app imports only this documented, stored-ZIP pack format.
+Use --download for an explicit build-time download of missing pinned weights.
+Default application/source packages do not include these weights. The app
+imports only this documented, stored-ZIP pack format.
 """
 import argparse
 import hashlib
 import json
 from pathlib import Path
+import shutil
+import urllib.request
 import zipfile
 
 source = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--models', type=Path, required=True)
 parser.add_argument('--output', type=Path, required=True)
+parser.add_argument('--download', action='store_true', help='Download missing weights from the pinned model revision')
 args = parser.parse_args()
 catalog = json.loads((source / 'vendor/optional-models.json').read_text())
 license_text = (source / 'vendor/licenses/OpenAI-Whisper-MIT.txt').read_text()
@@ -21,6 +25,21 @@ args.output.mkdir(parents=True, exist_ok=True)
 
 for model in catalog['models']:
     weights = args.models / model['filename']
+    url = catalog['repository'] + '/resolve/' + catalog['revision'] + '/' + model['filename']
+    if args.download and not weights.exists():
+        weights.parent.mkdir(parents=True, exist_ok=True)
+        temporary = weights.with_name(weights.name + '.partial')
+        try:
+            with urllib.request.urlopen(url, timeout=120) as response, temporary.open('wb') as output:
+                shutil.copyfileobj(response, output, 1024 * 1024)
+            if temporary.stat().st_size != model['size']:
+                raise RuntimeError('Downloaded model has the wrong size: ' + model['filename'])
+            with temporary.open('rb') as stream:
+                if hashlib.file_digest(stream, 'sha256').hexdigest() != model['sha256']:
+                    raise RuntimeError('Downloaded model SHA-256 mismatch: ' + model['filename'])
+            temporary.replace(weights)
+        finally:
+            temporary.unlink(missing_ok=True)
     if weights.stat().st_size != model['size']:
         raise RuntimeError('Wrong model size: ' + weights.name)
     with weights.open('rb') as stream:
@@ -28,7 +47,6 @@ for model in catalog['models']:
             raise RuntimeError('Wrong model SHA-256: ' + weights.name)
     manifest = {'format': 'speechdesk-model-pack', 'version': 1,
                 **{k: model[k] for k in ('id', 'filename', 'size', 'sha256')}}
-    url = catalog['repository'] + '/resolve/' + catalog['revision'] + '/' + model['filename']
     readme = f'''SpeechDesk 1.0.0 optional dictation expansion
 {model['name']}
 

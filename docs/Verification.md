@@ -5,7 +5,7 @@
 | Check | Result and scope |
 | --- | --- |
 | Native Linux Release build | Passed with Qt 6.4.2 |
-| Standard CTest groups | `textsegments`, `ttsclient`, `modelpacks` and `providerprofiles` passed |
+| Standard CTest groups | `textsegments`, `ttsclient`, `modelpacks`, `providerprofiles` and the Linux `ui_profiles` subset passed |
 | Focused UI checks | Model-specific OpenRouter voices, minimum-size dictation layout, saved profile edits and text modified-state behavior passed with the FFmpeg media backend |
 | Live OpenRouter request | Discovery returned speech models; `elevenlabs/eleven-flash-v2.5` with voice `george` returned MP3 audio through the production TTS client |
 | Returned audio inspection | MP3 decoded as 44.1 kHz mono, approximately 3.47 seconds |
@@ -24,7 +24,7 @@ cmake --build build --parallel 4
 ctest --test-dir build --output-on-failure --timeout 90
 ```
 
-Build/CI logs identify the tested commit, operating system and toolchain. A successful build is not a physical microphone/speaker test. The additional UI test executable needs an actual or virtual audio output and is separate from the standard headless test set.
+Build/CI logs identify the tested commit, operating system and toolchain. A successful build is not a physical microphone/speaker test. The headless `ui_profiles` subset runs on Linux in CTest; the additional playback cases in the UI test executable require an actual or virtual audio output.
 
 A live provider check establishes compatibility only for the endpoint, model, voice and options used in that request. A fixture or one provider's successful request does not establish compatibility with another service. API keys are not needed for standard CI and must never be included in logs or repository files.
 
