@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "application": "SpeechDesk 1.0.0",
+  "application": "SpeechDesk 1.1.0",
   "provenance": "Pinned upstream engines and recognition models; locally built native audio helper. See vendor/provenance for source revisions and build parameters.",
   "notes": [
     "JSON checksums are component provenance. The deliverable has one separate SHA256SUM text file.",
