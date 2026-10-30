@@ -111,5 +111,12 @@ if(SPEECHDESK_BUILD_TESTS)
         -o -,txt -o ui-profiles.txt,txt -v1)
     set_tests_properties(ui_profiles PROPERTIES ENVIRONMENT
         "QT_QPA_PLATFORM=offscreen;QT_MEDIA_BACKEND=ffmpeg;QT_FORCE_STDERR_LOGGING=1;SPEECHDESK_FIXTURE=${CMAKE_CURRENT_SOURCE_DIR}/tests/tts_fixture_server.py;SPEECHDESK_PYTHON=${Python3_EXECUTABLE}")
+    if(WIN32)
+        # The offscreen platform uses a font directory instead of the native
+        # Windows font database. Test with the same installed fonts as the app.
+        file(TO_CMAKE_PATH "$ENV{SystemRoot}/Fonts" SPEECHDESK_TEST_FONT_DIR)
+        set_property(TEST ui_profiles APPEND PROPERTY ENVIRONMENT
+            "QT_QPA_FONTDIR=${SPEECHDESK_TEST_FONT_DIR}")
+    endif()
     # Playback integration cases require an actual or virtual audio output.
 endif()

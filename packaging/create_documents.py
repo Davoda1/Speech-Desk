@@ -11,8 +11,8 @@ prefix=f'SpeechDesk-{version}'
 screenshots=[
  ('screenshot-dark.png','Dark','Editor · Dark theme','Write, read and save audio in the main editor.'),
  ('screenshot-light.png','Light','Editor · Light theme','Write, read and save audio in the main editor.'),
- ('dictation-dark.png','Dictation-Dark','Dictation · Dark theme','Centered controls keep model, language and microphone selections readable.'),
- ('dictation-light.png','Dictation-Light','Dictation · Light theme','Centered controls keep model, language and microphone selections readable.'),
+ ('dictation-dark.png','Dictation-Dark','Dictation · Dark theme','Model, language and microphone selectors fill the top row; compact actions are centered below.'),
+ ('dictation-light.png','Dictation-Light','Dictation · Light theme','Model, language and microphone selectors fill the top row; compact actions are centered below.'),
  ('settings-servers-dark.png','Settings-Servers-Dark','Server settings · Dark theme','Configure speech providers and optional encrypted API-key storage.'),
  ('settings-servers-light.png','Settings-Servers-Light','Server settings · Light theme','Configure speech providers and optional encrypted API-key storage.'),
  ('settings-about-dark.png','Settings-About-Dark','About · Dark theme','Find the application version and open the online manual.'),

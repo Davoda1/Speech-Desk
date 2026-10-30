@@ -2,7 +2,7 @@
 
 ## Version 1.1.1 verification scope
 
-This patch focuses on full-label speech and dictation controls, centered dictation actions at compact and wider window sizes, and updated screenshots in both themes. Local geometry checks passed at 100%, 125%, 150% and 200% display scaling. CI records the Windows/Linux build results, focused tests and package checks for the exact submitted commit. A screenshot documents the interface; it does not establish provider compatibility or physical audio-device operation.
+This patch focuses on readable speech and dictation labels, a dictation selector row spanning the panel, and a compact action row centered beneath it. Geometry checks cover the inset panel at compact and wider window sizes. CI records the Windows/Linux build results, focused tests and package checks for the exact submitted commit. A screenshot documents the interface; it does not establish provider compatibility or physical audio-device operation.
 
 ## Version 1.1.0 local validation baseline
 

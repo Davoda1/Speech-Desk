@@ -21,6 +21,15 @@ class UiFlowTest : public QObject {
     QProcess fixture;
     QTemporaryDir scratch;
     QString base;
+    static QString controlGeometry(QWidget *control,QWidget *container) {
+        QString details;QDebug stream(&details);
+        stream.nospace()<<control->objectName()<<" bounds="<<QRect(control->mapTo(container,QPoint()),control->size())
+            <<" container="<<container->rect()<<" hint="<<control->sizeHint()<<" minimum="<<control->minimumSizeHint()
+            <<" containerMinimum="<<container->minimumSizeHint()<<" containerHfw="<<container->heightForWidth(container->width())
+            <<" window="<<control->window()->size()<<" font="<<QFontInfo(control->font()).family()
+            <<" pixels="<<QFontInfo(control->font()).pixelSize()<<" scale="<<control->devicePixelRatioF();
+        return details;
+    }
     void prepare(MainWindow &window, const QString &path = "/json") {
         auto profile = defaultServerProfile();
         profile["baseUrl"] = base;
@@ -55,6 +64,7 @@ private slots:
         QApplication::setStyle("Fusion");
         QFont font=qApp->font();
 #ifdef Q_OS_WIN
+        QVERIFY2(!QFontDatabase::families().isEmpty(),"UI geometry tests require real fonts. Set QT_QPA_FONTDIR to the Windows Fonts directory for the offscreen platform.");
         font.setFamily("Segoe UI");
 #else
         font.setFamily("DejaVu Sans");
@@ -231,6 +241,14 @@ private slots:
             window.resize(target);QCoreApplication::processEvents();
             QCOMPARE(window.size(),target);
             auto *actions=window.findChild<QWidget *>("dictationActions");QVERIFY(actions);
+            auto *selectors=window.findChild<QWidget *>("dictationSelectors");QVERIFY(selectors);
+            QCOMPARE(window.m_sttModel->mapTo(selectors,QPoint()).x(),selectors->contentsRect().left());
+            const QRect refreshBounds(window.m_refreshDevices->mapTo(selectors,QPoint()),window.m_refreshDevices->size());
+            QCOMPARE(refreshBounds.right(),selectors->contentsRect().right());
+            for(QComboBox *box:{window.m_sttModel,window.m_language,window.m_device}) {
+                QCOMPARE(box->sizePolicy().horizontalPolicy(),QSizePolicy::Expanding);
+                QCOMPARE(box->mapTo(selectors,QPoint()).y(),window.m_sttModel->mapTo(selectors,QPoint()).y());
+            }
             QRect buttonBounds;
             for(QPushButton *button:{window.m_record,window.m_cancelStt,window.m_transcribeFile,static_cast<QPushButton *>(window.m_live)}) {
                 button->ensurePolished();
@@ -240,9 +258,9 @@ private slots:
                 QVERIFY2(button->height()>=qCeil(metrics.height())+16,qPrintable(button->text()));
                 QVERIFY(button->size().expandedTo(button->sizeHint())==button->size());
                 const QRect bounds(button->mapTo(actions,QPoint()),button->size());
-                QVERIFY(actions->rect().contains(bounds));buttonBounds=buttonBounds.united(bounds);
+                QVERIFY2(actions->rect().contains(bounds),qPrintable(controlGeometry(button,actions)));buttonBounds=buttonBounds.united(bounds);
             }
-            QVERIFY(qAbs(buttonBounds.center().x()-actions->rect().center().x())<=1);
+            QVERIFY2(qAbs(buttonBounds.center().x()-actions->rect().center().x())<=1,qPrintable(controlGeometry(window.m_live,actions)));
             QCOMPARE(window.m_live->text(),QString("Live text"));
             for(QComboBox *box:{window.m_server,window.m_model,window.m_voice,window.m_sttModel,window.m_language,window.m_device}) {
                 QStyleOptionComboBox option;option.initFrom(box);option.editable=box->isEditable();option.frame=true;
@@ -260,12 +278,18 @@ private slots:
         }
         // Device names can exceed a compact row without losing any characters.
         window.resize(680,540);
-        window.m_device->addItem("USB microphone with an unusually long manufacturer and product name for the recording input");
+        window.m_device->addItem(QString("USB microphone with an unusually long manufacturer and product name for the recording input ").repeated(3));
         window.m_device->setCurrentIndex(window.m_device->count()-1);QCoreApplication::processEvents();
         QCOMPARE(window.size(),QSize(680,540));
         QVERIFY(window.m_text->height()>=54);
         QVERIFY(window.m_device->hasHeightForWidth());
-        QVERIFY(window.m_device->height()>=window.m_device->heightForWidth(window.m_device->width()));
+        QTRY_VERIFY2_WITH_TIMEOUT(window.m_device->height()>=window.m_device->heightForWidth(window.m_device->width()),qPrintable(controlGeometry(window.m_device,window.m_device->parentWidget())),500);
+        auto *selectorScroll=window.findChild<QScrollArea *>("dictationSelectorScroll");QVERIFY(selectorScroll);
+        QCOMPARE(selectorScroll->horizontalScrollBarPolicy(),Qt::ScrollBarAlwaysOff);
+        QTRY_VERIFY_WITH_TIMEOUT(selectorScroll->verticalScrollBar()->maximum()>0,500);
+        selectorScroll->verticalScrollBar()->setValue(selectorScroll->verticalScrollBar()->maximum());
+        const QRect deviceBounds(window.m_device->mapTo(selectorScroll->viewport(),QPoint()),window.m_device->size());
+        QVERIFY(deviceBounds.bottom()<=selectorScroll->viewport()->rect().bottom());
         auto *actions=window.findChild<QWidget *>("dictationActions");
         QRect bounds;
         for(QPushButton *button:{window.m_record,window.m_cancelStt,window.m_transcribeFile,static_cast<QPushButton *>(window.m_live)})bounds=bounds.united(QRect(button->mapTo(actions,QPoint()),button->size()));

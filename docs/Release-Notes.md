@@ -5,7 +5,7 @@ SpeechDesk 1.1.1 is a patch release for dictation layout and interface documenta
 ## Changes in 1.1.1
 
 - Size speech and dictation dropdowns for complete labels, including the dropdown arrow and padding. Long selected values and popup entries wrap when needed.
-- Center dictation selectors and action buttons in separate groups, keeping each wrapped row centered at narrower window widths.
+- Arrange dictation selectors across the panel, with a compact row of action buttons centered beneath them. A subtle inset background separates the controls from the editor. At compact sizes, exceptionally long selector labels can scroll vertically within the toolbar while the action buttons remain visible.
 - Measure the Live text button using its rendered font and preserve padding at different display scales.
 - Include eight fresh screenshots covering the editor, dictation, server settings and About in dark and light themes. The screenshots are available separately and within the offline documentation.
 

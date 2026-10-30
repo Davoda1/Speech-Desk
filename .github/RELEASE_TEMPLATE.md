@@ -1,6 +1,6 @@
 SpeechDesk 1.1.1 is a native desktop application for text-to-speech playback and local dictation on Windows and Linux.
 
-This patch keeps speech and dictation selector labels readable, corrects Live text button sizing, and centers dictation selectors and actions in separate groups. Eight fresh screenshots cover the editor, dictation, server settings and About in both themes.
+This patch keeps speech and dictation selector labels readable and corrects Live text button sizing. A subtle inset dictation panel places selectors across its width, with compact action buttons centered in the row below. Eight fresh screenshots cover the editor, dictation, server settings and About in both themes.
 
 ## Features
 

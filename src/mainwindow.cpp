@@ -34,6 +34,7 @@
 #include <QListView>
 #include <QResizeEvent>
 #include <QMouseEvent>
+#include <QScrollArea>
 #include <QtMath>
 #include <QScreen>
 #include <QCryptographicHash>
@@ -144,7 +145,41 @@ private:
     }
 };
 
-// Rows are based on real widget hints, and each row is centered independently.
+// Keep the action row visible when a device name needs more vertical space
+// than the compact window can provide. Only the selector row scrolls.
+class SelectorScrollArea final : public QScrollArea {
+public:
+    SelectorScrollArea()
+    {
+        setFrameShape(QFrame::NoFrame);setWidgetResizable(true);
+        setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        setMinimumHeight(36);viewport()->setAutoFillBackground(false);
+        QSizePolicy policy(QSizePolicy::Expanding,QSizePolicy::Preferred);
+        policy.setHeightForWidth(true);setSizePolicy(policy);
+    }
+    void setSelectors(QWidget *selectors)
+    {
+        setWidget(selectors);selectors->setAutoFillBackground(false);selectors->installEventFilter(this);
+    }
+    QSize minimumSizeHint() const override {return {0,36};}
+    QSize sizeHint() const override {return widget()?widget()->sizeHint().expandedTo(QSize(0,36)):QSize(0,36);}
+    int heightForWidth(int width) const override {return widget()?qMax(36,widget()->heightForWidth(qMax(1,width))):36;}
+protected:
+    void resizeEvent(QResizeEvent *event) override {QScrollArea::resizeEvent(event);keepFullContentHeight();}
+    bool eventFilter(QObject *object,QEvent *event) override
+    {
+        const bool handled=QScrollArea::eventFilter(object,event);
+        if(object==widget()&&event->type()==QEvent::LayoutRequest){keepFullContentHeight();updateGeometry();}
+        return handled;
+    }
+private:
+    void keepFullContentHeight()
+    {
+        if(widget())widget()->setMinimumHeight(qMax(36,widget()->heightForWidth(qMax(1,viewport()->width()))));
+    }
+};
+
+// Rows use real widget hints and remain independently centered.
 // The minimum width is the widest individual control's wrapped minimum, not
 // the sum of a fixed row, so the window keeps its normal compact size.
 class CenteredDictationLayout final : public QLayout {
@@ -167,7 +202,8 @@ public:
     {
         QSize size(0,0);int visible=0;
         for(auto item:m_items)if(!item->isEmpty()) {
-            size.rwidth()+=item->sizeHint().width()+(visible++?spacing():0);size.setHeight(qMax(size.height(),item->sizeHint().height()));
+            const QSize hint=item->sizeHint().expandedTo(item->minimumSize());
+            size.rwidth()+=hint.width()+(visible++?spacing():0);size.setHeight(qMax(size.height(),hint.height()));
         }
         const auto margins=contentsMargins();return size+QSize(margins.left()+margins.right(),margins.top()+margins.bottom());
     }
@@ -203,8 +239,9 @@ private:
         for(auto item:m_items) {
             if(item->isEmpty())continue;
             if(auto widget=item->widget())widget->ensurePolished();
-            const int width=qMin(available,item->sizeHint().expandedTo(item->minimumSize()).width());
-            const int height=qMax(item->sizeHint().height(),item->hasHeightForWidth()?item->heightForWidth(width):0);
+            const QSize hint=item->sizeHint().expandedTo(item->minimumSize());
+            const int width=qMin(available,hint.width());
+            const int height=qMax(hint.height(),item->hasHeightForWidth()?item->heightForWidth(width):0);
             if(!row.isEmpty()&&rowWidth+spacing()+width>available)finishRow();
             rowWidth+=width+(row.isEmpty()?0:spacing());rowHeight=qMax(rowHeight,height);row.append({item,{width,height}});
         }
@@ -364,14 +401,18 @@ QWidget *MainWindow::buildTts()
 }
 QWidget *MainWindow::buildDictation()
 {
-    auto panel=new QWidget;auto rows=new QVBoxLayout(panel);rows->setContentsMargins(12,2,12,6);rows->setSpacing(7);
-    auto selectors=new QWidget;selectors->setObjectName("dictationSelectors");auto layout=new CenteredDictationLayout(selectors);layout->setContentsMargins(0,0,0,0);rows->addWidget(selectors);
+    auto panel=new QWidget;auto insetLayout=new QVBoxLayout(panel);insetLayout->setContentsMargins(12,2,12,8);
+    auto inset=new QFrame;inset->setObjectName("dictationInset");insetLayout->addWidget(inset);
+    auto rows=new QVBoxLayout(inset);rows->setContentsMargins(12,10,12,10);rows->setSpacing(9);
+    auto selectors=new QWidget;selectors->setObjectName("dictationSelectors");auto layout=new QHBoxLayout(selectors);layout->setContentsMargins(0,0,0,0);layout->setSpacing(7);
+    auto selectorScroll=new SelectorScrollArea;selectorScroll->setObjectName("dictationSelectorScroll");selectorScroll->setSelectors(selectors);rows->addWidget(selectorScroll);
     m_sttModel=new FullTextComboBox;m_sttModel->setObjectName("recognitionModel");
     m_sttModel->setAccessibleName("Dictation recognition model");m_sttModel->setToolTip("Local recognition model");
     refreshDictationModels();
     m_language=new FullTextComboBox;m_language->setObjectName("recognitionLanguage");m_language->setAccessibleName("Dictation language");m_language->setToolTip("Language to recognize");
     m_device=new FullTextComboBox;m_device->setObjectName("microphoneCombo");m_device->setAccessibleName("Dictation microphone");m_device->addItem("System default microphone",QString());m_device->setToolTip("Microphone input");
-    layout->addWidget(m_sttModel);layout->addWidget(m_language);layout->addWidget(m_device);
+    for(auto box:{m_sttModel,m_language,m_device}){auto policy=box->sizePolicy();policy.setHorizontalPolicy(QSizePolicy::Expanding);box->setSizePolicy(policy);}
+    layout->addWidget(m_sttModel,3);layout->addWidget(m_language,2);layout->addWidget(m_device,4);
     m_refreshDevices=tool("","Refresh microphones");m_refreshDevices->setObjectName("refreshMicrophonesButton");m_refreshDevices->setIcon(QIcon(":/refresh.svg"));m_refreshDevices->setIconSize(QSize(18,18));m_refreshDevices->setFixedSize(36,36);layout->addWidget(m_refreshDevices);
     connect(m_refreshDevices,&QToolButton::clicked,this,[this]{if(!m_sttBusy&&!m_recording)m_stt.requestDevices();});
     connect(m_sttModel,&QComboBox::currentIndexChanged,this,&MainWindow::updateLanguages);updateLanguages();
@@ -379,8 +420,9 @@ QWidget *MainWindow::buildDictation()
     m_cancelStt=new QPushButton("Cancel");m_cancelStt->setObjectName("cancelDictationButton");m_cancelStt->setToolTip("Discard this dictation and restore the original text (Escape)");
     m_transcribeFile=new QPushButton("Audio file");m_transcribeFile->setObjectName("insertAudioButton");m_transcribeFile->setToolTip("Insert words from an audio recording at the cursor");
     m_live=new AnimatedToggleButton("Live text");m_live->setObjectName("liveDictation");m_live->setChecked(m_settings.value("live").toBool(true));m_live->setToolTip("Update text while speaking, then refine it after Stop. Turn off to transcribe only after recording.");
-    auto actions=new QWidget;actions->setObjectName("dictationActions");auto actionLayout=new CenteredDictationLayout(actions);actionLayout->setContentsMargins(0,0,0,0);rows->addWidget(actions);
+    auto actions=new QWidget;actions->setObjectName("dictationActions");auto actionLayout=new QHBoxLayout(actions);actionLayout->setContentsMargins(0,0,0,0);actionLayout->setSpacing(7);actionLayout->addStretch();rows->addWidget(actions);
     for(auto button:QList<QPushButton *>{m_record,m_cancelStt,m_transcribeFile,m_live}){button->setMinimumHeight(36);button->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Preferred);actionLayout->addWidget(button);}
+    actionLayout->addStretch();
     connect(m_record,&QPushButton::clicked,this,&MainWindow::record);connect(m_transcribeFile,&QPushButton::clicked,this,&MainWindow::openAudio);connect(m_cancelStt,&QPushButton::clicked,this,&MainWindow::cancelDictation);
     return panel;
 }
@@ -695,6 +737,8 @@ QCheckBox::indicator { width:16px; height:16px; border:1px solid %5; border-radi
 QCheckBox::indicator:checked { background:#737b87; image:url(:/check.svg); border-color:#737b87; }
 QToolTip { background:%4; border:1px solid %5; padding:6px; }
 )").arg(text,bg,muted,panel,border,input,hover).arg(accent,accentText,accentHover,focus,selection);
+    css+=QString("QFrame#dictationInset { background:%1; border:1px solid %2; border-top-color:%3; border-left-color:%3; border-radius:8px; }")
+        .arg(dark?"#1b1c1f":"#eceeef",dark?"#484a50":"#ffffff",dark?"#101114":"#c5c9d0");
     qApp->setStyleSheet(css);m_level->setDark(dark);m_live->setDark(dark);QFont editorFont=qApp->font();editorFont.setPixelSize(m_settings.value("fontSize").toInt(16));m_text->setFont(editorFont);
     m_text->setStyleSheet(QString("font-size:%1px;").arg(editorFont.pixelSize()));
     // Appearance changes must neither create nor erase an unsaved-text state.
