@@ -58,8 +58,10 @@ def archive_tar(root, files, target, prefix=''):
                 archive.addfile(info,stream)
 
 def copy_documents(runtime, output):
-    for file in [ROOT/'LICENSE.txt', ROOT/'docs/Release-Notes.md', ROOT/'docs/Server-Profiles.md', ROOT/'docs/Verification.md', ROOT/'docs/Optional-Models.md', ROOT/'docs/User-Guide.md']:
+    for file in [ROOT/'LICENSE.txt', ROOT/'SECURITY.md', ROOT/'docs/Release-Notes.md', ROOT/'docs/Server-Profiles.md', ROOT/'docs/Verification.md', ROOT/'docs/Optional-Models.md', ROOT/'docs/User-Guide.md']:
         shutil.copy2(file, runtime/file.name)
+    guide = runtime/'User-Guide.md'
+    guide.write_text(guide.read_text(encoding='utf-8').replace('](../SECURITY.md)', '](SECURITY.md)'), encoding='utf-8')
     shutil.copy2(output/f'{PREFIX}-README.html', runtime/'README.html')
     shutil.copy2(ROOT/'vendor/optional-models.json',runtime/'optional-models.json')
     inventory=json.loads((ROOT/'vendor/native-assets.json').read_text())
@@ -131,7 +133,7 @@ def main():
             if deb_root.exists():shutil.rmtree(deb_root)
             subprocess.run(['python3',str(ROOT/'packaging/stage_deb.py'),'--portable',str(runtime),'--output',str(deb_root)],check=True)
             doc=deb_root/'usr/share/doc/speechdesk';doc.mkdir(parents=True,exist_ok=True)
-            for name in ['README.html','LICENSE.txt','Release-Notes.md','Server-Profiles.md','Verification.md','Optional-Models.md','User-Guide.md']:
+            for name in ['README.html','LICENSE.txt','SECURITY.md','Release-Notes.md','Server-Profiles.md','Verification.md','Optional-Models.md','User-Guide.md']:
                 shutil.copy2(runtime/name,doc/name)
             control=deb_root/'DEBIAN/control'
             control.write_text(re.sub(r'Installed-Size: \d+', f"Installed-Size: {sum(f.stat().st_size for f in runtime_files(deb_root/'usr'))//1024}",control.read_text()))

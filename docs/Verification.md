@@ -7,12 +7,15 @@ Validation for this release covers the native Linux build, local HTTP/WebSocket 
 | Local check | Result |
 | --- | --- |
 | Linux Release build, Qt 6.4.2 and pinned libsodium 1.0.22 | Passed |
+| Windows x64 cross-build, Qt 6.8.3 and MinGW GCC 13 | Passed; native Windows execution remains pending |
 | `textsegments`, `ttsclient`, `modelpacks`, `providerprofiles`, `credentialstore`, `ui_profiles` | All six focused groups passed |
 | Credential integrity and rollback | Wrong passphrase, modified ciphertext, invalid parameters, profile/origin binding, independent replacement and damaged-file rollback covered |
 | UI state and minimum size | Centered meter, Live text state, selected-profile locking and 680 × 540 layout covered |
 | Public source and documentation scan | No supplied API keys or internal workspace references found |
 
 The OpenAI Realtime adapter is tested against a deterministic local protocol fixture. No live OpenAI account request is claimed. Transcript matching compares the provider's reported text with the submitted text; it does not independently transcribe returned audio or establish pronunciation accuracy. Punctuation and numeric-format differences are deliberately rejected by the conservative check.
+
+The Windows portable package has been cross-built and its layout, dependencies and bundled model hashes checked. This is not a native Windows runtime test. Startup, encrypted-key storage and audio-device operation still need validation on Windows.
 
 No physical microphone, speaker or private speech server is available to these automated checks. The local UI checks establish layout and state behavior, not physical audio-device operation. Recognition remains local and existing model weights are unchanged.
 

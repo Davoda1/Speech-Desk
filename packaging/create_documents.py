@@ -17,8 +17,10 @@ section_ids={
 sections=[]
 for title,path in texts:
  text=path.read_text(encoding='utf-8')
- for filename,anchor in section_ids.items():
-  text=text.replace('(docs/'+filename+')','(#'+anchor+')').replace('('+filename+')','(#'+anchor+')')
+ def inline_document_link(match):
+  filename, fragment = match.groups()
+  return '](' + (fragment or '#' + section_ids[filename]) + ')'
+ text=re.sub(r'\]\((?:(?:\.\./)?docs/|\.\./)?(' + '|'.join(re.escape(name) for name in section_ids) + r')(#[^)]+)?\)', inline_document_link, text)
  def embed_image(match):
   image_path=a.source/match.group(2)
   if image_path.is_file():
