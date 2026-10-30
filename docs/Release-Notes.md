@@ -1,8 +1,17 @@
-# SpeechDesk 1.1.0
+# SpeechDesk 1.1.1
 
-SpeechDesk 1.1.0 adds optional encrypted credentials, OpenAI Realtime support and refinements to the native Qt6 interface.
+SpeechDesk 1.1.1 is a patch release for dictation layout and interface documentation.
 
-## Changes
+## Changes in 1.1.1
+
+- Size speech and dictation dropdowns for complete labels, including the dropdown arrow and padding. Long selected values and popup entries wrap when needed.
+- Center dictation selectors and action buttons in separate groups, keeping each wrapped row centered at narrower window widths.
+- Measure the Live text button using its rendered font and preserve padding at different display scales.
+- Include eight fresh screenshots covering the editor, dictation, server settings and About in dark and light themes. The screenshots are available separately and within the offline documentation.
+
+## Features introduced in 1.1.0
+
+SpeechDesk 1.1.0 introduced optional encrypted credentials, OpenAI Realtime support and refinements to the native Qt6 interface:
 
 - Save an API key separately for each server profile when requested. Argon2id and XChaCha20-Poly1305 protect the saved credential; the unlock passphrase is never stored.
 - Unlock saved keys when needed, lock them again during a session, or replace an inaccessible credential without changing another profile's key. Keys remain session-only unless saving is enabled.

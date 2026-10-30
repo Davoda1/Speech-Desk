@@ -1,8 +1,12 @@
 # Verification scope
 
-## Version 1.1.0 validation
+## Version 1.1.1 verification scope
 
-Validation for this release covers the native Linux build, local HTTP/WebSocket fixtures, credential encryption and transactional saves, minimum-size UI behavior, and documentation links. CI records the exact Windows/Linux build results and release-package checks for the submitted commit.
+This patch focuses on full-label speech and dictation controls, centered dictation actions at compact and wider window sizes, and updated screenshots in both themes. Local geometry checks passed at 100%, 125%, 150% and 200% display scaling. CI records the Windows/Linux build results, focused tests and package checks for the exact submitted commit. A screenshot documents the interface; it does not establish provider compatibility or physical audio-device operation.
+
+## Version 1.1.0 local validation baseline
+
+The following local checks were recorded for version 1.1.0. They are a historical baseline, not a claim that a later commit has passed. Consult the corresponding CI run for each release's exact results.
 
 | Local check | Result |
 | --- | --- |
@@ -34,7 +38,7 @@ cmake --build build --parallel 4
 ctest --test-dir build --output-on-failure --timeout 90
 ```
 
-Build/CI logs identify the tested commit, operating system and toolchain. A successful build is not a physical microphone/speaker test. The headless `ui_profiles` subset runs on Linux in CTest; the additional playback cases in the UI test executable require an actual or virtual audio output.
+Build/CI logs identify the tested commit, operating system and toolchain. A successful build is not a physical microphone/speaker test. The headless `ui_profiles` subset runs on Windows and Linux in CTest; the additional playback cases in the UI test executable require an actual or virtual audio output.
 
 A live provider check establishes compatibility only for the endpoint, model, voice and options used in that request. A fixture or one provider's successful request does not establish compatibility with another service. API keys are not needed for standard CI and must never be included in logs or repository files.
 

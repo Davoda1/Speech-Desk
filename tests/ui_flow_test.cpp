@@ -215,6 +215,67 @@ private slots:
         window.updateSttControls();QCOMPARE(window.m_level->value(),0);
         window.m_dictate->setChecked(false);QVERIFY(!window.m_level->isVisible());
     }
+    void fullControlTextAndCenteredDictationActions() {
+        MainWindow window;window.showDemo(true);window.show();
+        for(const QSize target:{QSize(680,540),QSize(1100,760)}) {
+            window.resize(target);QCoreApplication::processEvents();
+            QCOMPARE(window.size(),target);
+            auto *actions=window.findChild<QWidget *>("dictationActions");QVERIFY(actions);
+            QRect buttonBounds;
+            for(QPushButton *button:{window.m_record,window.m_cancelStt,window.m_transcribeFile,static_cast<QPushButton *>(window.m_live)}) {
+                button->ensurePolished();
+                QFont measuredFont=button->font();if(button==window.m_live)measuredFont.setWeight(QFont::DemiBold);
+                const QFontMetricsF metrics(measuredFont,button);
+                QVERIFY2(button->width()>=qCeil(metrics.horizontalAdvance(button->text()))+26,qPrintable(button->text()));
+                QVERIFY2(button->height()>=qCeil(metrics.height())+16,qPrintable(button->text()));
+                QVERIFY(button->size().expandedTo(button->sizeHint())==button->size());
+                const QRect bounds(button->mapTo(actions,QPoint()),button->size());
+                QVERIFY(actions->rect().contains(bounds));buttonBounds=buttonBounds.united(bounds);
+            }
+            QVERIFY(qAbs(buttonBounds.center().x()-actions->rect().center().x())<=1);
+            QCOMPARE(window.m_live->text(),QString("Live text"));
+            for(QComboBox *box:{window.m_server,window.m_model,window.m_voice,window.m_sttModel,window.m_language,window.m_device}) {
+                QStyleOptionComboBox option;option.initFrom(box);option.editable=box->isEditable();option.frame=true;
+                const QRect textRect=box->style()->subControlRect(QStyle::CC_ComboBox,&option,QStyle::SC_ComboBoxEditField,box);
+                const QString visible=box->currentText().isEmpty()&&box->lineEdit()?box->lineEdit()->placeholderText():box->currentText();
+                const QFontMetrics metrics(box->font(),box);
+                QVERIFY2(textRect.width()>=metrics.horizontalAdvance(visible)+4||box->height()>box->sizeHint().height(),qPrintable(visible));
+                QCOMPARE(box->view()->textElideMode(),Qt::ElideNone);
+                auto *list=qobject_cast<QListView *>(box->view());QVERIFY(list);QVERIFY(list->wordWrap());
+                const QRect bounds(box->mapTo(window.centralWidget(),QPoint()),box->size());
+                QVERIFY2(window.centralWidget()->rect().contains(bounds),qPrintable(box->objectName()));
+            }
+            window.m_live->setChecked(!window.m_live->isChecked());QCoreApplication::processEvents();
+            QVERIFY(window.m_live->width()>=window.m_live->minimumSizeHint().width());
+        }
+        // Device names can exceed a compact row without losing any characters.
+        window.resize(680,540);
+        window.m_device->addItem("USB microphone with an unusually long manufacturer and product name for the recording input");
+        window.m_device->setCurrentIndex(window.m_device->count()-1);QCoreApplication::processEvents();
+        QCOMPARE(window.size(),QSize(680,540));
+        QVERIFY(window.m_text->height()>=54);
+        QVERIFY(window.m_device->hasHeightForWidth());
+        QVERIFY(window.m_device->height()>=window.m_device->heightForWidth(window.m_device->width()));
+        auto *actions=window.findChild<QWidget *>("dictationActions");
+        QRect bounds;
+        for(QPushButton *button:{window.m_record,window.m_cancelStt,window.m_transcribeFile,static_cast<QPushButton *>(window.m_live)})bounds=bounds.united(QRect(button->mapTo(actions,QPoint()),button->size()));
+        QVERIFY(qAbs(bounds.center().x()-actions->rect().center().x())<=1);
+        // A wrapped editable selection can still be focused and edited normally.
+        window.m_dictate->setChecked(false);
+        const QString longModel="provider/"+QString("long-model-identifier-").repeated(6);
+        window.m_model->setCurrentText(longModel);window.m_text->setFocus();QCoreApplication::processEvents();
+        QCOMPARE(window.m_model->currentText(),longModel);
+        QTRY_VERIFY_WITH_TIMEOUT(window.m_model->height()>=window.m_model->heightForWidth(window.m_model->width()),500);
+        QVERIFY(!window.m_model->lineEdit()->isVisible());
+        QTest::mouseClick(window.m_model,Qt::LeftButton,Qt::NoModifier,QPoint(15,window.m_model->height()/2));
+        QCoreApplication::processEvents();QVERIFY(window.m_model->lineEdit()->isVisible());
+        QVERIFY(window.m_model->lineEdit()->hasFocus());
+        QTest::keyClick(window.m_model->lineEdit(),Qt::Key_End);QTest::keyClicks(window.m_model->lineEdit(),"-edited");
+        window.m_text->setFocus();QCoreApplication::processEvents();
+        QCOMPARE(window.m_model->currentText(),longModel+"-edited");
+        QVERIFY(!window.m_model->lineEdit()->isVisible());
+        QTRY_VERIFY_WITH_TIMEOUT(window.m_model->height()>=window.m_model->heightForWidth(window.m_model->width()),500);
+    }
     void lockingOneProfilePreservesOtherSessionKeys() {
         MainWindow window;window.m_demo=true;
         auto first=serverProfileForProvider("openrouter");first["apiKey"]="first-test-key";

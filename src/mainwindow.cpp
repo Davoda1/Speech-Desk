@@ -31,6 +31,9 @@
 #include <QStylePainter>
 #include <QStyleOptionComboBox>
 #include <QTextLayout>
+#include <QListView>
+#include <QResizeEvent>
+#include <QMouseEvent>
 #include <QtMath>
 #include <QScreen>
 #include <QCryptographicHash>
@@ -46,50 +49,90 @@ static QByteArray speechSignature(QJsonObject p){p.remove("discovery");p.remove(
 static QToolButton *tool(const QString &text,const QString &tip,QWidget *parent=nullptr){auto b=new QToolButton(parent);b->setMinimumHeight(32);b->setText(text);b->setToolTip(tip);b->setAccessibleName(tip);b->setCursor(Qt::PointingHandCursor);return b;}
 static QFrame *card(){auto f=new QFrame;f->setObjectName("card");return f;}
 static QWidget *field(const QString &label,QWidget *input){auto w=new QWidget;auto l=new QVBoxLayout(w);l->setContentsMargins(0,0,0,0);l->setSpacing(5);auto t=new QLabel(label);t->setProperty("muted",true);t->setBuddy(input);l->addWidget(t);l->addWidget(input);return w;}
-static void compactCombo(QComboBox *box){box->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);box->setMinimumContentsLength(7);box->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);}
 
 namespace {
-// Keep normal selections at their full content width. A device name that is
-// wider than the entire toolbar can use multiple lines instead of being cut off.
-class DictationComboBox final : public QComboBox {
+// Measure the polished control and every complete label. Long selections wrap
+// inside the available row; popup rows also wrap instead of inserting ellipses.
+class FullTextComboBox final : public QComboBox {
 public:
-    DictationComboBox()
+    FullTextComboBox()
     {
         setSizeAdjustPolicy(QComboBox::AdjustToContents);
         setMinimumHeight(36);
         QSizePolicy policy(QSizePolicy::Preferred,QSizePolicy::Preferred);
         policy.setHeightForWidth(true);setSizePolicy(policy);
-        connect(this,&QComboBox::currentTextChanged,this,[this]{updateGeometry();update();});
+        auto list=new QListView;list->setTextElideMode(Qt::ElideNone);list->setWordWrap(true);
+        list->setUniformItemSizes(false);list->setResizeMode(QListView::Adjust);setView(list);
+        connect(this,&QComboBox::currentTextChanged,this,[this]{updateGeometry();updateEditor();update();});
     }
-    QSize sizeHint() const override {return {QComboBox::sizeHint().width(),36};}
+    QSize sizeHint() const override
+    {
+        ensurePolished();
+        QStyleOptionComboBox option;initStyleOption(&option);
+        const QFontMetrics metrics(font(),this);int textWidth=metrics.horizontalAdvance(displayText());
+        for(int i=0;i<count();++i)textWidth=qMax(textWidth,metrics.horizontalAdvance(itemText(i)));
+        return style()->sizeFromContents(QStyle::CT_ComboBox,&option,QSize(textWidth+4,metrics.height()),this).expandedTo(QSize(0,36));
+    }
     QSize minimumSizeHint() const override
     {
-        const int naturalWidth=QComboBox::sizeHint().width();
-        QStyleOptionComboBox option;initStyleOption(&option);option.rect=QRect(0,0,naturalWidth,36);
-        const QRect field=style()->subControlRect(QStyle::CC_ComboBox,&option,QStyle::SC_ComboBoxEditField,this);
-        return {naturalWidth-field.width()+fontMetrics().maxWidth(),36};
+        ensurePolished();QStyleOptionComboBox option;initStyleOption(&option);
+        return style()->sizeFromContents(QStyle::CT_ComboBox,&option,QSize(fontMetrics().maxWidth()+4,fontMetrics().height()),this).expandedTo(QSize(0,36));
     }
     int heightForWidth(int width) const override
     {
-        QStyleOptionComboBox option;initStyleOption(&option);option.rect=QRect(0,0,width,36);
+        ensurePolished();const QSize natural=sizeHint();
+        QStyleOptionComboBox option;initStyleOption(&option);option.rect=QRect(0,0,width,natural.height());
         const QRect field=style()->subControlRect(QStyle::CC_ComboBox,&option,QStyle::SC_ComboBoxEditField,this);
-        QTextLayout text(currentText(),font());
-        return qMax(36,qCeil(wrapText(text,field.width()))+36-field.height());
+        QTextLayout text(displayText(),font(),this);
+        return qMax(natural.height(),qCeil(wrapText(text,field.width()-4))+natural.height()-field.height());
+    }
+    void showPopup() override
+    {
+        const int available=screen()?screen()->availableGeometry().width()-24:width();
+        view()->setMinimumWidth(qMin(qMax(width(),sizeHint().width()),available));
+        QComboBox::showPopup();
     }
 protected:
+    void resizeEvent(QResizeEvent *event) override {QComboBox::resizeEvent(event);updateEditor();}
+    void focusInEvent(QFocusEvent *event) override
+    {
+        if(lineEdit())lineEdit()->show();QComboBox::focusInEvent(event);updateEditor();
+    }
+    void mousePressEvent(QMouseEvent *event) override
+    {
+        if(lineEdit()&&event->position().x()<width()-24){lineEdit()->show();lineEdit()->setFocus();}
+        QComboBox::mousePressEvent(event);
+    }
+    bool eventFilter(QObject *object,QEvent *event) override
+    {
+        if(object==lineEdit()&&(event->type()==QEvent::FocusOut||event->type()==QEvent::FocusIn))
+            QTimer::singleShot(0,this,[this]{updateEditor();update();});
+        return QComboBox::eventFilter(object,event);
+    }
     void paintEvent(QPaintEvent *event) override
     {
+        updateEditor();
         QStyleOptionComboBox option;initStyleOption(&option);
-        const QRect field=style()->subControlRect(QStyle::CC_ComboBox,&option,QStyle::SC_ComboBoxEditField,this);
-        if(fontMetrics().horizontalAdvance(currentText())<=field.width()&&!currentText().contains('\n')) {
+        const QRect field=style()->subControlRect(QStyle::CC_ComboBox,&option,QStyle::SC_ComboBoxEditField,this).adjusted(2,0,-2,0);
+        if((lineEdit()&&lineEdit()->isVisible())||(!isEditable()&&fontMetrics().horizontalAdvance(displayText())<=field.width()&&!displayText().contains('\n'))) {
             QComboBox::paintEvent(event);return;
         }
         QStylePainter painter(this);painter.drawComplexControl(QStyle::CC_ComboBox,option);
-        painter.setPen(option.palette.color(isEnabled()?QPalette::Active:QPalette::Disabled,QPalette::ButtonText));
-        QTextLayout text(currentText(),font());const qreal height=wrapText(text,field.width());
+        painter.setPen(option.palette.color(isEnabled()?QPalette::Active:QPalette::Disabled,currentText().isEmpty()?QPalette::PlaceholderText:QPalette::ButtonText));
+        QTextLayout text(displayText(),font(),this);const qreal height=wrapText(text,field.width());
         painter.setClipRect(field);text.draw(&painter,QPointF(field.x(),field.y()+(field.height()-height)/2.0));
     }
 private:
+    QString displayText() const {return currentText().isEmpty()&&lineEdit()?lineEdit()->placeholderText():currentText();}
+    void updateEditor()
+    {
+        if(!lineEdit())return;
+        lineEdit()->installEventFilter(this);
+        QStyleOptionComboBox option;initStyleOption(&option);
+        const QRect field=style()->subControlRect(QStyle::CC_ComboBox,&option,QStyle::SC_ComboBoxEditField,this);
+        const bool wraps=fontMetrics().horizontalAdvance(displayText())>field.width()-4||displayText().contains('\n');
+        lineEdit()->setVisible(!wraps||lineEdit()->hasFocus());
+    }
     static qreal wrapText(QTextLayout &text,int width)
     {
         QTextOption option;option.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);text.setTextOption(option);
@@ -106,7 +149,7 @@ private:
 // the sum of a fixed row, so the window keeps its normal compact size.
 class CenteredDictationLayout final : public QLayout {
 public:
-    explicit CenteredDictationLayout(QWidget *parent):QLayout(parent){setSpacing(7);}
+    explicit CenteredDictationLayout(QWidget *parent,bool expandRows=false):QLayout(parent),m_expandRows(expandRows){setSpacing(7);}
     ~CenteredDictationLayout() override {while(auto item=takeAt(0))delete item;}
     void addItem(QLayoutItem *item) override {m_items.append(item);invalidate();}
     int count() const override {return m_items.size();}
@@ -131,6 +174,7 @@ public:
     void setGeometry(const QRect &rect) override {QLayout::setGeometry(rect);arrange(rect,true);}
 private:
     QList<QLayoutItem *> m_items;
+    bool m_expandRows;
     int arrange(const QRect &rect,bool apply) const
     {
         const auto margins=contentsMargins();const int available=qMax(1,rect.width()-margins.left()-margins.right());
@@ -138,16 +182,28 @@ private:
         QList<Entry> row;int rowWidth=0,rowHeight=0,y=rect.y()+margins.top();
         auto finishRow=[&]{
             if(row.isEmpty())return;
+            if(m_expandRows) {
+                int expanding=0;for(const auto &entry:row)if(entry.item->expandingDirections()&Qt::Horizontal)++expanding;
+                int extra=available-rowWidth;
+                for(auto &entry:row)if(expanding&&(entry.item->expandingDirections()&Qt::Horizontal)) {
+                    const int added=extra/expanding;entry.size.rwidth()+=added;rowWidth+=added;extra-=added;--expanding;
+                    if(entry.item->hasHeightForWidth())entry.size.setHeight(qMax(entry.size.height(),entry.item->heightForWidth(entry.size.width())));
+                }
+            }
+            // Action rows use a shared natural height, including larger fonts.
+            for(auto &entry:row)if(qobject_cast<QPushButton *>(entry.item->widget()))entry.size.setHeight(rowHeight);
             int x=rect.x()+margins.left()+(available-rowWidth)/2;
             for(const auto &entry:row) {
-                if(apply)entry.item->setGeometry(QRect(QPoint(x,y+(rowHeight-entry.size.height())/2),entry.size));
+                const int top=(entry.item->alignment()&Qt::AlignBottom)?rowHeight-entry.size.height():(rowHeight-entry.size.height())/2;
+                if(apply)entry.item->setGeometry(QRect(QPoint(x,y+top),entry.size));
                 x+=entry.size.width()+spacing();
             }
             y+=rowHeight+spacing();row.clear();rowWidth=rowHeight=0;
         };
         for(auto item:m_items) {
             if(item->isEmpty())continue;
-            const int width=qMin(available,item->sizeHint().width());
+            if(auto widget=item->widget())widget->ensurePolished();
+            const int width=qMin(available,item->sizeHint().expandedTo(item->minimumSize()).width());
             const int height=qMax(item->sizeHint().height(),item->hasHeightForWidth()?item->heightForWidth(width):0);
             if(!row.isEmpty()&&rowWidth+spacing()+width>available)finishRow();
             rowWidth+=width+(row.isEmpty()?0:spacing());rowHeight=qMax(rowHeight,height);row.append({item,{width,height}});
@@ -272,14 +328,17 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),m_tts(this),m_stt(th
 QWidget *MainWindow::buildTts()
 {
     auto page=new QWidget;auto l=new QVBoxLayout(page);l->setContentsMargins(0,0,0,0);l->setSpacing(8);
-    auto choices=new QHBoxLayout;choices->setSpacing(12);m_server=new QComboBox;compactCombo(m_server);m_model=new QComboBox;compactCombo(m_model);m_model->setEditable(true);m_model->setInsertPolicy(QComboBox::NoInsert);m_model->lineEdit()->setPlaceholderText("Server default model");m_voice=new QComboBox;compactCombo(m_voice);m_voice->setEditable(true);m_voice->setInsertPolicy(QComboBox::NoInsert);m_voice->lineEdit()->setPlaceholderText("Server default voice");choices->addWidget(field("Server",m_server),2);choices->addWidget(field("Model",m_model),2);choices->addWidget(field("Voice",m_voice),1);auto setup=tool("Configure…","Configure speech servers");choices->addWidget(setup,0,Qt::AlignBottom);connect(setup,&QToolButton::clicked,this,[this]{configure(true);});l->addLayout(choices);
+    auto choicePanel=new QWidget;choicePanel->setObjectName("speechChoices");auto choices=new CenteredDictationLayout(choicePanel,true);choices->setContentsMargins(0,0,0,0);choices->setSpacing(12);
+    m_server=new FullTextComboBox;m_server->setObjectName("speechServer");m_model=new FullTextComboBox;m_model->setObjectName("speechModel");m_model->setEditable(true);m_model->setInsertPolicy(QComboBox::NoInsert);m_model->lineEdit()->setPlaceholderText("Server default model");m_voice=new FullTextComboBox;m_voice->setObjectName("speechVoice");m_voice->setEditable(true);m_voice->setInsertPolicy(QComboBox::NoInsert);m_voice->lineEdit()->setPlaceholderText("Server default voice");
+    for(auto box:{m_server,m_model,m_voice}){auto policy=box->sizePolicy();policy.setHorizontalPolicy(QSizePolicy::Expanding);box->setSizePolicy(policy);}
+    choices->addWidget(field("Server",m_server));choices->addWidget(field("Model",m_model));choices->addWidget(field("Voice",m_voice));auto setup=tool("Configure","Configure speech servers");choices->addWidget(setup);choices->itemAt(choices->count()-1)->setAlignment(Qt::AlignBottom);connect(setup,&QToolButton::clicked,this,[this]{configure(true);});l->addWidget(choicePanel);
     connect(m_server,&QComboBox::currentIndexChanged,this,[this](int i){m_settings["selectedProfile"]=i;updateVoiceChoices();});
     auto editorCard=card();auto el=new QVBoxLayout(editorCard);el->setContentsMargins(0,0,0,0);el->setSpacing(0);
     auto toolbar=new QHBoxLayout;toolbar->setContentsMargins(12,4,10,4);
     auto label=new QLabel("TEXT TO READ");label->setProperty("sectionLabel",true);toolbar->addWidget(label);toolbar->addStretch();
     m_dictate=tool("Dictate","Show dictation controls · insert speech at the cursor (Ctrl+R)");m_dictate->setObjectName("dictateButton");m_dictate->setCheckable(true);
-    m_openText=tool("Open TXT…","Open a text file (Ctrl+O)");m_openText->setObjectName("openTextButton");
-    m_saveText=tool("Save text…","Save the editor as a text file (Ctrl+S)");m_saveText->setObjectName("saveTextButton");
+    m_openText=tool("Open TXT","Open a text file (Ctrl+O)");m_openText->setObjectName("openTextButton");
+    m_saveText=tool("Save text","Save the editor as a text file (Ctrl+S)");m_saveText->setObjectName("saveTextButton");
     m_clearText=tool("Clear","Clear the text");m_clearText->setObjectName("clearTextButton");
     toolbar->addWidget(m_dictate);toolbar->addWidget(m_openText);toolbar->addWidget(m_saveText);toolbar->addWidget(m_clearText);el->addLayout(toolbar);
     m_dictationPanel=buildDictation();m_dictationPanel->setObjectName("dictationPanel");m_dictationPanel->setVisible(false);el->addWidget(m_dictationPanel);
@@ -294,7 +353,7 @@ QWidget *MainWindow::buildTts()
     connect(m_clearText,&QToolButton::clicked,this,[this]{if(m_active||m_dictationActive||m_sttBusy)return;if(confirmReplace(m_text,"Clear text"))m_text->clear();});
     connect(m_text,&QPlainTextEdit::textChanged,this,&MainWindow::updateStatistics);
     connect(m_text,&QPlainTextEdit::selectionChanged,this,[this]{if(!m_active&&!m_dictationActive)m_speak->setText(m_text->textCursor().hasSelection()?"Speak selection":"Speak");});
-    auto controls=new QHBoxLayout;controls->setSpacing(9);m_speak=new QPushButton("Speak");m_speak->setObjectName("speakButton");m_speak->setProperty("accent",true);m_speak->setMinimumWidth(118);m_speak->setMinimumHeight(36);m_speak->setToolTip("Read text or selected text (Ctrl+Enter)");m_pause=new QPushButton("Pause");m_pause->setMinimumHeight(36);m_stop=new QPushButton("Stop");m_stop->setMinimumHeight(36);controls->addWidget(m_speak);controls->addWidget(m_pause);controls->addWidget(m_stop);controls->addStretch();m_export=new QPushButton("Save audio…");m_export->setMinimumHeight(36);m_export->setEnabled(false);controls->addWidget(m_export);auto volume=new QLabel("Volume");volume->setProperty("muted",true);controls->addWidget(volume);m_volume=new QSlider(Qt::Horizontal);m_volume->setRange(0,100);m_volume->setValue(m_settings.value("volume").toInt(85));m_volume->setFixedWidth(80);m_volume->setAccessibleName("Playback volume");controls->addWidget(m_volume);l->addLayout(controls);
+    auto controls=new QHBoxLayout;controls->setSpacing(9);m_speak=new QPushButton("Speak");m_speak->setObjectName("speakButton");m_speak->setProperty("accent",true);m_speak->setMinimumWidth(118);m_speak->setMinimumHeight(36);m_speak->setToolTip("Read text or selected text (Ctrl+Enter)");m_pause=new QPushButton("Pause");m_pause->setMinimumHeight(36);m_stop=new QPushButton("Stop");m_stop->setMinimumHeight(36);controls->addWidget(m_speak);controls->addWidget(m_pause);controls->addWidget(m_stop);controls->addStretch();m_export=new QPushButton("Save audio");m_export->setMinimumHeight(36);m_export->setEnabled(false);controls->addWidget(m_export);auto volume=new QLabel("Volume");volume->setProperty("muted",true);controls->addWidget(volume);m_volume=new QSlider(Qt::Horizontal);m_volume->setRange(0,100);m_volume->setValue(m_settings.value("volume").toInt(85));m_volume->setFixedWidth(80);m_volume->setAccessibleName("Playback volume");controls->addWidget(m_volume);l->addLayout(controls);
     auto progress=new QHBoxLayout;m_seek=new QSlider(Qt::Horizontal);m_seek->setRange(0,0);m_seek->setEnabled(false);m_seek->setAccessibleName("Position within current reading part");m_time=new QLabel("0:00 / 0:00");m_time->setProperty("muted",true);m_time->setMinimumWidth(88);progress->addWidget(m_seek,1);progress->addWidget(m_time);l->addLayout(progress);auto statusRow=new QWidget;statusRow->setObjectName("speechStatusBar");auto statusLayout=new QGridLayout(statusRow);statusLayout->setContentsMargins(0,0,0,0);statusLayout->setHorizontalSpacing(8);
     m_status=new QLabel("Add a speech server in Settings to begin.");m_status->setWordWrap(true);m_status->setProperty("muted",true);m_status->setMinimumHeight(28);m_status->setMinimumWidth(0);m_status->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Preferred);m_sttStatus=m_status;
     m_level=new SymmetricLevelMeter;m_level->setObjectName("microphoneLevel");m_level->setFixedSize(200,16);m_level->setVisible(false);
@@ -305,22 +364,23 @@ QWidget *MainWindow::buildTts()
 }
 QWidget *MainWindow::buildDictation()
 {
-    auto panel=new QWidget;auto layout=new CenteredDictationLayout(panel);layout->setContentsMargins(12,2,12,6);
-    m_sttModel=new DictationComboBox;m_sttModel->setObjectName("recognitionModel");
+    auto panel=new QWidget;auto rows=new QVBoxLayout(panel);rows->setContentsMargins(12,2,12,6);rows->setSpacing(7);
+    auto selectors=new QWidget;selectors->setObjectName("dictationSelectors");auto layout=new CenteredDictationLayout(selectors);layout->setContentsMargins(0,0,0,0);rows->addWidget(selectors);
+    m_sttModel=new FullTextComboBox;m_sttModel->setObjectName("recognitionModel");
     m_sttModel->setAccessibleName("Dictation recognition model");m_sttModel->setToolTip("Local recognition model");
     refreshDictationModels();
-    m_language=new DictationComboBox;m_language->setObjectName("recognitionLanguage");m_language->setAccessibleName("Dictation language");m_language->setToolTip("Language to recognize");
-    m_device=new DictationComboBox;m_device->setObjectName("microphoneCombo");m_device->setAccessibleName("Dictation microphone");m_device->addItem("System default microphone",QString());m_device->setToolTip("Microphone input");
+    m_language=new FullTextComboBox;m_language->setObjectName("recognitionLanguage");m_language->setAccessibleName("Dictation language");m_language->setToolTip("Language to recognize");
+    m_device=new FullTextComboBox;m_device->setObjectName("microphoneCombo");m_device->setAccessibleName("Dictation microphone");m_device->addItem("System default microphone",QString());m_device->setToolTip("Microphone input");
     layout->addWidget(m_sttModel);layout->addWidget(m_language);layout->addWidget(m_device);
     m_refreshDevices=tool("","Refresh microphones");m_refreshDevices->setObjectName("refreshMicrophonesButton");m_refreshDevices->setIcon(QIcon(":/refresh.svg"));m_refreshDevices->setIconSize(QSize(18,18));m_refreshDevices->setFixedSize(36,36);layout->addWidget(m_refreshDevices);
     connect(m_refreshDevices,&QToolButton::clicked,this,[this]{if(!m_sttBusy&&!m_recording)m_stt.requestDevices();});
     connect(m_sttModel,&QComboBox::currentIndexChanged,this,&MainWindow::updateLanguages);updateLanguages();
     m_record=new QPushButton("Record");m_record->setObjectName("recordButton");m_record->setToolTip("Dictate into the editor at the cursor (Ctrl+R); Stop finishes recognition");
     m_cancelStt=new QPushButton("Cancel");m_cancelStt->setObjectName("cancelDictationButton");m_cancelStt->setToolTip("Discard this dictation and restore the original text (Escape)");
-    m_transcribeFile=new QPushButton("Audio file…");m_transcribeFile->setObjectName("insertAudioButton");m_transcribeFile->setToolTip("Insert words from an audio recording at the cursor");
+    m_transcribeFile=new QPushButton("Audio file");m_transcribeFile->setObjectName("insertAudioButton");m_transcribeFile->setToolTip("Insert words from an audio recording at the cursor");
     m_live=new AnimatedToggleButton("Live text");m_live->setObjectName("liveDictation");m_live->setChecked(m_settings.value("live").toBool(true));m_live->setToolTip("Update text while speaking, then refine it after Stop. Turn off to transcribe only after recording.");
-    layout->addWidget(m_record);layout->addWidget(m_cancelStt);layout->addWidget(m_transcribeFile);layout->addWidget(m_live);
-    for(auto button:QList<QPushButton *>{m_record,m_cancelStt,m_transcribeFile,m_live})button->setFixedHeight(36);
+    auto actions=new QWidget;actions->setObjectName("dictationActions");auto actionLayout=new CenteredDictationLayout(actions);actionLayout->setContentsMargins(0,0,0,0);rows->addWidget(actions);
+    for(auto button:QList<QPushButton *>{m_record,m_cancelStt,m_transcribeFile,m_live}){button->setMinimumHeight(36);button->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Preferred);actionLayout->addWidget(button);}
     connect(m_record,&QPushButton::clicked,this,&MainWindow::record);connect(m_transcribeFile,&QPushButton::clicked,this,&MainWindow::openAudio);connect(m_cancelStt,&QPushButton::clicked,this,&MainWindow::cancelDictation);
     return panel;
 }

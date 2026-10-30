@@ -94,7 +94,7 @@ def stage(args):
     qt_version = (qt / "mkspecs/qconfig.pri").read_text(errors="replace")
     match = re.search(r"^QT_VERSION\s*=\s*(\S+)", qt_version, re.MULTILINE)
     manifest = {
-        "application": "SpeechDesk", "version": "1.1.0", "platform": "windows-x64",
+        "application": "SpeechDesk", "version": "1.1.1", "platform": "windows-x64",
         "qt_version": match.group(1) if match else "unknown",
         "compiler": subprocess.check_output([args.compiler, "--version"], text=True).splitlines()[0],
         "source_provenance": "Source archives and build-manifest.json",

@@ -39,7 +39,6 @@ protected:
 
 private:
     qreal m_checkedProgress = 0;
-    QString m_label;
     bool m_dark = false;
     QVariantAnimation m_transition;
 };

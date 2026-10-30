@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(SpeechDesk VERSION 1.1.0 LANGUAGES CXX)
+project(SpeechDesk VERSION 1.1.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
@@ -91,22 +91,24 @@ if(SPEECHDESK_BUILD_TESTS)
     add_executable(credentialstore_test tests/credentialstore_test.cpp)
     target_link_libraries(credentialstore_test PRIVATE Qt6::Test speechdesk_credentials)
     add_test(NAME credentialstore COMMAND credentialstore_test)
+    add_executable(ui_flow_test tests/ui_flow_test.cpp
+        src/mainwindow.cpp src/mainwindow.h src/numberededitor.cpp src/numberededitor.h
+        src/settingsdialog.cpp src/settingsdialog.h src/textsegments.cpp
+        src/audiomerger.cpp src/audiomerger.h src/ttsclient.cpp src/ttsclient.h
+        src/speechwidgets.cpp src/speechwidgets.h
+        src/credentialdialogs.cpp src/credentialdialogs.h
+        src/sttservice.cpp src/sttservice.h src/modelpacks.cpp src/modelpacks.h resources/app.qrc)
+    target_include_directories(ui_flow_test PRIVATE src)
+    target_link_libraries(ui_flow_test PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::WebSockets Qt6::Multimedia Qt6::Svg Qt6::Test speechdesk_credentials)
     if(NOT WIN32)
-        add_executable(ui_flow_test tests/ui_flow_test.cpp
-            src/mainwindow.cpp src/mainwindow.h src/numberededitor.cpp src/numberededitor.h
-            src/settingsdialog.cpp src/settingsdialog.h src/textsegments.cpp
-            src/audiomerger.cpp src/audiomerger.h src/ttsclient.cpp src/ttsclient.h
-            src/speechwidgets.cpp src/speechwidgets.h
-            src/credentialdialogs.cpp src/credentialdialogs.h
-            src/sttservice.cpp src/sttservice.h src/modelpacks.cpp src/modelpacks.h resources/app.qrc)
-        target_include_directories(ui_flow_test PRIVATE src)
-        target_link_libraries(ui_flow_test PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::WebSockets Qt6::Multimedia Qt6::Svg Qt6::DBus Qt6::Test speechdesk_credentials)
-        add_test(NAME ui_profiles COMMAND ui_flow_test
-            openRouterVoicesFollowSelectedModel unifiedEditorFitsMinimumSizeWithDictation
-            profileEditsSurviveSwitching cleanStartupAndThemesPreserveTextModificationState
-            microphoneMeterIsCenteredAndLiveButtonKeepsState lockingOneProfilePreservesOtherSessionKeys)
-        set_tests_properties(ui_profiles PROPERTIES ENVIRONMENT
-            "QT_QPA_PLATFORM=offscreen;QT_MEDIA_BACKEND=ffmpeg;SPEECHDESK_FIXTURE=${CMAKE_CURRENT_SOURCE_DIR}/tests/tts_fixture_server.py;SPEECHDESK_PYTHON=${Python3_EXECUTABLE}")
-        # Playback integration cases require an actual or virtual audio output.
+        target_link_libraries(ui_flow_test PRIVATE Qt6::DBus)
     endif()
+    add_test(NAME ui_profiles COMMAND ui_flow_test
+        openRouterVoicesFollowSelectedModel unifiedEditorFitsMinimumSizeWithDictation
+        profileEditsSurviveSwitching cleanStartupAndThemesPreserveTextModificationState
+        microphoneMeterIsCenteredAndLiveButtonKeepsState lockingOneProfilePreservesOtherSessionKeys
+        fullControlTextAndCenteredDictationActions)
+    set_tests_properties(ui_profiles PROPERTIES ENVIRONMENT
+        "QT_QPA_PLATFORM=offscreen;QT_MEDIA_BACKEND=ffmpeg;SPEECHDESK_FIXTURE=${CMAKE_CURRENT_SOURCE_DIR}/tests/tts_fixture_server.py;SPEECHDESK_PYTHON=${Python3_EXECUTABLE}")
+    # Playback integration cases require an actual or virtual audio output.
 endif()

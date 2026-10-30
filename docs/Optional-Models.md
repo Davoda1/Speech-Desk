@@ -4,8 +4,8 @@ Two separate packs add higher-capacity Whisper models to local dictation. Each m
 
 | Pack | Model weights | SHA-256 of weights |
 | --- | --- | --- |
-| `SpeechDesk-1.1.0-Whisper-Large-v3-Turbo-Expansion.zip` | 574,041,195 bytes | `394221709cd5ad1f40c46e6031ca61bce88931e6e088c188294c6d5a55ffa7e2` |
-| `SpeechDesk-1.1.0-Whisper-Large-v3-Expansion.zip` | 1,081,140,203 bytes | `d75795ecff3f83b5faa89d1900604ad8c780abd5739fae406de19f23ecd98ad1` |
+| `SpeechDesk-1.1.1-Whisper-Large-v3-Turbo-Expansion.zip` | 574,041,195 bytes | `394221709cd5ad1f40c46e6031ca61bce88931e6e088c188294c6d5a55ffa7e2` |
+| `SpeechDesk-1.1.1-Whisper-Large-v3-Expansion.zip` | 1,081,140,203 bytes | `d75795ecff3f83b5faa89d1900604ad8c780abd5739fae406de19f23ecd98ad1` |
 
 ## Install
 
@@ -13,7 +13,7 @@ Two separate packs add higher-capacity Whisper models to local dictation. Each m
 2. Open **Settings → Dictation → Import model pack…** and select the ZIP directly.
 3. Wait for validation and import, close Settings, then select the model in **Dictate**.
 
-Existing SpeechDesk 1.0.0 packs remain compatible: the model identities and weights have not changed. Do not extract the pack before importing it. The same pack works on Windows and Linux, with a separate installation on each computer. Installed models persist across restarts in `%AppData%\Speech-Desk\models` or `$XDG_CONFIG_HOME/Speech-Desk/models` (normally `~/.config/Speech-Desk/models`). The downloaded ZIP can be removed after a successful import.
+Existing SpeechDesk 1.0.0 and 1.1.0 packs remain compatible: the model identities and weights have not changed. Do not extract the pack before importing it. The same pack works on Windows and Linux, with a separate installation on each computer. Installed models persist across restarts in `%AppData%\Speech-Desk\models` or `$XDG_CONFIG_HOME/Speech-Desk/models` (normally `~/.config/Speech-Desk/models`). The downloaded ZIP can be removed after a successful import.
 
 The importer validates the catalogued model ID, byte count, SHA-256, CRC and archive structure. Cancellation leaves an existing installed model intact, unless the final atomic commit has already completed. Imported models remain installed even if the Settings dialog is subsequently cancelled.
 

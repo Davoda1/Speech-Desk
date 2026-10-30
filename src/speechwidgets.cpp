@@ -83,7 +83,7 @@ void SymmetricLevelMeter::paintEvent(QPaintEvent *)
 }
 
 AnimatedToggleButton::AnimatedToggleButton(const QString &text, QWidget *parent)
-    : QPushButton(text, parent), m_label(text)
+    : QPushButton(text, parent)
 {
     setCheckable(true);
     setAccessibleName(text);
@@ -119,10 +119,14 @@ void AnimatedToggleButton::setDark(bool dark)
 
 QSize AnimatedToggleButton::sizeHint() const
 {
+    ensurePolished();
     QFont labelFont = font();labelFont.setWeight(QFont::DemiBold);
-    QFontMetrics metrics(labelFont);
-    const int width = metrics.horizontalAdvance(m_label);
-    return QSize(width + 28, qMax(36, metrics.height() + 16));
+    const QFontMetricsF metrics(labelFont,this);
+    const int width=qCeil(qMax(metrics.horizontalAdvance(text()),metrics.boundingRect(text()).width()));
+    QStyleOptionButton option;initStyleOption(&option);
+    const QSize contents(width,qCeil(metrics.height()));
+    return style()->sizeFromContents(QStyle::CT_PushButton,&option,contents,this)
+        .expandedTo(contents+QSize(28,18)).expandedTo(QSize(0,36));
 }
 
 QSize AnimatedToggleButton::minimumSizeHint() const { return sizeHint(); }
@@ -153,7 +157,7 @@ void AnimatedToggleButton::paintEvent(QPaintEvent *)
     painter.setPen(QPen(border, 1));painter.setBrush(background);
     painter.drawRoundedRect(QRectF(rect()).adjusted(0.5,0.5,-0.5,-0.5), 7, 7);
     QFont labelFont = font();labelFont.setWeight(QFont::DemiBold);painter.setFont(labelFont);
-    painter.setPen(foreground);painter.drawText(rect().translated(0,isDown()?1:0), Qt::AlignCenter, text());
+    painter.setPen(foreground);painter.drawText(rect().adjusted(14,8,-14,-8).translated(0,isDown()?1:0), Qt::AlignCenter|Qt::TextSingleLine, text());
     if (hasFocus()) {
         painter.setPen(QPen(foreground, 1, Qt::DotLine));painter.setBrush(Qt::NoBrush);
         painter.drawRoundedRect(QRectF(rect()).adjusted(4.5,4.5,-4.5,-4.5), 3, 3);

@@ -1,6 +1,6 @@
 # Build SpeechDesk
 
-SpeechDesk 1.1.0 uses C++17, Qt, and a pinned static libsodium build. Build the crypto dependency before configuring the application. The commands below run from the repository root.
+SpeechDesk 1.1.1 uses C++17, Qt, and a pinned static libsodium build. Build the crypto dependency before configuring the application. The commands below run from the repository root.
 
 ## Requirements
 

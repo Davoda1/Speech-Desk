@@ -2,13 +2,15 @@
 
 **A native desktop reader with hosted text-to-speech and local dictation.**
 
-SpeechDesk 1.1.0 brings typing, text files, microphone dictation and speech playback into one editor. Choose OpenAI, ElevenLabs, OpenRouter or a compatible speech server; listen inside the application, follow the highlighted passage and save the completed reading as WAV.
+SpeechDesk 1.1.1 brings typing, text files, microphone dictation and speech playback into one editor. Choose OpenAI, ElevenLabs, OpenRouter or a compatible speech server; listen inside the application, follow the highlighted passage and save the completed reading as WAV.
 
 [Releases](https://github.com/Davoda1/Speech-Desk/releases) · [Online manual](https://davoda1.github.io/Speech-Desk-Manual/) · [User guide](docs/User-Guide.md) · [Speech providers](docs/Server-Profiles.md) · [Optional models](docs/Optional-Models.md)
 
 | Dark theme | Light theme |
 | --- | --- |
 | ![SpeechDesk dark theme](docs/extras/screenshot-dark.png) | ![SpeechDesk light theme](docs/extras/screenshot-light.png) |
+
+Version 1.1.1 refines dictation control widths and centering. The offline guide and release also include dark and light screenshots of dictation, server settings and About.
 
 ## Features
 
@@ -32,14 +34,14 @@ Choose an available package from [Releases](https://github.com/Davoda1/Speech-De
 
 | Platform | Package | Start |
 | --- | --- | --- |
-| Windows 10/11 x64 | [SpeechDesk-1.1.0-Windows-x64.zip](https://github.com/Davoda1/Speech-Desk/releases/download/v1.1.0/SpeechDesk-1.1.0-Windows-x64.zip) | Extract everything and open the root `SpeechDesk.exe` |
-| Linux x86-64 | [SpeechDesk-1.1.0-Linux-amd64.tar.gz](https://github.com/Davoda1/Speech-Desk/releases/download/v1.1.0/SpeechDesk-1.1.0-Linux-amd64.tar.gz) | Extract and run the top-level `speechdesk` executable |
-| Debian/Ubuntu amd64 | [SpeechDesk-1.1.0-Linux-amd64.deb](https://github.com/Davoda1/Speech-Desk/releases/download/v1.1.0/SpeechDesk-1.1.0-Linux-amd64.deb) | Install with a package manager; launch SpeechDesk |
+| Windows 10/11 x64 | [SpeechDesk-1.1.1-Windows-x64.zip](https://github.com/Davoda1/Speech-Desk/releases/download/v1.1.1/SpeechDesk-1.1.1-Windows-x64.zip) | Extract everything and open the root `SpeechDesk.exe` |
+| Linux x86-64 | [SpeechDesk-1.1.1-Linux-amd64.tar.gz](https://github.com/Davoda1/Speech-Desk/releases/download/v1.1.1/SpeechDesk-1.1.1-Linux-amd64.tar.gz) | Extract and run the top-level `speechdesk` executable |
+| Debian/Ubuntu amd64 | [SpeechDesk-1.1.1-Linux-amd64.deb](https://github.com/Davoda1/Speech-Desk/releases/download/v1.1.1/SpeechDesk-1.1.1-Linux-amd64.deb) | Install with a package manager; launch SpeechDesk |
 
 Runtime packages include Qt and the four default recognition models. Keep the executable, libraries, plugins and resources together. No Python or separate Qt installation is required to run a packaged application. Windows Unicode recognition paths require Windows 10 version 1903 or newer. Linux needs a graphical desktop, audio service and the system dependencies listed by the package; see [runtime details](docs/Native-Engines.md).
 
 ```sh
-sudo apt install ./SpeechDesk-1.1.0-Linux-amd64.deb
+sudo apt install ./SpeechDesk-1.1.1-Linux-amd64.deb
 ```
 
 The Debian package installs a real executable at `/usr/bin/speechdesk`. Portable packages start the real executable directly, without a launcher script.
