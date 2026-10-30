@@ -28,6 +28,10 @@
 #include <QRegularExpression>
 #include <QSvgRenderer>
 #include <QPainter>
+#include <QStylePainter>
+#include <QStyleOptionComboBox>
+#include <QTextLayout>
+#include <QtMath>
 #include <QScreen>
 #include <QCryptographicHash>
 
@@ -43,6 +47,115 @@ static QToolButton *tool(const QString &text,const QString &tip,QWidget *parent=
 static QFrame *card(){auto f=new QFrame;f->setObjectName("card");return f;}
 static QWidget *field(const QString &label,QWidget *input){auto w=new QWidget;auto l=new QVBoxLayout(w);l->setContentsMargins(0,0,0,0);l->setSpacing(5);auto t=new QLabel(label);t->setProperty("muted",true);t->setBuddy(input);l->addWidget(t);l->addWidget(input);return w;}
 static void compactCombo(QComboBox *box){box->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);box->setMinimumContentsLength(7);box->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);}
+
+namespace {
+// Keep normal selections at their full content width. A device name that is
+// wider than the entire toolbar can use multiple lines instead of being cut off.
+class DictationComboBox final : public QComboBox {
+public:
+    DictationComboBox()
+    {
+        setSizeAdjustPolicy(QComboBox::AdjustToContents);
+        setMinimumHeight(36);
+        QSizePolicy policy(QSizePolicy::Preferred,QSizePolicy::Preferred);
+        policy.setHeightForWidth(true);setSizePolicy(policy);
+        connect(this,&QComboBox::currentTextChanged,this,[this]{updateGeometry();update();});
+    }
+    QSize sizeHint() const override {return {QComboBox::sizeHint().width(),36};}
+    QSize minimumSizeHint() const override
+    {
+        const int naturalWidth=QComboBox::sizeHint().width();
+        QStyleOptionComboBox option;initStyleOption(&option);option.rect=QRect(0,0,naturalWidth,36);
+        const QRect field=style()->subControlRect(QStyle::CC_ComboBox,&option,QStyle::SC_ComboBoxEditField,this);
+        return {naturalWidth-field.width()+fontMetrics().maxWidth(),36};
+    }
+    int heightForWidth(int width) const override
+    {
+        QStyleOptionComboBox option;initStyleOption(&option);option.rect=QRect(0,0,width,36);
+        const QRect field=style()->subControlRect(QStyle::CC_ComboBox,&option,QStyle::SC_ComboBoxEditField,this);
+        QTextLayout text(currentText(),font());
+        return qMax(36,qCeil(wrapText(text,field.width()))+36-field.height());
+    }
+protected:
+    void paintEvent(QPaintEvent *event) override
+    {
+        QStyleOptionComboBox option;initStyleOption(&option);
+        const QRect field=style()->subControlRect(QStyle::CC_ComboBox,&option,QStyle::SC_ComboBoxEditField,this);
+        if(fontMetrics().horizontalAdvance(currentText())<=field.width()&&!currentText().contains('\n')) {
+            QComboBox::paintEvent(event);return;
+        }
+        QStylePainter painter(this);painter.drawComplexControl(QStyle::CC_ComboBox,option);
+        painter.setPen(option.palette.color(isEnabled()?QPalette::Active:QPalette::Disabled,QPalette::ButtonText));
+        QTextLayout text(currentText(),font());const qreal height=wrapText(text,field.width());
+        painter.setClipRect(field);text.draw(&painter,QPointF(field.x(),field.y()+(field.height()-height)/2.0));
+    }
+private:
+    static qreal wrapText(QTextLayout &text,int width)
+    {
+        QTextOption option;option.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);text.setTextOption(option);
+        qreal height=0;text.beginLayout();
+        for(QTextLine line=text.createLine();line.isValid();line=text.createLine()) {
+            line.setLineWidth(qMax(1,width));line.setPosition(QPointF(0,height));height+=line.height();
+        }
+        text.endLayout();return height;
+    }
+};
+
+// Rows are based on real widget hints, and each row is centered independently.
+// The minimum width is the widest individual control's wrapped minimum, not
+// the sum of a fixed row, so the window keeps its normal compact size.
+class CenteredDictationLayout final : public QLayout {
+public:
+    explicit CenteredDictationLayout(QWidget *parent):QLayout(parent){setSpacing(7);}
+    ~CenteredDictationLayout() override {while(auto item=takeAt(0))delete item;}
+    void addItem(QLayoutItem *item) override {m_items.append(item);invalidate();}
+    int count() const override {return m_items.size();}
+    QLayoutItem *itemAt(int index) const override {return m_items.value(index);}
+    QLayoutItem *takeAt(int index) override {return index>=0&&index<m_items.size()?m_items.takeAt(index):nullptr;}
+    Qt::Orientations expandingDirections() const override {return Qt::Horizontal;}
+    bool hasHeightForWidth() const override {return true;}
+    int heightForWidth(int width) const override {return arrange(QRect(0,0,width,0),false);}
+    QSize minimumSize() const override
+    {
+        QSize size(0,0);for(auto item:m_items)if(!item->isEmpty())size=size.expandedTo(item->minimumSize());
+        const auto margins=contentsMargins();return size+QSize(margins.left()+margins.right(),margins.top()+margins.bottom());
+    }
+    QSize sizeHint() const override
+    {
+        QSize size(0,0);int visible=0;
+        for(auto item:m_items)if(!item->isEmpty()) {
+            size.rwidth()+=item->sizeHint().width()+(visible++?spacing():0);size.setHeight(qMax(size.height(),item->sizeHint().height()));
+        }
+        const auto margins=contentsMargins();return size+QSize(margins.left()+margins.right(),margins.top()+margins.bottom());
+    }
+    void setGeometry(const QRect &rect) override {QLayout::setGeometry(rect);arrange(rect,true);}
+private:
+    QList<QLayoutItem *> m_items;
+    int arrange(const QRect &rect,bool apply) const
+    {
+        const auto margins=contentsMargins();const int available=qMax(1,rect.width()-margins.left()-margins.right());
+        struct Entry {QLayoutItem *item;QSize size;};
+        QList<Entry> row;int rowWidth=0,rowHeight=0,y=rect.y()+margins.top();
+        auto finishRow=[&]{
+            if(row.isEmpty())return;
+            int x=rect.x()+margins.left()+(available-rowWidth)/2;
+            for(const auto &entry:row) {
+                if(apply)entry.item->setGeometry(QRect(QPoint(x,y+(rowHeight-entry.size.height())/2),entry.size));
+                x+=entry.size.width()+spacing();
+            }
+            y+=rowHeight+spacing();row.clear();rowWidth=rowHeight=0;
+        };
+        for(auto item:m_items) {
+            if(item->isEmpty())continue;
+            const int width=qMin(available,item->sizeHint().width());
+            const int height=qMax(item->sizeHint().height(),item->hasHeightForWidth()?item->heightForWidth(width):0);
+            if(!row.isEmpty()&&rowWidth+spacing()+width>available)finishRow();
+            rowWidth+=width+(row.isEmpty()?0:spacing());rowHeight=qMax(rowHeight,height);row.append({item,{width,height}});
+        }
+        finishRow();return y-rect.y()+margins.bottom()-(y>rect.y()+margins.top()?spacing():0);
+    }
+};
+}
 QString MainWindow::configDirectory()
 {
     QString override=qEnvironmentVariable("SPEECHDESK_CONFIG_DIR");if(!override.isEmpty())return override;
@@ -192,25 +305,22 @@ QWidget *MainWindow::buildTts()
 }
 QWidget *MainWindow::buildDictation()
 {
-    auto panel=new QWidget;auto layout=new QVBoxLayout(panel);layout->setContentsMargins(12,2,12,6);layout->setSpacing(5);
-    auto choices=new QHBoxLayout;choices->setSpacing(7);
-    m_sttModel=new QComboBox;m_sttModel->setObjectName("recognitionModel");compactCombo(m_sttModel);
+    auto panel=new QWidget;auto layout=new CenteredDictationLayout(panel);layout->setContentsMargins(12,2,12,6);
+    m_sttModel=new DictationComboBox;m_sttModel->setObjectName("recognitionModel");
     m_sttModel->setAccessibleName("Dictation recognition model");m_sttModel->setToolTip("Local recognition model");
     refreshDictationModels();
-    m_language=new QComboBox;m_language->setObjectName("recognitionLanguage");compactCombo(m_language);m_language->setAccessibleName("Dictation language");m_language->setToolTip("Language to recognize");
-    m_device=new QComboBox;m_device->setObjectName("microphoneCombo");compactCombo(m_device);m_device->setAccessibleName("Dictation microphone");m_device->addItem("System default microphone",QString());m_device->setToolTip("Microphone input");
-    choices->addWidget(m_sttModel,2);choices->addWidget(m_language,1);choices->addWidget(m_device,2);
-    m_refreshDevices=tool("","Refresh microphones");m_refreshDevices->setObjectName("refreshMicrophonesButton");m_refreshDevices->setIcon(QIcon(":/refresh.svg"));m_refreshDevices->setIconSize(QSize(18,18));m_refreshDevices->setFixedSize(30,30);choices->addWidget(m_refreshDevices);
-    connect(m_refreshDevices,&QToolButton::clicked,this,[this]{if(!m_sttBusy&&!m_recording)m_stt.requestDevices();});layout->addLayout(choices);
+    m_language=new DictationComboBox;m_language->setObjectName("recognitionLanguage");m_language->setAccessibleName("Dictation language");m_language->setToolTip("Language to recognize");
+    m_device=new DictationComboBox;m_device->setObjectName("microphoneCombo");m_device->setAccessibleName("Dictation microphone");m_device->addItem("System default microphone",QString());m_device->setToolTip("Microphone input");
+    layout->addWidget(m_sttModel);layout->addWidget(m_language);layout->addWidget(m_device);
+    m_refreshDevices=tool("","Refresh microphones");m_refreshDevices->setObjectName("refreshMicrophonesButton");m_refreshDevices->setIcon(QIcon(":/refresh.svg"));m_refreshDevices->setIconSize(QSize(18,18));m_refreshDevices->setFixedSize(36,36);layout->addWidget(m_refreshDevices);
+    connect(m_refreshDevices,&QToolButton::clicked,this,[this]{if(!m_sttBusy&&!m_recording)m_stt.requestDevices();});
     connect(m_sttModel,&QComboBox::currentIndexChanged,this,&MainWindow::updateLanguages);updateLanguages();
-    auto controls=new QHBoxLayout;controls->setSpacing(7);
     m_record=new QPushButton("Record");m_record->setObjectName("recordButton");m_record->setToolTip("Dictate into the editor at the cursor (Ctrl+R); Stop finishes recognition");
     m_cancelStt=new QPushButton("Cancel");m_cancelStt->setObjectName("cancelDictationButton");m_cancelStt->setToolTip("Discard this dictation and restore the original text (Escape)");
     m_transcribeFile=new QPushButton("Audio file…");m_transcribeFile->setObjectName("insertAudioButton");m_transcribeFile->setToolTip("Insert words from an audio recording at the cursor");
     m_live=new AnimatedToggleButton("Live text");m_live->setObjectName("liveDictation");m_live->setChecked(m_settings.value("live").toBool(true));m_live->setToolTip("Update text while speaking, then refine it after Stop. Turn off to transcribe only after recording.");
-    controls->addWidget(m_record);controls->addWidget(m_cancelStt);controls->addWidget(m_transcribeFile);controls->addWidget(m_live);controls->addStretch();
+    layout->addWidget(m_record);layout->addWidget(m_cancelStt);layout->addWidget(m_transcribeFile);layout->addWidget(m_live);
     for(auto button:QList<QPushButton *>{m_record,m_cancelStt,m_transcribeFile,m_live})button->setFixedHeight(36);
-    layout->addLayout(controls);
     connect(m_record,&QPushButton::clicked,this,&MainWindow::record);connect(m_transcribeFile,&QPushButton::clicked,this,&MainWindow::openAudio);connect(m_cancelStt,&QPushButton::clicked,this,&MainWindow::cancelDictation);
     return panel;
 }

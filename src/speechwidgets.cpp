@@ -83,9 +83,13 @@ void SymmetricLevelMeter::paintEvent(QPaintEvent *)
 }
 
 AnimatedToggleButton::AnimatedToggleButton(const QString &text, QWidget *parent)
-    : QPushButton(text, parent)
+    : QPushButton(text, parent), m_label(text)
 {
     setCheckable(true);
+    setAccessibleName(text);
+    setAccessibleDescription(tr("Off"));
+    setCursor(Qt::PointingHandCursor);
+    setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     m_transition.setDuration(120);
     m_transition.setEasingCurve(QEasingCurve::OutCubic);
     connect(&m_transition, &QVariantAnimation::valueChanged, this, [this](const QVariant &value) {
@@ -93,6 +97,7 @@ AnimatedToggleButton::AnimatedToggleButton(const QString &text, QWidget *parent)
         update();
     });
     connect(this, &QPushButton::toggled, this, [this](bool checked) {
+        setAccessibleDescription(checked ? tr("On") : tr("Off"));
         m_transition.stop();
         const qreal target = checked ? 1.0 : 0.0;
         if (!isVisible()) {
@@ -108,50 +113,49 @@ AnimatedToggleButton::AnimatedToggleButton(const QString &text, QWidget *parent)
 
 void AnimatedToggleButton::setDark(bool dark)
 {
-    Q_UNUSED(dark);
-    // The application palette and style sheet own both light and dark colors.
+    m_dark = dark;
     update();
 }
 
+QSize AnimatedToggleButton::sizeHint() const
+{
+    QFont labelFont = font();labelFont.setWeight(QFont::DemiBold);
+    QFontMetrics metrics(labelFont);
+    const int width = metrics.horizontalAdvance(m_label);
+    return QSize(width + 28, qMax(36, metrics.height() + 16));
+}
+
+QSize AnimatedToggleButton::minimumSizeHint() const { return sizeHint(); }
+
 void AnimatedToggleButton::paintEvent(QPaintEvent *)
 {
-    QStyleOptionButton normal;
-    initStyleOption(&normal);
-    const bool physicallyPressed = isDown();
-    normal.state &= ~(QStyle::State_On | QStyle::State_Off | QStyle::State_Sunken);
-    normal.state |= QStyle::State_Off;
-    if (physicallyPressed) normal.state |= QStyle::State_Sunken;
-
-    QStyleOptionButton pressed = normal;
-    pressed.state &= ~QStyle::State_Off;
-    pressed.state |= QStyle::State_On | QStyle::State_Sunken;
-
-    QPainter painter(this);
-    if (m_checkedProgress <= 0.001) {
-        style()->drawControl(QStyle::CE_PushButton, &normal, &painter, this);
-        return;
+    const QColor off(m_dark ? "#292a2e" : "#ffffff");
+    const QColor on(m_dark ? "#1b4776" : "#b3d4ff");
+    const auto mix = [](const QColor &a, const QColor &b, qreal t) {
+        return QColor(qRound(a.red() + (b.red() - a.red()) * t),
+                      qRound(a.green() + (b.green() - a.green()) * t),
+                      qRound(a.blue() + (b.blue() - a.blue()) * t));
+    };
+    QColor background = mix(off, on, m_checkedProgress);
+    QColor border = mix(QColor(m_dark ? "#70757f" : "#9aa0a9"),
+                        QColor(m_dark ? "#6aa5e3" : "#2d6fba"), m_checkedProgress);
+    if (isEnabled() && (underMouse() || isDown()))
+        background = mix(background, QColor(m_dark ? "#ffffff" : "#000000"), isDown() ? 0.12 : 0.05);
+    // Select the foreground from the animated fill so it stays legible in the transition.
+    QColor foreground(qGray(background.rgb()) > 127 ? "#1d2024" : "#ffffff");
+    if (!isEnabled()) {
+        const QColor window = palette().color(QPalette::Window);
+        background = mix(background, window, 0.45);
+        border = mix(border, window, 0.45);
+        foreground = mix(foreground, background, 0.35);
     }
-    if (m_checkedProgress >= 0.999) {
-        style()->drawControl(QStyle::CE_PushButton, &pressed, &painter, this);
-        return;
+    QPainter painter(this);painter.setRenderHint(QPainter::Antialiasing);
+    painter.setPen(QPen(border, 1));painter.setBrush(background);
+    painter.drawRoundedRect(QRectF(rect()).adjusted(0.5,0.5,-0.5,-0.5), 7, 7);
+    QFont labelFont = font();labelFont.setWeight(QFont::DemiBold);painter.setFont(labelFont);
+    painter.setPen(foreground);painter.drawText(rect().translated(0,isDown()?1:0), Qt::AlignCenter, text());
+    if (hasFocus()) {
+        painter.setPen(QPen(foreground, 1, Qt::DotLine));painter.setBrush(Qt::NoBrush);
+        painter.drawRoundedRect(QRectF(rect()).adjusted(4.5,4.5,-4.5,-4.5), 3, 3);
     }
-
-    // Render through the active style (including the application's QSS) so
-    // borders, focus indication, labels and disabled colors remain consistent.
-    const qreal scale = devicePixelRatioF();
-    const QSize pixels(qCeil(width() * scale), qCeil(height() * scale));
-    QPixmap normalFrame(pixels), pressedFrame(pixels);
-    normalFrame.setDevicePixelRatio(scale);pressedFrame.setDevicePixelRatio(scale);
-    normalFrame.fill(Qt::transparent);pressedFrame.fill(Qt::transparent);
-    {
-        QPainter frame(&normalFrame);
-        style()->drawControl(QStyle::CE_PushButton, &normal, &frame, this);
-    }
-    {
-        QPainter frame(&pressedFrame);
-        style()->drawControl(QStyle::CE_PushButton, &pressed, &frame, this);
-    }
-    painter.drawPixmap(0, 0, normalFrame);
-    painter.setOpacity(m_checkedProgress);
-    painter.drawPixmap(0, 0, pressedFrame);
 }

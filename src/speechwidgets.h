@@ -25,18 +25,21 @@ private:
     QVariantAnimation m_release;
 };
 
-// Native button geometry, accessibility and keyboard handling, with a short
-// crossfade between the style's normal and persistently pressed states.
+// A checkable button with an animated, contrasting blue fill when enabled.
 class AnimatedToggleButton final : public QPushButton {
     Q_OBJECT
 public:
     explicit AnimatedToggleButton(const QString &text, QWidget *parent = nullptr);
     void setDark(bool dark);
+    QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
 
 protected:
     void paintEvent(QPaintEvent *) override;
 
 private:
     qreal m_checkedProgress = 0;
+    QString m_label;
+    bool m_dark = false;
     QVariantAnimation m_transition;
 };

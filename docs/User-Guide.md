@@ -22,7 +22,7 @@ Word highlighting uses supported word timings returned by the service and matche
 
 Place the cursor or select text to replace, then choose **Dictate**. Select a model, language and microphone. The refresh button updates the device list. Microphone access must be allowed by the operating system.
 
-**Live text** is a same-height toggle button beside the recording controls; its pressed state means it is enabled. With Live text enabled, recognition periodically updates provisional words in the editor. **Stop recording** finishes capture and produces the final text from the recording. Provisional words may change. With Live text disabled, recognition begins after recording stops.
+The dictation controls stay centered and adapt to the window width, keeping their full labels visible. The button always reads **Live text**. When enabled, it uses a light blue fill in light mode and a dark blue fill in dark mode; when disabled, its fill is neutral. With Live text enabled, recognition periodically updates provisional words in the editor. **Stop recording** finishes capture and produces the final text from the recording. Provisional words may change. With Live text disabled, recognition begins after recording stops.
 
 **Cancel** restores the text and selection from before dictation. Errors and an empty final result also preserve the original text. Successful insertion can be undone once with Ctrl+Z. Dictation never starts speech playback automatically. Playback and dictation cannot run simultaneously.
 
@@ -71,6 +71,8 @@ Turning **Save API key encrypted** off and choosing **Save** removes the profile
 Profile exports contain no API keys, encrypted credential files, or passphrases. Encrypted files are stored in the `credentials` subdirectory of SpeechDesk's configuration directory. This feature works without an operating-system keychain. Read [Security and privacy](../SECURITY.md) for its protection and limitations.
 
 ## Preferences and cleanup
+
+Choose **Settings → About → Manual** to open the [online manual](https://davoda1.github.io/Speech-Desk-Manual/) in your browser.
 
 Settings and installed models use the `Speech-Desk` directory in the user's configuration location. API keys are session-only by default; optional encrypted saved keys remain locked after restart until the profile is unlocked with its passphrase. Model import is independent of the Settings dialog's Save/Cancel buttons: a successfully imported model remains installed.
 

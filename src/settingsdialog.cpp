@@ -9,6 +9,7 @@
 #include <QFormLayout>
 #include <QPushButton>
 #include <QDialogButtonBox>
+#include <QDesktopServices>
 #include <QPlainTextEdit>
 #include <QFileDialog>
 #include <QSaveFile>
@@ -20,6 +21,7 @@
 #include <QProgressBar>
 #include <QScrollArea>
 #include <QTimer>
+#include <QUrl>
 #include <functional>
 
 namespace {
@@ -131,7 +133,13 @@ SettingsDialog::SettingsDialog(const QJsonObject &settings,QWidget *parent,const
     auto packs=new QPushButton("Import model pack…");packs->setObjectName("importModelPackButton");st->addRow("Optional dictation models",packs);connect(packs,&QPushButton::clicked,this,&SettingsDialog::importModelPack);
     m_modelPackInfo=new QLabel;m_modelPackInfo->setObjectName("modelPackInfo");m_modelPackInfo->setWordWrap(true);m_modelPackInfo->setProperty("muted",true);st->addRow(m_modelPackInfo);refreshModelPacks();
     auto packNote=new QLabel("Import the complete ZIP for the model you downloaded. Installed models appear in Dictate and remain installed when this dialog closes. Larger models may work best with Live text off.");packNote->setWordWrap(true);packNote->setProperty("muted",true);st->addRow(packNote);m_tabs->addTab(recognition,"Dictation");
-    auto about=new QWidget;auto ab=new QVBoxLayout(about);ab->setContentsMargins(24,24,24,24);auto title=new QLabel("SpeechDesk 1.1.0");title->setProperty("heading",true);ab->addWidget(title);auto description=new QLabel("Text to speech with OpenAI, ElevenLabs, OpenRouter or your own speech server.\n\nType, paste, open a text file or dictate into one editor. Generated speech plays inside SpeechDesk with passage highlighting.\n\nWhistle and Whisper provide local dictation. Optional larger models are available as separate ZIP add-ons.\n\nCopyright (c) 2026 davoda1. MIT License.\nThird-party components retain their own licenses.\n\nNo telemetry or automatic model downloads. Speech output is AI-generated.");description->setWordWrap(true);ab->addWidget(description);ab->addStretch();m_tabs->addTab(about,"About");
+    auto about=new QWidget;about->setObjectName("aboutPage");auto ab=new QVBoxLayout(about);ab->setContentsMargins(24,24,24,24);auto title=new QLabel("SpeechDesk 1.1.0");title->setProperty("heading",true);ab->addWidget(title);auto description=new QLabel("Text to speech with OpenAI, ElevenLabs, OpenRouter or your own speech server.\n\nType, paste, open a text file or dictate into one editor. Generated speech plays inside SpeechDesk with passage highlighting.\n\nWhistle and Whisper provide local dictation. Optional larger models are available as separate ZIP add-ons.\n\nCopyright (c) 2026 davoda1. MIT License.\nThird-party components retain their own licenses.\n\nNo telemetry or automatic model downloads. Speech output is AI-generated.");description->setWordWrap(true);ab->addWidget(description);
+    ab->addSpacing(16);
+    auto manualRow=new QHBoxLayout;manualRow->setSpacing(12);
+    auto manualHint=new QLabel("Open the manual website in your browser for\nsetup instructions and help using SpeechDesk.");manualHint->setObjectName("manualHint");manualHint->setProperty("muted",true);manualHint->setFixedHeight(36);manualHint->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);manualRow->addWidget(manualHint,0,Qt::AlignVCenter);
+    auto manual=new QPushButton("Manual");manual->setObjectName("manualButton");manual->setAutoDefault(false);manual->setMinimumSize(110,36);manual->setToolTip("Open the SpeechDesk manual in your browser");manualRow->addWidget(manual,0,Qt::AlignVCenter);manualRow->addStretch();ab->addLayout(manualRow);
+    connect(manual,&QPushButton::clicked,this,[]{QDesktopServices::openUrl(QUrl("https://davoda1.github.io/Speech-Desk-Manual/"));});
+    ab->addStretch();m_tabs->addTab(about,"About");
     auto buttons=new QDialogButtonBox(QDialogButtonBox::Save|QDialogButtonBox::Cancel);outer->addWidget(buttons);
     connect(buttons,&QDialogButtonBox::accepted,this,&SettingsDialog::saveAndAccept);connect(buttons,&QDialogButtonBox::rejected,this,&QDialog::reject);
     m_profiles=settings.value("profiles").toArray();if(m_profiles.isEmpty())m_profiles.append(defaultServerProfile());refreshProfiles(qBound(0,settings.value("selectedProfile").toInt(),int(m_profiles.size())-1));
