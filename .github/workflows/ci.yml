@@ -73,5 +73,8 @@ jobs:
         env:
           QT_QPA_PLATFORM: offscreen
         run: ctest --test-dir build --output-on-failure --timeout 90
+      - name: Show UI assertion report on failure
+        if: failure()
+        run: python -c "from pathlib import Path; p = Path('build/ui-profiles.txt'); print(p.read_text(encoding='utf-8', errors='replace') if p.is_file() else 'UI test report was not produced.')"
       - name: Validate packaging scripts
         run: python -m compileall -q packaging vendor/tools vendor/native/build_audio.py

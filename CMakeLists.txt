@@ -107,8 +107,9 @@ if(SPEECHDESK_BUILD_TESTS)
         openRouterVoicesFollowSelectedModel unifiedEditorFitsMinimumSizeWithDictation
         profileEditsSurviveSwitching cleanStartupAndThemesPreserveTextModificationState
         microphoneMeterIsCenteredAndLiveButtonKeepsState lockingOneProfilePreservesOtherSessionKeys
-        fullControlTextAndCenteredDictationActions)
+        fullControlTextAndCenteredDictationActions
+        -o -,txt -o ui-profiles.txt,txt -v1)
     set_tests_properties(ui_profiles PROPERTIES ENVIRONMENT
-        "QT_QPA_PLATFORM=offscreen;QT_MEDIA_BACKEND=ffmpeg;SPEECHDESK_FIXTURE=${CMAKE_CURRENT_SOURCE_DIR}/tests/tts_fixture_server.py;SPEECHDESK_PYTHON=${Python3_EXECUTABLE}")
+        "QT_QPA_PLATFORM=offscreen;QT_MEDIA_BACKEND=ffmpeg;QT_FORCE_STDERR_LOGGING=1;SPEECHDESK_FIXTURE=${CMAKE_CURRENT_SOURCE_DIR}/tests/tts_fixture_server.py;SPEECHDESK_PYTHON=${Python3_EXECUTABLE}")
     # Playback integration cases require an actual or virtual audio output.
 endif()

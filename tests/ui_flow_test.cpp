@@ -51,6 +51,16 @@ class UiFlowTest : public QObject {
     }
 private slots:
     void initTestCase() {
+        // Exercise the same base style and font as the shipped application.
+        QApplication::setStyle("Fusion");
+        QFont font=qApp->font();
+#ifdef Q_OS_WIN
+        font.setFamily("Segoe UI");
+#else
+        font.setFamily("DejaVu Sans");
+#endif
+        if(!QFontDatabase::families().contains(font.family()))font.setFamily("DejaVu Sans");
+        font.setPointSize(10);qApp->setFont(font);
         QVERIFY(scratch.isValid());
         qputenv("SPEECHDESK_CONFIG_DIR", scratch.path().toUtf8());
         QFile settings(scratch.filePath("settings.json"));
