@@ -41,11 +41,29 @@ jobs:
         with:
           version: '6.8.3'
           arch: ${{ matrix.arch }}
-          modules: 'qtmultimedia qtshadertools'
+          modules: 'qtmultimedia qtshadertools qtwebsockets'
           tools: ${{ matrix.tools }}
           cache: true
           setup-python: false
           add-tools-to-path: true
+      - name: Install Windows dependency build tools
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2.33.0
+        id: msys2
+        with:
+          msystem: MSYS
+          update: false
+          install: make
+          path-type: inherit
+      - name: Build pinned crypto dependency on Linux
+        if: runner.os == 'Linux'
+        run: python vendor/tools/build_sodium.py --output build/deps/sodium --cc gcc --jobs 3
+      - name: Build pinned crypto dependency on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
+        run: python vendor/tools/build_sodium.py --output build/deps/sodium --cc (Get-Command gcc).Source --shell "$env:MSYS2_LOCATION/usr/bin/bash.exe" --make "$env:MSYS2_LOCATION/usr/bin/make.exe" --jobs 3
       - name: Configure
         shell: bash
         run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ -DSPEECHDESK_BUILD_TESTS=ON

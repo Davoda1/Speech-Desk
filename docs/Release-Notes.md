@@ -1,21 +1,20 @@
-# SpeechDesk 1.0.0
+# SpeechDesk 1.1.0
 
-First release of SpeechDesk, a native C++17 / Qt6 application for speech playback and local dictation.
+SpeechDesk 1.1.0 adds optional encrypted credentials, OpenAI Realtime support and refinements to the native Qt6 interface.
 
-## Included
+## Changes
 
-- One editor for typed text, text files and locally recognized speech.
-- Hosted TTS profiles for OpenAI, ElevenLabs and OpenRouter, plus local/remote self-hosted speech services and configurable HTTP APIs.
-- Bundled Whistle and multilingual Whisper Tiny, Base and Small recognition models.
-- Separate complete ZIP add-ons for Whisper Large v3 Turbo and Large v3.
-- Playback controls, text highlighting, selected-passage reading and full-reading WAV export.
-- System/light/dark themes, embedded application icons and a resizable interface.
-- Session-only provider credentials, local speech recognition and no application telemetry.
+- Save an API key separately for each server profile when requested. Argon2id and XChaCha20-Poly1305 protect the saved credential; the unlock passphrase is never stored.
+- Unlock saved keys when needed, lock them again during a session, or replace an inaccessible credential without changing another profile's key. Keys remain session-only unless saving is enabled.
+- Use OpenAI Realtime for its replacement speech model. The older OpenAI speech models remain available before their announced 6 January 2027 shutdown and are hidden and rejected from that date onward. Compatible self-hosted speech APIs are unaffected.
+- See microphone input on a centered meter that expands toward both ends as the input level increases.
+- Toggle Live text with a button matching the surrounding controls; its pressed state indicates that provisional dictation text is enabled.
+- Follow clearer reading-part progress while retaining playback, text highlighting and full-reading WAV export.
 
-Windows and Linux runtime packages include Qt and recognition assets. Windows ZIP and Linux tar.gz packages start their top-level executable directly; the Debian package installs the real binary at `/usr/bin/speechdesk`.
+## Packaging and compatibility
 
-## Compatibility notes
+Windows and Linux runtime packages include Qt and the four default local recognition models. Windows ZIP and Linux tar.gz packages start their top-level executable directly; the Debian package installs the real binary at `/usr/bin/speechdesk`. Whisper Large v3 Turbo and Large v3 remain separate, complete ZIP add-ons.
 
-TTS compatibility depends on the service, model, voice and supported format. Sections are buffered before playback; SSE deltas do not provide incremental low-latency playback. Word highlighting requires supported timing data. Voice cloning, reference uploads, WebSocket-only services and asynchronous job APIs are outside this release.
+TTS compatibility depends on the service, model, voice and response format. Realtime speech is buffered per reading part and its returned transcript is checked against the requested text before playback. A mismatch or missing transcript causes an error; punctuation or number-format differences can also fail this conservative check. Transcript matching does not establish pronunciation accuracy. All speech recognition remains local.
 
-See [Verification](Verification.md) for the recorded validation scope and [Server profiles](Server-Profiles.md) for service configuration. Hosted providers apply their own account, retention and billing terms.
+See [Verification](Verification.md) for the recorded validation scope and [Server profiles](Server-Profiles.md) for configuration. Hosted providers apply their own account, retention and billing terms. Physical audio devices and private speech servers require checks on the target setup.

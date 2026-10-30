@@ -94,7 +94,7 @@ def stage(args):
     qt_version = (qt / "mkspecs/qconfig.pri").read_text(errors="replace")
     match = re.search(r"^QT_VERSION\s*=\s*(\S+)", qt_version, re.MULTILINE)
     manifest = {
-        "application": "SpeechDesk", "version": "1.0.0", "platform": "windows-x64",
+        "application": "SpeechDesk", "version": "1.1.0", "platform": "windows-x64",
         "qt_version": match.group(1) if match else "unknown",
         "compiler": subprocess.check_output([args.compiler, "--version"], text=True).splitlines()[0],
         "source_provenance": "Source archives and build-manifest.json",
@@ -102,6 +102,8 @@ def stage(args):
         "copied_dlls": sorted(copied), "system_dlls": sorted(system), "plugins": PLUGINS,
         "models": {name: sha256(out / "resources/models" / name) for name in MODELS},
     }
+    sodium_receipt = args.sodium_manifest or args.binary.parent / "deps/sodium/build-manifest.json"
+    manifest["static_dependencies"] = {"libsodium": json.loads(sodium_receipt.read_text(encoding="utf-8"))}
     (out / "runtime-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     files = [f for f in out.rglob("*") if f.is_file() and not any(p.startswith(".") for p in f.relative_to(out).parts)]
     print(json.dumps({"staged": str(out), "files": len(files),
@@ -116,4 +118,5 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--compiler", default=shutil.which("x86_64-w64-mingw32-g++-posix") or "g++")
     parser.add_argument("--objdump", default=shutil.which("x86_64-w64-mingw32-objdump") or "objdump")
+    parser.add_argument("--sodium-manifest", type=Path, help="Build receipt from the pinned libsodium bootstrap")
     stage(parser.parse_args())

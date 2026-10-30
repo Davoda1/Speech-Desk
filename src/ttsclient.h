@@ -10,6 +10,7 @@
 #include "speechtypes.h"
 
 class QNetworkReply;
+class QWebSocket;
 
 // Async, single-operation speech client. Starting a probe or synthesis cancels
 // the previous operation; cancellation never emits stale audio or probe results.
@@ -47,7 +48,9 @@ private:
     quint64 m_generation = 0;
     bool m_destroying = false;
     QString m_detectedAdapter;
+    QWebSocket *m_realtimeSocket = nullptr;
 
+    void synthesizeRealtime(const QString &text, quint64 generation);
     QUrl baseUrl(QString *failure = nullptr) const;
     QUrl endpoint(const QString &path, QString *failure = nullptr) const;
     void request(const QUrl &url, const QByteArray &body, bool get,

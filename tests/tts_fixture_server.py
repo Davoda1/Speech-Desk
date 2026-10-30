@@ -7,12 +7,14 @@ Run with --port 8765 for manual app verification. No network dependencies.
 import argparse
 import base64
 import io
+import hashlib
 import json
 import math
 import struct
 import time
 import wave
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import urlparse, parse_qs
 
 
 PCM = b"".join(struct.pack("<h", int(3000 * math.sin(i * 2 * math.pi * 440 / 16000))) for i in range(6400))
@@ -44,7 +46,103 @@ class Handler(BaseHTTPRequestHandler):
         except (BrokenPipeError, ConnectionResetError):
             pass
 
+    def websocket_send(self, event):
+        payload = json.dumps(event).encode()
+        length = len(payload)
+        prefix = bytes([0x81, length]) if length < 126 else (b"\x81\x7e" + struct.pack("!H", length)
+                  if length < 65536 else b"\x81\x7f" + struct.pack("!Q", length))
+        try:
+            self.wfile.write(prefix + payload)
+            self.wfile.flush()
+        except (BrokenPipeError, ConnectionResetError):
+            pass
+
+    def websocket_read(self):
+        prefix = self.rfile.read(2)
+        if len(prefix) < 2 or (prefix[0] & 15) == 8:
+            return None
+        length = prefix[1] & 127
+        if length == 126:
+            length = struct.unpack("!H", self.rfile.read(2))[0]
+        elif length == 127:
+            length = struct.unpack("!Q", self.rfile.read(8))[0]
+        if length > 4 * 1024 * 1024 or not prefix[1] & 128:
+            return None
+        mask = self.rfile.read(4)
+        data = self.rfile.read(length)
+        if len(mask) != 4 or len(data) != length:
+            return None
+        return json.loads(bytes(b ^ mask[i % 4] for i, b in enumerate(data)))
+
+    def realtime(self):
+        self.close_connection = True
+        path = urlparse(self.path)
+        if (self.headers.get("Authorization") != "Bearer fixture-key"
+                or parse_qs(path.query).get("model") != ["gpt-realtime-2.1-mini"]):
+            self.respond({"error": "fixture-secret-key"}, status=401)
+            return
+        if path.path.endswith("redirect"):
+            self.respond(b"", status=302, Location="http://example.invalid/capture")
+            return
+        accept = base64.b64encode(hashlib.sha1((self.headers.get("Sec-WebSocket-Key", "")
+                 + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11").encode()).digest()).decode()
+        self.wfile.write(("HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\n"
+                         "Connection: Upgrade\r\nSec-WebSocket-Accept: " + accept + "\r\n\r\n").encode())
+        self.wfile.flush()
+        self.websocket_send({"type": "session.created", "session": {"id": "fixture_session"}})
+        update = self.websocket_read() or {}
+        session = update.get("session", {})
+        valid = (update.get("type") == "session.update"
+                 and session.get("model") == "gpt-realtime-2.1-mini"
+                 and session.get("tools") == [] and session.get("tool_choice") == "none"
+                 and session.get("output_modalities") == ["audio"]
+                 and session.get("audio", {}).get("input", {}).get("turn_detection") is None
+                 and session.get("audio", {}).get("output", {}).get("format") == {"type": "audio/pcm", "rate": 24000})
+        if not valid:
+            self.websocket_send({"type": "error", "error": {"message": "Invalid session; fixture-secret-key"}})
+            return
+        self.websocket_send({"type": "session.updated", "session": session})
+        item_event = self.websocket_read() or {}
+        item = item_event.get("item", {})
+        if (item_event.get("type") != "conversation.item.create" or item.get("role") != "user"
+                or item.get("content", [{}])[0].get("type") != "input_text"):
+            self.websocket_send({"type": "error", "error": {"message": "Invalid input"}})
+            return
+        text = item["content"][0]["text"]
+        self.websocket_send({"type": "conversation.item.added", "item": item})
+        response_event = self.websocket_read() or {}
+        if response_event != {"type": "response.create", "response": {"output_modalities": ["audio"]}}:
+            self.websocket_send({"type": "error", "error": {"message": "Invalid response request"}})
+            return
+        if path.path.endswith("delay"):
+            time.sleep(1.6)
+        self.websocket_send({"type": "response.created", "response": {"id": "reading_1"}})
+        shared = {"response_id": "reading_1", "output_index": 0, "content_index": 0}
+        if path.path.endswith("oversize"):
+            self.websocket_send({"type": "response.output_audio.delta", **shared, "delta": "A" * (4 * 1024 * 1024)})
+            return
+        if path.path.endswith("error"):
+            self.websocket_send({"type": "error", "error": {"message": "fixture-secret-key and private input"}})
+            return
+        self.websocket_send({"type": "response.output_audio.delta", **shared, "delta": base64.b64encode(PCM).decode()})
+        self.websocket_send({"type": "response.output_audio.done", **shared})
+        transcript = text
+        if path.path.endswith("sign-drift"):
+            transcript = text.replace("-5", "5")
+        elif path.path.endswith("number-drift"):
+            transcript = text.replace("1.2", "12")
+        elif path.path.endswith("paraphrase"):
+            transcript = "Here is a summary of the message."
+        elif path.path.endswith("normalized"):
+            transcript = "  " + text.upper().replace(" ", "  ") + "  "
+        if not path.path.endswith("no-transcript"):
+            self.websocket_send({"type": "response.output_audio_transcript.done", **shared, "transcript": transcript})
+        self.websocket_send({"type": "response.done", "response": {"id": "reading_1", "status": "completed"}})
+
     def do_GET(self):
+        if self.headers.get("Upgrade", "").lower() == "websocket":
+            self.realtime()
+            return
         if self.path == "/openapi.json":
             self.respond({"openapi": "3.1.0", "info": {"title": "vLLM-Omni protocol fixture"},
                 "paths": {"/v1/audio/speech": {"post": {"requestBody": {"content": {"application/json": {
@@ -63,7 +161,7 @@ class Handler(BaseHTTPRequestHandler):
                     {"model_id": "fixture-tts", "can_do_text_to_speech": True},
                     {"model_id": "fixture-conversion", "can_do_text_to_speech": False}])
             elif self.headers.get("Authorization") == "Bearer fixture-key":
-                self.respond({"data": [{"id": "gpt-4o-mini-tts"}, {"id": "chat-only"}]})
+                self.respond({"data": [{"id": "gpt-4o-mini-tts"}, {"id": "gpt-realtime-2.1-mini"}, {"id": "chat-only"}]})
             else:
                 self.respond({"data": [{"id": "fixture-speech"}]})
         elif self.path == "/v2/voices":

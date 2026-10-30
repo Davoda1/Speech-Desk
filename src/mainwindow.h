@@ -5,19 +5,19 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QSlider>
-#include <QProgressBar>
-#include <QCheckBox>
 #include <QMediaPlayer>
 #include <QAudioOutput>
 #include <QTemporaryDir>
 #include <QToolButton>
 #include <QTextCursor>
+#include <QDate>
 #include <memory>
 #include "numberededitor.h"
 #include "speechtypes.h"
 #include "ttsclient.h"
 #include "sttservice.h"
 #include "audiomerger.h"
+#include "speechwidgets.h"
 class MainWindow:public QMainWindow {
     Q_OBJECT
 public:
@@ -38,8 +38,8 @@ private:
     QComboBox *m_server,*m_model,*m_voice,*m_sttModel,*m_language,*m_device;
     QPushButton *m_speak,*m_pause,*m_stop,*m_record,*m_transcribeFile,*m_cancelStt,*m_export;
     QSlider *m_seek,*m_volume;
-    QProgressBar *m_level;
-    QCheckBox *m_live;
+    SymmetricLevelMeter *m_level;
+    AnimatedToggleButton *m_live;
     QLabel *m_status,*m_sttStatus,*m_stats,*m_time,*m_highlightInfo,*m_recordTime;
     TtsClient m_tts;
     SttService m_stt;
@@ -60,11 +60,15 @@ private:
     QTextCursor m_dictationOriginalCursor;
     QChar m_dictationBefore,m_dictationAfter;
     QString m_lastTheme,m_cachedText;
+    QDate m_lifecycleDate;
     QByteArray m_cachedProfile;
     QWidget *buildTts();
     QWidget *buildDictation();
     void loadSettings();
     void saveSettings();
+    bool writeSettings(const QJsonObject &settings,QString *error);
+    bool unlockSelectedCredential();
+    void lockProfileCredential(const QString &id);
     void applyTheme();
     bool systemDark() const;
     QJsonObject selectedProfile() const;
@@ -86,6 +90,7 @@ private:
     void openText();
     void saveAudio();
     void updateSttControls();
+    void updateMeterVisibility();
     void updateLanguages();
     void refreshDictationModels();
     void record();

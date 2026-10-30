@@ -47,7 +47,7 @@ for model in catalog['models']:
             raise RuntimeError('Wrong model SHA-256: ' + weights.name)
     manifest = {'format': 'speechdesk-model-pack', 'version': 1,
                 **{k: model[k] for k in ('id', 'filename', 'size', 'sha256')}}
-    readme = f'''SpeechDesk 1.0.0 optional dictation expansion
+    readme = f'''SpeechDesk 1.1.0 optional dictation expansion
 {model['name']}
 
 Download the complete ZIP and select it in Settings > Dictation > Import model pack.

@@ -2,7 +2,7 @@
 """Stage the real native Linux executable and its redistributable Qt runtime."""
 import argparse,json,os,re,shutil,subprocess
 from pathlib import Path
-p=argparse.ArgumentParser();p.add_argument('--binary',type=Path,required=True);p.add_argument('--qt',type=Path,required=True);p.add_argument('--assets',type=Path,required=True);p.add_argument('--output',type=Path,required=True);args=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--binary',type=Path,required=True);p.add_argument('--qt',type=Path,required=True);p.add_argument('--assets',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--sodium-manifest',type=Path);args=p.parse_args()
 src=Path(__file__).resolve().parents[1];out=args.output.resolve();out.mkdir(parents=True,exist_ok=True)
 for name in ('lib','plugins','resources/bin','resources/models','licenses'): (out/name).mkdir(parents=True,exist_ok=True)
 shutil.copy2(args.binary,out/'speechdesk');os.chmod(out/'speechdesk',0o755)
@@ -43,6 +43,8 @@ for f in (out/'lib').glob('lib*.so*'):subprocess.run(['patchelf','--set-rpath','
 for f in (out/'plugins').rglob('*.so'):subprocess.run(['patchelf','--set-rpath','$ORIGIN/../../lib',str(f)],check=True)
 (out/'qt.conf').write_text('[Paths]\nPrefix=.\nLibraries=lib\nPlugins=plugins\n')
 manifest={'qt_version':'6.8.3','copied_libraries':sorted(copied),'system_libraries':sorted(system),'plugins':plugins}
+sodium_receipt=args.sodium_manifest or args.binary.parent/'deps/sodium/build-manifest.json'
+manifest['static_dependencies']={'libsodium':json.loads(sodium_receipt.read_text(encoding='utf-8'))}
 if (args.assets/'build-manifest.json').is_file():shutil.copy2(args.assets/'build-manifest.json',out/'native-build-manifest.json')
 (out/'runtime-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print(json.dumps({'staged':str(out),'qt_libraries':len(copied),'system_libraries':sorted(system)},indent=2))

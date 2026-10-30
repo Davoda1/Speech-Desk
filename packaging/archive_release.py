@@ -90,6 +90,13 @@ def validate_runtime(root, platform):
             raise RuntimeError('Missing included model: '+model)
     if not list(root.glob('Qt6Core.dll')) and not list((root/'lib').glob('libQt6Core.so*')):
         raise RuntimeError('Qt Core runtime is missing')
+    if not list(root.glob('Qt6WebSockets.dll')) and not list((root/'lib').glob('libQt6WebSockets.so*')):
+        raise RuntimeError('Qt WebSockets runtime is missing')
+    if not (root/'licenses/libsodium-ISC.txt').is_file():
+        raise RuntimeError('libsodium license is missing')
+    sodium=json.loads((root/'runtime-manifest.json').read_text(encoding='utf-8')).get('static_dependencies',{}).get('libsodium',{})
+    if sodium.get('version') != '1.0.22' or sodium.get('linkage') != 'static':
+        raise RuntimeError('Pinned libsodium build provenance is missing')
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)

@@ -44,6 +44,8 @@ Development-time downloads are explicit; the installed application does not invo
 
 **Qt and multimedia runtimes.** Packaging targets Qt 6.8.3 with dynamic linking. Packages include the required Qt libraries/plugins and multimedia runtime dependencies selected by the packaging scripts. OS graphics, fonts and audio services remain system dependencies. The Linux recognition engine requires at least glibc 2.34 and GLIBCXX 3.4.29; the packaged application and its toolchain may impose a newer baseline. Test the actual package on the intended distribution.
 
+**libsodium.** Optional credential storage uses statically linked libsodium 1.0.22 under its ISC license. `vendor/provenance/libsodium.json` pins the official source archive and SHA-256. The build reconstructs it with the application's compiler; runtime packages include the ISC notice and a build receipt. See [build instructions](Build.md).
+
 ## Runtime behavior and privacy
 
 Recognition is local CPU processing, with one recognition worker at a time. File input is limited to one hour and 1 GiB. Live recognition checks for captured audio periodically and does not guarantee real-time transcription. Cancellation terminates native workers and discards stale results.

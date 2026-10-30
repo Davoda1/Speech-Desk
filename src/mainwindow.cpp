@@ -2,6 +2,9 @@
 #include "settingsdialog.h"
 #include "textsegments.h"
 #include "modelpacks.h"
+#include "credentialstore.h"
+#include "credentialdialogs.h"
+#include "providerlifecycle.h"
 #include <QApplication>
 #include <QBoxLayout>
 #include <QGridLayout>
@@ -26,6 +29,7 @@
 #include <QSvgRenderer>
 #include <QPainter>
 #include <QScreen>
+#include <QCryptographicHash>
 
 #ifndef Q_OS_WIN
 #include <QDBusMessage>
@@ -34,8 +38,8 @@
 #endif
 
 static QString durationText(qint64 ms){qint64 s=qMax<qint64>(0,ms/1000);return QString("%1:%2").arg(s/60).arg(s%60,2,10,QChar('0'));}
-static QByteArray speechSignature(QJsonObject p){p.remove("discovery");p.remove("discoveryBaseUrl");p.remove("discoverySpeechPath");return QJsonDocument(p).toJson(QJsonDocument::Compact);}
-static QToolButton *tool(const QString &text,const QString &tip,QWidget *parent=nullptr){auto b=new QToolButton(parent);b->setText(text);b->setToolTip(tip);b->setAccessibleName(tip);b->setCursor(Qt::PointingHandCursor);return b;}
+static QByteArray speechSignature(QJsonObject p){p.remove("discovery");p.remove("discoveryBaseUrl");p.remove("discoverySpeechPath");return QCryptographicHash::hash(QJsonDocument(p).toJson(QJsonDocument::Compact),QCryptographicHash::Sha256);}
+static QToolButton *tool(const QString &text,const QString &tip,QWidget *parent=nullptr){auto b=new QToolButton(parent);b->setMinimumHeight(32);b->setText(text);b->setToolTip(tip);b->setAccessibleName(tip);b->setCursor(Qt::PointingHandCursor);return b;}
 static QFrame *card(){auto f=new QFrame;f->setObjectName("card");return f;}
 static QWidget *field(const QString &label,QWidget *input){auto w=new QWidget;auto l=new QVBoxLayout(w);l->setContentsMargins(0,0,0,0);l->setSpacing(5);auto t=new QLabel(label);t->setProperty("muted",true);t->setBuddy(input);l->addWidget(t);l->addWidget(input);return w;}
 static void compactCombo(QComboBox *box){box->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);box->setMinimumContentsLength(7);box->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);}
@@ -57,16 +61,28 @@ void MainWindow::saveSettings()
 {
     if(m_demo)return;
     rememberActiveProfile();m_settings["volume"]=m_volume->value();m_settings["live"]=m_live->isChecked();m_settings["sttModel"]=m_sttModel->currentData().toString();m_settings["sttLanguage"]=m_language->currentData().toString();m_settings["device"]=m_device->currentData().toString();m_settings["width"]=width();m_settings["height"]=height();
-    QJsonObject disk=m_settings;QJsonArray profiles;for(auto p:disk["profiles"].toArray())profiles.append(publicServerProfile(p.toObject()));disk["profiles"]=profiles;
-    QDir().mkpath(configDirectory());QSaveFile f(QDir(configDirectory()).filePath("settings.json"));auto bytes=QJsonDocument(disk).toJson(QJsonDocument::Indented);
-    if(!f.open(QIODevice::WriteOnly)||f.write(bytes)!=bytes.size()||!f.commit())m_status->setText("Could not save settings: "+f.errorString());
+    QString error;if(!writeSettings(m_settings,&error))m_status->setText("Could not save settings: "+error);
+}
+bool MainWindow::writeSettings(const QJsonObject &settings,QString *error)
+{
+    if(m_demo)return true;
+    QJsonObject disk=settings;QJsonArray profiles;
+    for(auto p:disk["profiles"].toArray())profiles.append(publicServerProfile(p.toObject()));
+    disk["profiles"]=profiles;
+    disk["volume"]=m_volume->value();disk["live"]=m_live->isChecked();disk["sttModel"]=m_sttModel->currentData().toString();
+    disk["sttLanguage"]=m_language->currentData().toString();disk["device"]=m_device->currentData().toString();disk["width"]=width();disk["height"]=height();
+    if(!QDir().mkpath(configDirectory())){if(error)*error="Could not create the settings directory.";return false;}
+    QSaveFile f(QDir(configDirectory()).filePath("settings.json"));auto bytes=QJsonDocument(disk).toJson(QJsonDocument::Indented);
+    if(!f.open(QIODevice::WriteOnly)||f.write(bytes)!=bytes.size()||!f.commit()){if(error)*error=f.errorString();return false;}
 #ifndef Q_OS_WIN
     QFile::setPermissions(QDir(configDirectory()).filePath("settings.json"),QFileDevice::ReadOwner|QFileDevice::WriteOwner);
 #endif
+    return true;
 }
+
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),m_tts(this),m_stt(this),m_merger(this),m_player(this),m_output(this)
 {
-    loadSettings();setWindowTitle("SpeechDesk");setWindowIcon(QIcon(":/app.svg"));setMinimumSize(680,540);
+    m_lifecycleDate=ProviderLifecycle::utcToday();loadSettings();setWindowTitle("SpeechDesk");setWindowIcon(QIcon(":/app.svg"));setMinimumSize(680,540);
     QSize screen=QGuiApplication::primaryScreen()?QGuiApplication::primaryScreen()->availableGeometry().size():QSize(1400,900);
     resize(qMin(m_settings.value("width").toInt(1100),screen.width()),qMin(m_settings.value("height").toInt(760),screen.height()));
     auto central=new QWidget;auto outer=new QVBoxLayout(central);outer->setContentsMargins(18,12,18,12);outer->setSpacing(10);setCentralWidget(central);
@@ -96,7 +112,7 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),m_tts(this),m_stt(th
         m_audioPaths[i]=path;m_audioFormats[i]=suffix;m_cues[i]=cues;
         if(i==m_current)playCurrent();requestNext();
     });
-    connect(&m_merger,&AudioMerger::progress,this,[this](int n,int total){m_status->setText(QString("Saving audio · section %1 of %2").arg(n).arg(total));m_export->setEnabled(false);updateSttControls();});
+    connect(&m_merger,&AudioMerger::progress,this,[this](int n,int total){m_status->setText(QString("Saving audio · part %1 of %2").arg(n).arg(total));m_export->setEnabled(false);updateSttControls();});
     connect(&m_merger,&AudioMerger::completed,this,[this](const QString &path){m_status->setText("Audio saved: "+QFileInfo(path).fileName());m_export->setEnabled(m_cacheComplete);m_speak->setEnabled(!m_active&&!m_sttBusy&&!m_recording&&!m_text->toPlainText().trimmed().isEmpty());updateSttControls();});
     connect(&m_merger,&AudioMerger::error,this,[this](const QString &s){m_status->setText("Export failed: "+s);m_export->setEnabled(m_cacheComplete);m_speak->setEnabled(!m_active&&!m_sttBusy&&!m_recording&&!m_text->toPlainText().trimmed().isEmpty());updateSttControls();});
     connect(&m_stt,&SttService::status,this,[this](const QString &message){
@@ -120,7 +136,15 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent),m_tts(this),m_stt(th
     QString resources=qEnvironmentVariable("SPEECHDESK_RESOURCES");if(resources.isEmpty()){resources=QDir(QCoreApplication::applicationDirPath()).filePath("resources");if(!QDir(resources).exists())resources="/usr/lib/speechdesk/resources";}m_stt.setResourceRoot(resources);
     updateProfileChoices();applyTheme();updateStatistics();updateSttControls();
     connect(m_model,&QComboBox::editTextChanged,this,[this]{updateModelVoices(true);rememberActiveProfile();});connect(m_voice,&QComboBox::editTextChanged,this,[this]{rememberActiveProfile();});
-    auto themeTimer=new QTimer(this);connect(themeTimer,&QTimer::timeout,this,[this]{if(m_settings.value("theme").toString("system")=="system")applyTheme();});themeTimer->start(5000);
+    auto themeTimer=new QTimer(this);connect(themeTimer,&QTimer::timeout,this,[this]{
+        if(m_settings.value("theme").toString("system")=="system")applyTheme();
+        const auto day=ProviderLifecycle::utcToday();
+        if(day!=m_lifecycleDate) {
+            m_lifecycleDate=day;const auto profile=selectedProfile();
+            if(m_active&&!ProviderLifecycle::modelAllowed(profile,profile.value("model").toString()))stopSpeech();
+            updateProfileChoices();
+        }
+    });themeTimer->start(5000);
     auto open=new QShortcut(QKeySequence::Open,this);connect(open,&QShortcut::activated,this,&MainWindow::openText);
     auto save=new QShortcut(QKeySequence::Save,this);connect(save,&QShortcut::activated,this,&MainWindow::saveText);
     auto saveAudioShortcut=new QShortcut(QKeySequence("Ctrl+Shift+S"),this);connect(saveAudioShortcut,&QShortcut::activated,this,&MainWindow::saveAudio);
@@ -150,15 +174,19 @@ QWidget *MainWindow::buildTts()
     m_text->setPlaceholderText("Type, paste, open a TXT file, or choose Dictate.\n\nYour words stay here. Edit them, then press Speak to listen.");m_text->setAccessibleName("Text to read or dictate");el->addWidget(m_text,1);
     auto bottom=new QHBoxLayout;bottom->setContentsMargins(12,4,12,4);m_stats=new QLabel;m_stats->setProperty("muted",true);bottom->addWidget(m_stats);bottom->addStretch();m_highlightInfo=new QLabel("Playback highlighting on");m_highlightInfo->setProperty("muted",true);bottom->addWidget(m_highlightInfo);el->addLayout(bottom);l->addWidget(editorCard,1);
     connect(m_dictate,&QToolButton::toggled,this,[this](bool visible){
-        m_dictationPanel->setVisible(visible);
+        m_dictationPanel->setVisible(visible);updateMeterVisibility();
         if(visible&&!m_sttBusy&&!m_active){m_status->setText("Dictate at the cursor, or replace selected text. Recognition stays on this computer.");if(m_device->count()==1)m_stt.requestDevices();}
     });
     connect(m_openText,&QToolButton::clicked,this,&MainWindow::openText);connect(m_saveText,&QToolButton::clicked,this,&MainWindow::saveText);
     connect(m_clearText,&QToolButton::clicked,this,[this]{if(m_active||m_dictationActive||m_sttBusy)return;if(confirmReplace(m_text,"Clear text"))m_text->clear();});
     connect(m_text,&QPlainTextEdit::textChanged,this,&MainWindow::updateStatistics);
     connect(m_text,&QPlainTextEdit::selectionChanged,this,[this]{if(!m_active&&!m_dictationActive)m_speak->setText(m_text->textCursor().hasSelection()?"Speak selection":"Speak");});
-    auto controls=new QHBoxLayout;controls->setSpacing(9);m_speak=new QPushButton("Speak");m_speak->setObjectName("speakButton");m_speak->setProperty("accent",true);m_speak->setMinimumWidth(118);m_speak->setMinimumHeight(36);m_speak->setToolTip("Read text or selected text (Ctrl+Enter)");m_pause=new QPushButton("Pause");m_pause->setMinimumHeight(36);m_stop=new QPushButton("Stop");m_stop->setMinimumHeight(36);controls->addWidget(m_speak);controls->addWidget(m_pause);controls->addWidget(m_stop);controls->addStretch();m_export=new QPushButton("Save audio…");m_export->setEnabled(false);controls->addWidget(m_export);auto volume=new QLabel("Volume");volume->setProperty("muted",true);controls->addWidget(volume);m_volume=new QSlider(Qt::Horizontal);m_volume->setRange(0,100);m_volume->setValue(m_settings.value("volume").toInt(85));m_volume->setFixedWidth(80);m_volume->setAccessibleName("Playback volume");controls->addWidget(m_volume);l->addLayout(controls);
-    auto progress=new QHBoxLayout;m_seek=new QSlider(Qt::Horizontal);m_seek->setRange(0,0);m_seek->setEnabled(false);m_seek->setAccessibleName("Position within current speech section");m_time=new QLabel("0:00 / 0:00");m_time->setProperty("muted",true);m_time->setMinimumWidth(88);progress->addWidget(m_seek,1);progress->addWidget(m_time);l->addLayout(progress);m_status=new QLabel("Add a speech server in Settings to begin.");m_status->setWordWrap(true);m_status->setProperty("muted",true);m_status->setMinimumHeight(26);m_sttStatus=m_status;l->addWidget(m_status);
+    auto controls=new QHBoxLayout;controls->setSpacing(9);m_speak=new QPushButton("Speak");m_speak->setObjectName("speakButton");m_speak->setProperty("accent",true);m_speak->setMinimumWidth(118);m_speak->setMinimumHeight(36);m_speak->setToolTip("Read text or selected text (Ctrl+Enter)");m_pause=new QPushButton("Pause");m_pause->setMinimumHeight(36);m_stop=new QPushButton("Stop");m_stop->setMinimumHeight(36);controls->addWidget(m_speak);controls->addWidget(m_pause);controls->addWidget(m_stop);controls->addStretch();m_export=new QPushButton("Save audio…");m_export->setMinimumHeight(36);m_export->setEnabled(false);controls->addWidget(m_export);auto volume=new QLabel("Volume");volume->setProperty("muted",true);controls->addWidget(volume);m_volume=new QSlider(Qt::Horizontal);m_volume->setRange(0,100);m_volume->setValue(m_settings.value("volume").toInt(85));m_volume->setFixedWidth(80);m_volume->setAccessibleName("Playback volume");controls->addWidget(m_volume);l->addLayout(controls);
+    auto progress=new QHBoxLayout;m_seek=new QSlider(Qt::Horizontal);m_seek->setRange(0,0);m_seek->setEnabled(false);m_seek->setAccessibleName("Position within current reading part");m_time=new QLabel("0:00 / 0:00");m_time->setProperty("muted",true);m_time->setMinimumWidth(88);progress->addWidget(m_seek,1);progress->addWidget(m_time);l->addLayout(progress);auto statusRow=new QWidget;statusRow->setObjectName("speechStatusBar");auto statusLayout=new QGridLayout(statusRow);statusLayout->setContentsMargins(0,0,0,0);statusLayout->setHorizontalSpacing(8);
+    m_status=new QLabel("Add a speech server in Settings to begin.");m_status->setWordWrap(true);m_status->setProperty("muted",true);m_status->setMinimumHeight(28);m_status->setMinimumWidth(0);m_status->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Preferred);m_sttStatus=m_status;
+    m_level=new SymmetricLevelMeter;m_level->setObjectName("microphoneLevel");m_level->setFixedSize(200,16);m_level->setVisible(false);
+    m_recordTime=new QLabel("0:00");m_recordTime->setObjectName("recordingTime");m_recordTime->setProperty("muted",true);m_recordTime->setAlignment(Qt::AlignRight|Qt::AlignVCenter);m_recordTime->setMinimumWidth(0);m_recordTime->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Preferred);m_recordTime->setVisible(false);
+    statusLayout->addWidget(m_status,0,0,1,3);statusLayout->addWidget(m_level,0,1,Qt::AlignCenter);statusLayout->addWidget(m_recordTime,0,2);statusLayout->setColumnStretch(0,1);statusLayout->setColumnStretch(2,1);l->addWidget(statusRow);
     connect(m_speak,&QPushButton::clicked,this,&MainWindow::startSpeech);connect(m_pause,&QPushButton::clicked,this,&MainWindow::pauseSpeech);connect(m_stop,&QPushButton::clicked,this,&MainWindow::stopSpeech);connect(m_export,&QPushButton::clicked,this,&MainWindow::saveAudio);m_export->setToolTip("Save the complete generated reading as WAV (Ctrl+Shift+S)");m_pause->setEnabled(false);m_stop->setEnabled(false);
     return page;
 }
@@ -179,29 +207,32 @@ QWidget *MainWindow::buildDictation()
     m_record=new QPushButton("Record");m_record->setObjectName("recordButton");m_record->setToolTip("Dictate into the editor at the cursor (Ctrl+R); Stop finishes recognition");
     m_cancelStt=new QPushButton("Cancel");m_cancelStt->setObjectName("cancelDictationButton");m_cancelStt->setToolTip("Discard this dictation and restore the original text (Escape)");
     m_transcribeFile=new QPushButton("Audio file…");m_transcribeFile->setObjectName("insertAudioButton");m_transcribeFile->setToolTip("Insert words from an audio recording at the cursor");
-    m_live=new QCheckBox("Live text");m_live->setObjectName("liveDictation");m_live->setChecked(m_settings.value("live").toBool(true));m_live->setToolTip("Update text while speaking, then refine it after Stop. Turn off to transcribe only after recording.");
+    m_live=new AnimatedToggleButton("Live text");m_live->setObjectName("liveDictation");m_live->setChecked(m_settings.value("live").toBool(true));m_live->setToolTip("Update text while speaking, then refine it after Stop. Turn off to transcribe only after recording.");
     controls->addWidget(m_record);controls->addWidget(m_cancelStt);controls->addWidget(m_transcribeFile);controls->addWidget(m_live);controls->addStretch();
-    m_level=new QProgressBar;m_level->setRange(0,100);m_level->setValue(0);m_level->setTextVisible(false);m_level->setFixedSize(54,6);m_level->setAccessibleName("Microphone level");controls->addWidget(m_level);
-    m_recordTime=new QLabel("0:00");m_recordTime->setProperty("muted",true);m_recordTime->setMinimumWidth(34);controls->addWidget(m_recordTime);layout->addLayout(controls);
+    for(auto button:QList<QPushButton *>{m_record,m_cancelStt,m_transcribeFile,m_live})button->setFixedHeight(36);
+    layout->addLayout(controls);
     connect(m_record,&QPushButton::clicked,this,&MainWindow::record);connect(m_transcribeFile,&QPushButton::clicked,this,&MainWindow::openAudio);connect(m_cancelStt,&QPushButton::clicked,this,&MainWindow::cancelDictation);
     return panel;
 }
 void MainWindow::updateProfileChoices()
 {
-    QSignalBlocker b(m_server);m_server->clear();auto profiles=m_settings["profiles"].toArray();for(auto p:profiles){auto o=p.toObject();m_server->addItem(o["name"].toString("Speech server"),o["id"].toString());}m_server->setCurrentIndex(qBound(0,m_settings["selectedProfile"].toInt(),m_server->count()-1));updateVoiceChoices();
+    QSignalBlocker b(m_server);m_server->clear();auto profiles=m_settings["profiles"].toArray();for(int i=0;i<profiles.size();++i){auto o=currentServerProfile(profiles[i].toObject());profiles[i]=o;m_server->addItem(o["name"].toString("Speech server"),o["id"].toString());}m_settings["profiles"]=profiles;m_server->setCurrentIndex(qBound(0,m_settings["selectedProfile"].toInt(),m_server->count()-1));updateVoiceChoices();
 }
 void MainWindow::updateVoiceChoices()
 {
     auto profiles=m_settings["profiles"].toArray();int i=m_server->currentIndex();if(i<0||i>=profiles.size())return;auto p=profiles[i].toObject();QSignalBlocker b1(m_model),b2(m_voice);m_model->clear();m_voice->clear();auto discovery=p["discovery"].toObject();
-    for(auto item:discovery["models"].toArray()){auto o=item.toObject();m_model->addItem(o["id"].toString());}
+    for(auto item:ProviderLifecycle::modelChoices(p,discovery["models"].toArray())){auto o=item.toObject();m_model->addItem(o["id"].toString());}
     for(auto item:discovery["voices"].toArray()){auto o=item.toObject();m_voice->addItem(o["id"].toString());}
-    m_model->setCurrentText(p["model"].toString());m_voice->setCurrentText(p["voice"].toString());updateModelVoices();m_server->setToolTip(p["baseUrl"].toString());
-    if(!m_active)m_status->setText(p["baseUrl"].toString().isEmpty()?"Add a speech server in Settings to begin.":"Ready · Text will be sent to "+p["name"].toString("the selected server")+" when you press Speak.");
+    const bool allowed=!p.value("modelRetired").toBool()&&ProviderLifecycle::modelAllowed(p,p.value("model").toString());
+    m_model->setCurrentText(allowed?p["model"].toString():QString());
+    m_model->lineEdit()->setPlaceholderText(allowed?"Server default model":"Retired model — choose replacement");
+    m_voice->setCurrentText(p["voice"].toString());updateModelVoices();m_server->setToolTip(p["baseUrl"].toString());
+    if(!m_active)m_status->setText(!allowed?"This OpenAI model is retired. Select a supported model to continue.":(p["baseUrl"].toString().isEmpty()?"Add a speech server in Settings to begin.":"Ready · Text will be sent to "+p["name"].toString("the selected server")+" when you press Speak."));
 }
 void MainWindow::updateModelVoices(bool modelChanged)
 {
     const auto profile=selectedProfile();
-    if(profile.value("adapter").toString()!="openrouter")return;
+    if(profile.value("adapter").toString()!="openrouter"&&!ProviderLifecycle::isOfficialOpenAi(profile))return;
     const QString previous=m_voice->currentText();
     QSignalBlocker block(m_voice);m_voice->clear();
     for(const auto &entry:profile.value("discovery").toObject().value("models").toArray()) {
@@ -216,7 +247,7 @@ void MainWindow::updateModelVoices(bool modelChanged)
 }
 QJsonObject MainWindow::selectedProfile() const
 {
-    auto profiles=m_settings["profiles"].toArray();int i=m_server->currentIndex();if(i<0||i>=profiles.size())return {};auto p=profiles[i].toObject();p["model"]=m_model->currentText().trimmed();p["voice"]=m_voice->currentText().trimmed();return p;
+    auto profiles=m_settings["profiles"].toArray();int i=m_server->currentIndex();if(i<0||i>=profiles.size())return {};auto p=profiles[i].toObject();p["model"]=m_model->currentText().trimmed();p["voice"]=m_voice->currentText().trimmed();if(!p.value("model").toString().isEmpty()&&ProviderLifecycle::modelAllowed(p,p.value("model").toString()))p.remove("modelRetired");return p;
 }
 void MainWindow::rememberActiveProfile(){auto ps=m_settings["profiles"].toArray();int i=m_server->currentIndex();if(i>=0&&i<ps.size()){ps[i]=selectedProfile();m_settings["profiles"]=ps;m_settings["selectedProfile"]=i;}}
 void MainWindow::updateStatistics()
@@ -228,11 +259,36 @@ void MainWindow::setSpeechActive(bool active)
 {
     m_active=active;m_pause->setEnabled(active);m_stop->setEnabled(active);m_server->setEnabled(!active);m_model->setEnabled(!active);m_voice->setEnabled(!active);m_pause->setText(m_paused?"Resume":"Pause");updateSttControls();
 }
+void MainWindow::lockProfileCredential(const QString &id)
+{
+    auto profiles=m_settings.value("profiles").toArray();
+    for(int i=0;i<profiles.size();++i)if(profiles[i].toObject().value("id").toString()==id)profiles[i]=publicServerProfile(profiles[i].toObject());
+    m_settings["profiles"]=profiles;m_tts.setProfile({});
+    m_cachedProfile.fill('\0');m_cachedProfile.clear();
+}
+bool MainWindow::unlockSelectedCredential()
+{
+    const auto profile=selectedProfile();
+    if(!profile.value("apiKey").toString().trimmed().isEmpty())return true;
+    const QString directory=QDir(configDirectory()).filePath("credentials");CredentialStore credentials(directory);
+    if(!credentials.exists(profile.value("id").toString())) {
+        if(profile.value("provider").toString("selfhosted")!="selfhosted"){configure(true);return false;}
+        return true;
+    }
+    QString key;
+    if(!unlockCredentialForProfile(this,profile,directory,&key)){m_status->setText("Saved API key remains locked. Unlock it when you are ready to speak.");return false;}
+    auto profiles=m_settings["profiles"].toArray();const int index=m_server->currentIndex();
+    if(index<0||index>=profiles.size())return false;
+    auto unlocked=profiles[index].toObject();unlocked["apiKey"]=key;key.fill(QChar(0));profiles[index]=unlocked;m_settings["profiles"]=profiles;return true;
+}
 void MainWindow::startSpeech()
 {
     if(m_active||m_dictationActive||m_sttBusy||m_recording||m_merger.busy())return;auto profile=selectedProfile();QUrl url(profile["baseUrl"].toString());if(!url.isValid()||url.host().isEmpty()||!(url.scheme()=="http"||url.scheme()=="https")){configure(true);return;}
     auto cursor=m_text->textCursor();QString text=cursor.hasSelection()?cursor.selectedText().replace(QChar::ParagraphSeparator,'\n'):m_text->toPlainText();int offset=cursor.hasSelection()?cursor.selectionStart():0;if(text.trimmed().isEmpty())return;
     if(text.size()>200000){m_status->setText("Select a shorter passage (up to 200,000 characters) for one playback session.");return;}
+    if(!ProviderLifecycle::modelAllowed(profile,profile.value("model").toString())){m_status->setText("This OpenAI model is retired. Choose gpt-realtime-2.1-mini or another supported model in Settings.");return;}
+    if(ProviderLifecycle::isOfficialOpenAi(profile)&&profile.value("model").toString().trimmed().isEmpty()){m_status->setText("Choose a supported OpenAI model before speaking.");return;}
+    if(!unlockSelectedCredential())return;profile=selectedProfile();
     if(m_cacheComplete&&text==m_cachedText&&speechSignature(profile)==m_cachedProfile&&!m_segments.isEmpty()&&m_segments.first().start==offset){++m_playbackGeneration;m_current=0;m_request=-1;m_requestBusy=false;m_paused=false;m_detecting=false;setSpeechActive(true);playCurrent();return;}
     ++m_playbackGeneration;m_tts.cancel();m_player.stop();m_player.setSource(QUrl());m_audioDir=std::make_unique<QTemporaryDir>(QDir::tempPath()+"/speechdesk-playback-XXXXXX");if(!m_audioDir->isValid()){m_status->setText("Could not create a temporary audio folder.");return;}
     m_segments=splitSpeechText(text,profile["maxChars"].toInt(500),offset);if(m_segments.isEmpty())return;
@@ -249,15 +305,15 @@ void MainWindow::requestNext()
 void MainWindow::playCurrent()
 {
     if(!m_active||m_current<0||m_current>=m_segments.size())return;
-    if(m_audioPaths[m_current].isEmpty()){m_text->clearReadingRange();m_status->setText(QString("Generating section %1 of %2…").arg(m_current+1).arg(m_segments.size()));requestNext();return;}
+    if(m_audioPaths[m_current].isEmpty()){m_text->clearReadingRange();m_status->setText(QString("Generating speech…"));requestNext();return;}
     m_player.setSource(QUrl::fromLocalFile(m_audioPaths[m_current]));
-    m_status->setText(QString("%1 · section %2 of %3").arg(m_paused?"Paused":"Reading").arg(m_current+1).arg(m_segments.size()));m_highlightInfo->setText(m_cues[m_current].isEmpty()?"Sentence highlighting":"Word highlighting");
+    m_status->setText(QString(m_paused?"Paused · part %1 of %2":"Reading part %1 of %2").arg(m_current+1).arg(m_segments.size()));m_highlightInfo->setText(m_cues[m_current].isEmpty()?"Sentence highlighting":"Word highlighting");
     if(!m_paused)m_player.play();updateHighlight(0);requestNext();
 }
 void MainWindow::nextSection(){if(!m_active)return;++m_current;if(m_current>=m_segments.size()){finishSpeech();return;}playCurrent();}
 void MainWindow::pauseSpeech()
 {
-    if(!m_active)return;m_paused=!m_paused;if(m_paused)m_player.pause();else if(!m_audioPaths.value(m_current).isEmpty())m_player.play();m_pause->setText(m_paused?"Resume":"Pause");m_status->setText(QString("%1 · section %2 of %3").arg(m_paused?"Paused":"Reading").arg(m_current+1).arg(m_segments.size()));
+    if(!m_active)return;m_paused=!m_paused;if(m_paused)m_player.pause();else if(!m_audioPaths.value(m_current).isEmpty())m_player.play();m_pause->setText(m_paused?"Resume":"Pause");m_status->setText(QString(m_paused?"Paused · part %1 of %2":"Reading part %1 of %2").arg(m_current+1).arg(m_segments.size()));
 }
 void MainWindow::stopSpeech()
 {
@@ -298,6 +354,13 @@ void MainWindow::updateLanguages()
     const QList<QPair<QString,QString>> common={{"English","en"},{"German","de"},{"French","fr"},{"Spanish","es"},{"Italian","it"},{"Dutch","nl"},{"Polish","pl"}};for(auto v:common)m_language->addItem(v.first,v.second);
     if(m_sttModel->currentData().toString()!="whistle")for(auto v:QList<QPair<QString,QString>>{{"Hungarian","hu"},{"Portuguese","pt"},{"Russian","ru"},{"Ukrainian","uk"},{"Chinese","zh"},{"Japanese","ja"},{"Korean","ko"},{"Arabic","ar"},{"Czech","cs"},{"Slovak","sk"},{"Romanian","ro"},{"Turkish","tr"},{"Swedish","sv"},{"Danish","da"},{"Finnish","fi"},{"Norwegian","no"},{"Greek","el"},{"Hindi","hi"}})m_language->addItem(v.first,v.second);
     m_language->setCurrentIndex(qMax(0,m_language->findData(selected)));
+}
+void MainWindow::updateMeterVisibility()
+{
+    const bool visible=m_dictate->isChecked();m_level->setVisible(visible);m_recordTime->setVisible(visible);
+    if(auto layout=qobject_cast<QGridLayout *>(m_status->parentWidget()->layout())) {
+        layout->removeWidget(m_status);layout->addWidget(m_status,0,0,1,visible?1:3);
+    }
 }
 void MainWindow::updateSttControls()
 {
@@ -392,7 +455,13 @@ void MainWindow::saveText()
 }
 void MainWindow::configure(bool serverPage)
 {
-    if(m_active||m_sttBusy||m_merger.busy()){QMessageBox::information(this,"Settings","Stop the active playback or dictation task before changing settings.");return;}rememberActiveProfile();SettingsDialog d(m_settings,this);if(serverPage)d.showServers();if(d.exec()==QDialog::Accepted){m_settings=d.resultSettings();updateProfileChoices();m_lastTheme.clear();applyTheme();saveSettings();}
+    if(m_active||m_sttBusy||m_merger.busy()){QMessageBox::information(this,"Settings","Stop the active playback or dictation task before changing settings.");return;}
+    rememberActiveProfile();SettingsDialog d(m_settings,this,QDir(configDirectory()).filePath("credentials"));
+    d.setSaveHandler([this](const QJsonObject &settings,QString *error){return writeSettings(settings,error);});
+    connect(&d,&SettingsDialog::credentialLocked,this,&MainWindow::lockProfileCredential);
+    if(serverPage)d.showServers();
+    if(d.exec()==QDialog::Accepted){m_settings=d.resultSettings();m_tts.setProfile({});updateProfileChoices();m_lastTheme.clear();applyTheme();}
+    else updateVoiceChoices();
     // Installing a pack is an explicit independent action even if the user
     // dismisses the remaining preferences with Cancel.
     refreshDictationModels();updateLanguages();
@@ -412,7 +481,8 @@ void MainWindow::applyTheme()
     QString mode=m_settings.value("theme").toString("system");bool dark=mode=="dark"||(mode=="system"&&systemDark());QString key=QString::number(dark)+":"+QString::number(m_settings.value("fontSize").toInt(16));if(m_lastTheme==key)return;m_lastTheme=key;m_dark=dark;
     const bool textWasModified=m_text->document()->isModified();
     const QString bg=dark?"#191a1d":"#f3f4f5",panel=dark?"#222326":"#ffffff",input=dark?"#292a2e":"#ffffff",text=dark?"#f0f0f2":"#1e2025",muted=dark?"#a5a7af":"#646974",border=dark?"#37393f":"#dcdfe4",hover=dark?"#34363c":"#eceff3";
-    QPalette p;p.setColor(QPalette::Window,QColor(bg));p.setColor(QPalette::WindowText,QColor(text));p.setColor(QPalette::Base,QColor(panel));p.setColor(QPalette::AlternateBase,QColor(dark?"#202124":"#f7f8fa"));p.setColor(QPalette::Text,QColor(text));p.setColor(QPalette::Button,QColor(input));p.setColor(QPalette::ButtonText,QColor(text));p.setColor(QPalette::Highlight,QColor("#357fc7"));p.setColor(QPalette::HighlightedText,Qt::white);p.setColor(QPalette::PlaceholderText,QColor(muted));p.setColor(QPalette::ToolTipBase,QColor(panel));p.setColor(QPalette::ToolTipText,QColor(text));p.setColor(QPalette::Disabled,QPalette::Text,QColor(muted));p.setColor(QPalette::Disabled,QPalette::ButtonText,QColor(dark?"#777b83":"#999da6"));qApp->setPalette(p);
+    const QString accent=dark?"#e2e5e9":"#30343a",accentText=dark?"#1d2024":"#ffffff",accentHover=dark?"#f2f4f6":"#454b53",focus=dark?"#9299a3":"#6b737e",selection=dark?"#444a53":"#cdd3db";
+    QPalette p;p.setColor(QPalette::Window,QColor(bg));p.setColor(QPalette::WindowText,QColor(text));p.setColor(QPalette::Base,QColor(panel));p.setColor(QPalette::AlternateBase,QColor(dark?"#202124":"#f7f8fa"));p.setColor(QPalette::Text,QColor(text));p.setColor(QPalette::Button,QColor(input));p.setColor(QPalette::ButtonText,QColor(text));p.setColor(QPalette::Highlight,QColor(selection));p.setColor(QPalette::HighlightedText,QColor(text));p.setColor(QPalette::PlaceholderText,QColor(muted));p.setColor(QPalette::ToolTipBase,QColor(panel));p.setColor(QPalette::ToolTipText,QColor(text));p.setColor(QPalette::Disabled,QPalette::Text,QColor(muted));p.setColor(QPalette::Disabled,QPalette::ButtonText,QColor(dark?"#777b83":"#999da6"));qApp->setPalette(p);
     QString css=QString(R"(
 QWidget { color:%1; font-size:13px; }
 QMainWindow, QDialog { background:%2; }
@@ -423,38 +493,39 @@ QLabel[sectionLabel="true"] { font-size:11px; font-weight:600; letter-spacing:1p
 QFrame#card { background:%4; border:1px solid %5; border-radius:10px; }
 QTabWidget::pane { border:0; }
 QTabBar::tab { background:transparent; color:%3; padding:11px 18px; margin-right:10px; border-bottom:2px solid transparent; }
-QTabBar::tab:selected { color:%1; font-weight:600; border-bottom:2px solid #4d91d5; }
+QTabBar::tab:selected { color:%1; font-weight:600; border-bottom:2px solid %8; }
 QTabBar::tab:hover { color:%1; }
 QPushButton,QToolButton { background:%6; border:1px solid %5; border-radius:7px; padding:8px 13px; }
 QToolButton { padding:5px 9px; background:transparent; border:0; }
 QPushButton:hover,QToolButton:hover { background:%7; }
-QToolButton:checked { background:%7; color:#4d91d5; }
+QToolButton:checked { background:%7; color:%8; }
 QPushButton:pressed,QToolButton:pressed { background:%5; }
-QPushButton[accent="true"] { background:#307bc5; border-color:#307bc5; color:white; font-weight:600; }
-QPushButton[accent="true"]:hover { background:#3d8bd6; }
+QPushButton:checked { background:%5; border-color:%3; font-weight:600; }
+QPushButton[accent="true"] { background:%8; border-color:%8; color:%9; font-weight:600; }
+QPushButton[accent="true"]:hover { background:%10; }
 QPushButton:disabled,QToolButton:disabled { color:%3; background:transparent; }
-QPushButton:focus,QComboBox:focus,QLineEdit:focus,QSpinBox:focus { border-color:#5799d9; }
+QPushButton:focus,QComboBox:focus,QLineEdit:focus,QSpinBox:focus { border-color:%11; }
 QComboBox,QLineEdit,QSpinBox { background:%6; border:1px solid %5; border-radius:6px; padding:7px 9px; min-height:18px; }
 QComboBox { padding-right:24px; }
 QComboBox::drop-down { border:0; width:23px; }
 QComboBox::down-arrow { image:url(:/chevron.svg); width:12px; height:8px; }
-QComboBox QAbstractItemView { background:%4; border:1px solid %5; selection-background-color:#307bc5; }
-QPlainTextEdit { background:%4; color:%1; border:0; selection-background-color:#347ab9; selection-color:white; }
+QComboBox QAbstractItemView { background:%4; border:1px solid %5; selection-background-color:%12; selection-color:%1; }
+QPlainTextEdit { background:%4; color:%1; border:0; selection-background-color:%12; selection-color:%1; }
 QScrollBar:vertical { background:transparent; width:10px; margin:2px; }
 QScrollBar::handle:vertical { background:%5; border-radius:4px; min-height:28px; }
 QScrollBar::add-line:vertical,QScrollBar::sub-line:vertical { height:0; }
 QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical { background:transparent; }
 QSlider::groove:horizontal { height:4px; background:%5; border-radius:2px; }
-QSlider::sub-page:horizontal { background:#478cd0; border-radius:2px; }
-QSlider::handle:horizontal { background:#5c9fdf; width:12px; margin:-4px 0; border-radius:6px; }
+QSlider::sub-page:horizontal { background:%8; border-radius:2px; }
+QSlider::handle:horizontal { background:%8; width:12px; margin:-4px 0; border-radius:6px; }
 QProgressBar { border:0; background:%5; border-radius:3px; }
 QProgressBar::chunk { background:#4b9d7a; border-radius:3px; }
 QCheckBox { spacing:8px; }
 QCheckBox::indicator { width:16px; height:16px; border:1px solid %5; border-radius:4px; background:%6; }
-QCheckBox::indicator:checked { background:#347fc7; image:url(:/check.svg); border-color:#347fc7; }
+QCheckBox::indicator:checked { background:#737b87; image:url(:/check.svg); border-color:#737b87; }
 QToolTip { background:%4; border:1px solid %5; padding:6px; }
-)").arg(text,bg,muted,panel,border,input,hover);
-    qApp->setStyleSheet(css);QFont editorFont=qApp->font();editorFont.setPixelSize(m_settings.value("fontSize").toInt(16));m_text->setFont(editorFont);
+)").arg(text,bg,muted,panel,border,input,hover).arg(accent,accentText,accentHover,focus,selection);
+    qApp->setStyleSheet(css);m_level->setDark(dark);m_live->setDark(dark);QFont editorFont=qApp->font();editorFont.setPixelSize(m_settings.value("fontSize").toInt(16));m_text->setFont(editorFont);
     m_text->setStyleSheet(QString("font-size:%1px;").arg(editorFont.pixelSize()));
     // Appearance changes must neither create nor erase an unsaved-text state.
     m_text->document()->setModified(textWasModified);
@@ -469,7 +540,7 @@ void MainWindow::showDemo(bool dictation)
     m_text->setPlainText(example);
     if(dictation){
         // Preview opens the real controls without starting a microphone or inference.
-        QSignalBlocker blocked(m_dictate);m_dictate->setChecked(true);m_dictationPanel->show();
+        QSignalBlocker blocked(m_dictate);m_dictate->setChecked(true);m_dictationPanel->show();updateMeterVisibility();
         m_text->moveCursor(QTextCursor::End);m_status->setText("Preview · sample text with dictation controls open. No recording is active.");
     }else{
         int start=example.indexOf("Read a thought");int end=example.indexOf("SpeechDesk");m_text->setReadingRange(start,end-start,start,4,false);m_highlightInfo->setText("Highlighting preview");m_status->setText("Preview · sample text and playback highlight");

@@ -10,7 +10,7 @@
 #include <QDir>
 int main(int argc,char **argv)
 {
-    QCoreApplication::setOrganizationName("Speech-Desk");QCoreApplication::setApplicationName("SpeechDesk");QCoreApplication::setApplicationVersion("1.0.0");
+    QCoreApplication::setOrganizationName("Speech-Desk");QCoreApplication::setApplicationName("SpeechDesk");QCoreApplication::setApplicationVersion("1.1.0");
     qputenv("DO_NOT_TRACK","1");qputenv("NEEDLE_TELEMETRY","0");qputenv("HF_HUB_OFFLINE","1");qputenv("HF_HUB_DISABLE_TELEMETRY","1");
     if(qEnvironmentVariableIsEmpty("QT_MEDIA_BACKEND"))qputenv("QT_MEDIA_BACKEND","ffmpeg");
 #ifndef Q_OS_WIN

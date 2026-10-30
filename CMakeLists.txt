@@ -1,10 +1,31 @@
 cmake_minimum_required(VERSION 3.21)
-project(SpeechDesk VERSION 1.0.0 LANGUAGES CXX)
+project(SpeechDesk VERSION 1.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-find_package(Qt6 6.4 REQUIRED COMPONENTS Core Gui Widgets Network Multimedia Svg)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Core Gui Widgets Network WebSockets Multimedia Svg)
+
+# The bootstrap uses the same compiler family as the application on each OS.
+# Require that pinned static build instead of silently selecting a system DLL.
+set(SPEECHDESK_SODIUM_ROOT "${CMAKE_BINARY_DIR}/deps/sodium" CACHE PATH "Pinned libsodium installation")
+find_path(SPEECHDESK_SODIUM_INCLUDE sodium.h PATHS "${SPEECHDESK_SODIUM_ROOT}/include" NO_DEFAULT_PATH REQUIRED)
+find_file(SPEECHDESK_SODIUM_LIBRARY libsodium.a PATHS "${SPEECHDESK_SODIUM_ROOT}/lib" NO_DEFAULT_PATH REQUIRED)
+file(STRINGS "${SPEECHDESK_SODIUM_INCLUDE}/sodium/version.h" SPEECHDESK_SODIUM_VERSION REGEX "^#define SODIUM_VERSION_STRING")
+if(NOT SPEECHDESK_SODIUM_VERSION MATCHES "\"1\\.0\\.22\"")
+    message(FATAL_ERROR "SpeechDesk requires pinned libsodium 1.0.22; run vendor/tools/build_sodium.py")
+endif()
+add_library(speechdesk_sodium STATIC IMPORTED)
+set_target_properties(speechdesk_sodium PROPERTIES
+    IMPORTED_LOCATION "${SPEECHDESK_SODIUM_LIBRARY}"
+    INTERFACE_INCLUDE_DIRECTORIES "${SPEECHDESK_SODIUM_INCLUDE}"
+    INTERFACE_COMPILE_DEFINITIONS SODIUM_STATIC)
+add_library(speechdesk_credentials STATIC src/credentialstore.cpp src/credentialstore.h)
+target_include_directories(speechdesk_credentials PUBLIC src)
+target_link_libraries(speechdesk_credentials PUBLIC Qt6::Core PRIVATE speechdesk_sodium)
+if(WIN32)
+    target_link_libraries(speechdesk_credentials PRIVATE advapi32)
+endif()
 add_executable(SpeechDesk WIN32
     src/main.cpp src/mainwindow.cpp src/mainwindow.h
     src/numberededitor.cpp src/numberededitor.h
@@ -12,9 +33,11 @@ add_executable(SpeechDesk WIN32
     src/textsegments.cpp src/textsegments.h
     src/audiomerger.cpp src/audiomerger.h
     src/ttsclient.cpp src/ttsclient.h
+    src/speechwidgets.cpp src/speechwidgets.h
+    src/credentialdialogs.cpp src/credentialdialogs.h
     src/sttservice.cpp src/sttservice.h src/modelpacks.cpp src/modelpacks.h src/speechtypes.h
     resources/app.qrc)
-target_link_libraries(SpeechDesk PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::Multimedia Qt6::Svg)
+target_link_libraries(SpeechDesk PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::WebSockets Qt6::Multimedia Qt6::Svg speechdesk_credentials)
 if(WIN32)
     enable_language(RC)
     target_include_directories(SpeechDesk PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/resources)
@@ -47,7 +70,7 @@ if(SPEECHDESK_BUILD_TESTS)
     add_test(NAME textsegments COMMAND textsegments_test)
     add_executable(ttsclient_test tests/ttsclient_test.cpp src/ttsclient.cpp)
     target_include_directories(ttsclient_test PRIVATE src)
-    target_link_libraries(ttsclient_test PRIVATE Qt6::Core Qt6::Network Qt6::Test)
+    target_link_libraries(ttsclient_test PRIVATE Qt6::Core Qt6::Network Qt6::WebSockets Qt6::Test)
     add_test(NAME ttsclient COMMAND ttsclient_test)
     set_tests_properties(ttsclient PROPERTIES ENVIRONMENT "SPEECHDESK_FIXTURE=${CMAKE_CURRENT_SOURCE_DIR}/tests/tts_fixture_server.py;SPEECHDESK_PYTHON=${Python3_EXECUTABLE}")
     add_executable(sttservice_test tests/sttservice_test.cpp src/sttservice.cpp src/modelpacks.cpp)
@@ -59,22 +82,29 @@ if(SPEECHDESK_BUILD_TESTS)
     add_test(NAME modelpacks COMMAND modelpacks_test)
     add_executable(providerprofiles_test tests/providerprofiles_test.cpp
         src/settingsdialog.cpp src/settingsdialog.h src/modelpacks.cpp src/modelpacks.h
+        src/credentialdialogs.cpp src/credentialdialogs.h
         src/ttsclient.cpp src/ttsclient.h)
     target_include_directories(providerprofiles_test PRIVATE src)
-    target_link_libraries(providerprofiles_test PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::Test)
+    target_link_libraries(providerprofiles_test PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::WebSockets Qt6::Test speechdesk_credentials)
     add_test(NAME providerprofiles COMMAND providerprofiles_test)
     set_tests_properties(providerprofiles PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    add_executable(credentialstore_test tests/credentialstore_test.cpp)
+    target_link_libraries(credentialstore_test PRIVATE Qt6::Test speechdesk_credentials)
+    add_test(NAME credentialstore COMMAND credentialstore_test)
     if(NOT WIN32)
         add_executable(ui_flow_test tests/ui_flow_test.cpp
             src/mainwindow.cpp src/mainwindow.h src/numberededitor.cpp src/numberededitor.h
             src/settingsdialog.cpp src/settingsdialog.h src/textsegments.cpp
             src/audiomerger.cpp src/audiomerger.h src/ttsclient.cpp src/ttsclient.h
+            src/speechwidgets.cpp src/speechwidgets.h
+            src/credentialdialogs.cpp src/credentialdialogs.h
             src/sttservice.cpp src/sttservice.h src/modelpacks.cpp src/modelpacks.h resources/app.qrc)
         target_include_directories(ui_flow_test PRIVATE src)
-        target_link_libraries(ui_flow_test PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::Multimedia Qt6::Svg Qt6::DBus Qt6::Test)
+        target_link_libraries(ui_flow_test PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::WebSockets Qt6::Multimedia Qt6::Svg Qt6::DBus Qt6::Test speechdesk_credentials)
         add_test(NAME ui_profiles COMMAND ui_flow_test
             openRouterVoicesFollowSelectedModel unifiedEditorFitsMinimumSizeWithDictation
-            profileEditsSurviveSwitching cleanStartupAndThemesPreserveTextModificationState)
+            profileEditsSurviveSwitching cleanStartupAndThemesPreserveTextModificationState
+            microphoneMeterIsCenteredAndLiveButtonKeepsState lockingOneProfilePreservesOtherSessionKeys)
         set_tests_properties(ui_profiles PROPERTIES ENVIRONMENT
             "QT_QPA_PLATFORM=offscreen;QT_MEDIA_BACKEND=ffmpeg;SPEECHDESK_FIXTURE=${CMAKE_CURRENT_SOURCE_DIR}/tests/tts_fixture_server.py;SPEECHDESK_PYTHON=${Python3_EXECUTABLE}")
         # Playback integration cases require an actual or virtual audio output.

@@ -73,7 +73,7 @@ private slots:
         QSignalSpy playerFailures(&window.m_player, &QMediaPlayer::errorOccurred);
         window.startSpeech();
         QTRY_VERIFY_WITH_TIMEOUT(window.m_player.playbackState() == QMediaPlayer::PlayingState, 5000);
-        QVERIFY(window.m_active); QCOMPARE(window.m_segments.size(), 2);
+        QVERIFY(window.m_active); QCOMPARE(window.m_segments.size(), 2);QVERIFY(window.m_status->text().startsWith("Reading part "));
         QVERIFY(!window.m_cues[0].isEmpty());
         // The UI must use actual server times, not a word-rate estimate.
         window.updateHighlight(50);
@@ -87,7 +87,7 @@ private slots:
         QVERIFY(qAbs(window.m_player.position() - paused) <= 25);
         window.pauseSpeech(); QVERIFY(!window.m_paused);
         QTRY_VERIFY_WITH_TIMEOUT(!window.m_active, 5000);
-        QVERIFY2(window.m_cacheComplete, qPrintable(window.m_status->text()));
+        QVERIFY2(window.m_cacheComplete, qPrintable(window.m_status->text()));QVERIFY(!window.m_status->text().contains("Reading part"));
         QCOMPARE(audio.size(), 2); QCOMPARE(failures.size(), 0); QCOMPARE(playerFailures.size(), 0);
         QVERIFY(window.m_text->extraSelections().isEmpty());
         QVERIFY(window.m_export->isEnabled());
@@ -197,6 +197,33 @@ private slots:
             const QRect bounds(control->mapTo(window.centralWidget(), QPoint()), control->size());
             QVERIFY2(area.contains(bounds), qPrintable(control->objectName()));
         }
+    }
+    void microphoneMeterIsCenteredAndLiveButtonKeepsState() {
+        MainWindow window;window.showDemo(true);window.resize(680,540);window.show();
+        QCoreApplication::processEvents();
+        QVERIFY(window.m_level->isVisible());QVERIFY(window.m_live->isCheckable());
+        QCOMPARE(window.m_live->height(),window.m_record->height());
+        QCOMPARE(window.m_live->height(),window.m_transcribeFile->height());
+        auto *bar=window.m_status->parentWidget();
+        const auto centered=[&]{return qAbs(window.m_level->mapTo(bar,window.m_level->rect().center()).x()-bar->rect().center().x())<=1;};
+        QVERIFY(centered());
+        window.m_status->setText("A much longer dictation status message to exercise asymmetric label widths.");
+        window.m_recordTime->setText("12:34");QCoreApplication::processEvents();QVERIFY(centered());
+        const bool before=window.m_live->isChecked();window.m_live->click();QCOMPARE(window.m_live->isChecked(),!before);
+        window.m_live->click();QCOMPARE(window.m_live->isChecked(),before);
+        window.m_level->setValue(85);QCOMPARE(window.m_level->value(),85);
+        window.updateSttControls();QCOMPARE(window.m_level->value(),0);
+        window.m_dictate->setChecked(false);QVERIFY(!window.m_level->isVisible());
+    }
+    void lockingOneProfilePreservesOtherSessionKeys() {
+        MainWindow window;window.m_demo=true;
+        auto first=serverProfileForProvider("openrouter");first["apiKey"]="first-test-key";
+        auto second=serverProfileForProvider("elevenlabs");second["apiKey"]="second-test-key";
+        window.m_settings["profiles"]=QJsonArray{first,second};window.updateProfileChoices();
+        window.lockProfileCredential(first.value("id").toString());
+        const auto profiles=window.m_settings.value("profiles").toArray();
+        QVERIFY(profiles.first().toObject().value("apiKey").toString().isEmpty());
+        QCOMPARE(profiles.last().toObject().value("apiKey").toString(),QString("second-test-key"));
     }
     void dictationReplacesOnlySelectionAndCreatesOneUndoStep() {
         MainWindow window; prepare(window);
