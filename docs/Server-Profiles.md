@@ -1,3 +1,7 @@
+# Built-in and server speech profiles
+
+**Built-in / Offline** uses the bundled Pocket TTS or Kokoro model and its preset voices. It does not use a server address or API key. Model and voice discovery is local. The remaining sections describe server profiles.
+
 # SpeechDesk server profiles
 
 Profiles describe how SpeechDesk connects to a speech service. They do not install a model, start a server, or make a text-chat endpoint synthesize audio. Use **Settings → Servers** for ordinary connection fields and **Advanced…** for documented JSON mappings.

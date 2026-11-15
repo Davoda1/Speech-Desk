@@ -37,7 +37,7 @@ jobs:
   native-assets:
     name: Reconstruct pinned native dependencies
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -47,6 +47,8 @@ jobs:
           python-version: '3.12'
       - name: Download verified models and build native engines
         run: python vendor/tools/bootstrap_native.py --platform all --jobs 3
+      - name: Prepare verified bundled CPU speech models and runtimes
+        run: python vendor/tts/prepare_assets.py --output vendor/assets/tts --cache .cache/tts-downloads --platform all
       - name: Preserve executable modes for platform builds
         run: tar -czf native-assets.tar.gz -C vendor assets
       - uses: actions/upload-artifact@v7.0.2
@@ -59,7 +61,7 @@ jobs:
     name: Package ${{ matrix.platform }}
     needs: native-assets
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+    timeout-minutes: 35
     strategy:
       fail-fast: false
       matrix:
@@ -141,6 +143,8 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: python packaging/package_linux.py --binary build/speechdesk --qt "$QT_ROOT_DIR" --assets vendor/assets --output staging/linux
+      - name: Verify real offline CPU synthesis from staged runtime
+        run: python packaging/verify_tts.py --assets staging/${{ matrix.platform }}/resources/tts-assets
       - name: Archive packages and validate layout
         run: python packaging/archive_release.py --platform ${{ matrix.platform }} --runtime staging/${{ matrix.platform }} --output dist
       - uses: actions/upload-artifact@v7.0.2
@@ -172,12 +176,12 @@ jobs:
           python packaging/archive_release.py --platform checksums --output dist
       - uses: actions/upload-artifact@v7.0.2
         with:
-          name: SpeechDesk-1.1.1-release-files
+          name: SpeechDesk-2.0.0-release-files
           path: dist/*
           compression-level: 0
           retention-days: 14
-  draft-release:
-    name: Attach verified packages to draft release
+  publish-release:
+    name: Publish verified release packages
     needs: assemble
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -189,7 +193,7 @@ jobs:
           persist-credentials: false
       - uses: actions/download-artifact@v8.0.2
         with:
-          name: SpeechDesk-1.1.1-release-files
+          name: SpeechDesk-2.0.0-release-files
           path: dist
       - name: Verify checksums and attach assets
         env:
@@ -198,10 +202,16 @@ jobs:
         shell: bash
         run: |
           (cd dist && sha256sum --check SHA256SUM.txt)
-          if gh release view v1.1.1 --json isDraft --jq .isDraft > release-state.txt 2>/dev/null; then
+          if gh release view v2.0.0 --json isDraft --jq .isDraft > release-state.txt 2>/dev/null; then
             test "$(cat release-state.txt)" = true || { echo "Refusing to replace a published release."; exit 1; }
-            gh release edit v1.1.1 --draft --target "$GITHUB_SHA" --title "SpeechDesk 1.1.1" --notes-file .github/RELEASE_TEMPLATE.md
+            gh release edit v2.0.0 --draft --target "$GITHUB_SHA" --title "SpeechDesk 2.0.0" --notes-file .github/RELEASE_TEMPLATE.md
           else
-            gh release create v1.1.1 --draft --target "$GITHUB_SHA" --title "SpeechDesk 1.1.1" --notes-file .github/RELEASE_TEMPLATE.md
+            gh release create v2.0.0 --draft --target "$GITHUB_SHA" --title "SpeechDesk 2.0.0" --notes-file .github/RELEASE_TEMPLATE.md
           fi
-          gh release upload v1.1.1 dist/* --clobber
+          gh release upload v2.0.0 dist/* --clobber
+
+      - name: Publish completed release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release edit v2.0.0 --draft=false --latest

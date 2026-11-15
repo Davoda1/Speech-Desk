@@ -11,6 +11,7 @@ import json
 import re
 import shutil
 import subprocess
+from stage_tts import stage as stage_tts
 
 SOURCE = Path(__file__).resolve().parents[1]
 MODELS = ("whistle.cact", "ggml-tiny-q5_1.bin", "ggml-base-q5_1.bin", "ggml-small-q5_1.bin")
@@ -86,6 +87,7 @@ def stage(args):
             copy(source, out / "licenses" / source.name)
     if (args.assets / 'build-manifest.json').is_file():
         copy(args.assets / 'build-manifest.json', out / 'native-build-manifest.json')
+    stage_tts(args.assets / "tts", "win32", out / "resources/tts-assets")
     (out / "qt.conf").write_text("[Paths]\nPrefix=.\nPlugins=plugins\n", encoding="utf-8")
     source_files = [SOURCE / "CMakeLists.txt", *sorted((SOURCE / "src").glob("*")),
                     *sorted((SOURCE / "resources").glob("*"))]
@@ -94,7 +96,7 @@ def stage(args):
     qt_version = (qt / "mkspecs/qconfig.pri").read_text(errors="replace")
     match = re.search(r"^QT_VERSION\s*=\s*(\S+)", qt_version, re.MULTILINE)
     manifest = {
-        "application": "SpeechDesk", "version": "1.1.1", "platform": "windows-x64",
+        "application": "SpeechDesk", "version": "2.0.0", "platform": "windows-x64",
         "qt_version": match.group(1) if match else "unknown",
         "compiler": subprocess.check_output([args.compiler, "--version"], text=True).splitlines()[0],
         "source_provenance": "Source archives and build-manifest.json",

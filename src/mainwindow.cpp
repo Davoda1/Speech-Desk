@@ -5,6 +5,7 @@
 #include "credentialstore.h"
 #include "credentialdialogs.h"
 #include "providerlifecycle.h"
+#include "builtinttscatalog.h"
 #include <QApplication>
 #include <QBoxLayout>
 #include <QGridLayout>
@@ -261,7 +262,10 @@ QString MainWindow::configDirectory()
 void MainWindow::loadSettings()
 {
     QFile f(QDir(configDirectory()).filePath("settings.json"));if(f.open(QIODevice::ReadOnly)&&f.size()<4*1024*1024)m_settings=QJsonDocument::fromJson(f.readAll()).object();
-    if(m_settings.value("profiles").toArray().isEmpty())m_settings["profiles"]=QJsonArray{defaultServerProfile()};
+    auto profiles=m_settings.value("profiles").toArray();bool builtin=false;
+    for(const auto &p:profiles)if(p.toObject().value("provider").toString()=="builtin")builtin=true;
+    if(!builtin)profiles.append(serverProfileForProvider("builtin"));
+    m_settings["profiles"]=profiles;
 }
 void MainWindow::saveSettings()
 {
@@ -368,7 +372,7 @@ QWidget *MainWindow::buildTts()
     auto choicePanel=new QWidget;choicePanel->setObjectName("speechChoices");auto choices=new CenteredDictationLayout(choicePanel,true);choices->setContentsMargins(0,0,0,0);choices->setSpacing(12);
     m_server=new FullTextComboBox;m_server->setObjectName("speechServer");m_model=new FullTextComboBox;m_model->setObjectName("speechModel");m_model->setEditable(true);m_model->setInsertPolicy(QComboBox::NoInsert);m_model->lineEdit()->setPlaceholderText("Server default model");m_voice=new FullTextComboBox;m_voice->setObjectName("speechVoice");m_voice->setEditable(true);m_voice->setInsertPolicy(QComboBox::NoInsert);m_voice->lineEdit()->setPlaceholderText("Server default voice");
     for(auto box:{m_server,m_model,m_voice}){auto policy=box->sizePolicy();policy.setHorizontalPolicy(QSizePolicy::Expanding);box->setSizePolicy(policy);}
-    choices->addWidget(field("Server",m_server));choices->addWidget(field("Model",m_model));choices->addWidget(field("Voice",m_voice));auto setup=tool("Configure","Configure speech servers");choices->addWidget(setup);choices->itemAt(choices->count()-1)->setAlignment(Qt::AlignBottom);connect(setup,&QToolButton::clicked,this,[this]{configure(true);});l->addWidget(choicePanel);
+    choices->addWidget(field("Provider",m_server));choices->addWidget(field("Model",m_model));choices->addWidget(field("Voice",m_voice));auto setup=tool("Configure","Configure speech providers");choices->addWidget(setup);choices->itemAt(choices->count()-1)->setAlignment(Qt::AlignBottom);connect(setup,&QToolButton::clicked,this,[this]{configure(true);});l->addWidget(choicePanel);
     connect(m_server,&QComboBox::currentIndexChanged,this,[this](int i){m_settings["selectedProfile"]=i;updateVoiceChoices();});
     auto editorCard=card();auto el=new QVBoxLayout(editorCard);el->setContentsMargins(0,0,0,0);el->setSpacing(0);
     auto toolbar=new QHBoxLayout;toolbar->setContentsMargins(12,4,10,4);
@@ -432,18 +436,24 @@ void MainWindow::updateProfileChoices()
 }
 void MainWindow::updateVoiceChoices()
 {
-    auto profiles=m_settings["profiles"].toArray();int i=m_server->currentIndex();if(i<0||i>=profiles.size())return;auto p=profiles[i].toObject();QSignalBlocker b1(m_model),b2(m_voice);m_model->clear();m_voice->clear();auto discovery=p["discovery"].toObject();
+    auto profiles=m_settings["profiles"].toArray();int i=m_server->currentIndex();if(i<0||i>=profiles.size())return;auto p=currentServerProfile(profiles[i].toObject());QSignalBlocker b1(m_model),b2(m_voice);m_model->clear();m_voice->clear();auto discovery=p["discovery"].toObject();
     for(auto item:ProviderLifecycle::modelChoices(p,discovery["models"].toArray())){auto o=item.toObject();m_model->addItem(o["id"].toString());}
     for(auto item:discovery["voices"].toArray()){auto o=item.toObject();m_voice->addItem(o["id"].toString());}
     const bool allowed=!p.value("modelRetired").toBool()&&ProviderLifecycle::modelAllowed(p,p.value("model").toString());
+    const bool builtin=p.value("provider").toString()=="builtin";
+    m_model->lineEdit()->setReadOnly(builtin);m_voice->lineEdit()->setReadOnly(builtin);
     m_model->setCurrentText(allowed?p["model"].toString():QString());
     m_model->lineEdit()->setPlaceholderText(allowed?"Server default model":"Retired model — choose replacement");
-    m_voice->setCurrentText(p["voice"].toString());updateModelVoices();m_server->setToolTip(p["baseUrl"].toString());
-    if(!m_active)m_status->setText(!allowed?"This OpenAI model is retired. Select a supported model to continue.":(p["baseUrl"].toString().isEmpty()?"Add a speech server in Settings to begin.":"Ready · Text will be sent to "+p["name"].toString("the selected server")+" when you press Speak."));
+    m_voice->setCurrentText(p["voice"].toString());updateModelVoices();m_server->setToolTip(builtin?"Bundled offline CPU speech":p["baseUrl"].toString());
+    if(!m_active)m_status->setText(builtin?"Ready · Speech is generated offline on this computer.":!allowed?"This OpenAI model is retired. Select a supported model to continue.":(p["baseUrl"].toString().isEmpty()?"Add a speech server in Settings to begin.":"Ready · Text will be sent to "+p["name"].toString("the selected server")+" when you press Speak."));
 }
 void MainWindow::updateModelVoices(bool modelChanged)
 {
     const auto profile=selectedProfile();
+    if(profile.value("provider").toString()=="builtin") {
+        const QString previous=m_voice->currentText();QSignalBlocker block(m_voice);m_voice->clear();m_voice->addItems(builtinTtsVoiceIds(m_model->currentText()));
+        if(m_voice->findText(previous)>=0)m_voice->setCurrentText(previous);else if(m_voice->count())m_voice->setCurrentIndex(0);return;
+    }
     if(profile.value("adapter").toString()!="openrouter"&&!ProviderLifecycle::isOfficialOpenAi(profile))return;
     const QString previous=m_voice->currentText();
     QSignalBlocker block(m_voice);m_voice->clear();
@@ -481,6 +491,7 @@ void MainWindow::lockProfileCredential(const QString &id)
 bool MainWindow::unlockSelectedCredential()
 {
     const auto profile=selectedProfile();
+    if(profile.value("provider").toString()=="builtin")return true;
     if(!profile.value("apiKey").toString().trimmed().isEmpty())return true;
     const QString directory=QDir(configDirectory()).filePath("credentials");CredentialStore credentials(directory);
     if(!credentials.exists(profile.value("id").toString())) {
@@ -495,7 +506,7 @@ bool MainWindow::unlockSelectedCredential()
 }
 void MainWindow::startSpeech()
 {
-    if(m_active||m_dictationActive||m_sttBusy||m_recording||m_merger.busy())return;auto profile=selectedProfile();QUrl url(profile["baseUrl"].toString());if(!url.isValid()||url.host().isEmpty()||!(url.scheme()=="http"||url.scheme()=="https")){configure(true);return;}
+    if(m_active||m_dictationActive||m_sttBusy||m_recording||m_merger.busy())return;auto profile=selectedProfile();QUrl url(profile["baseUrl"].toString());if(profile.value("provider").toString()!="builtin"&&(!url.isValid()||url.host().isEmpty()||!(url.scheme()=="http"||url.scheme()=="https"))){configure(true);return;}
     auto cursor=m_text->textCursor();QString text=cursor.hasSelection()?cursor.selectedText().replace(QChar::ParagraphSeparator,'\n'):m_text->toPlainText();int offset=cursor.hasSelection()?cursor.selectionStart():0;if(text.trimmed().isEmpty())return;
     if(text.size()>200000){m_status->setText("Select a shorter passage (up to 200,000 characters) for one playback session.");return;}
     if(!ProviderLifecycle::modelAllowed(profile,profile.value("model").toString())){m_status->setText("This OpenAI model is retired. Choose gpt-realtime-2.1-mini or another supported model in Settings.");return;}

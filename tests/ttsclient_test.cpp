@@ -257,6 +257,46 @@ private slots:
         QVERIFY(ready.wait(3000)); QTest::qWait(1800);
         QCOMPARE(ready.size(), 1); QCOMPARE(failure.size(), 0);
     }
+    void builtinCatalogNeedsNoServer() {
+        TtsClient client;
+        QSignalSpy done(&client, &TtsClient::probeFinished), failure(&client, &TtsClient::error);
+        client.setProfile({{"provider", "builtin"}, {"adapter", "builtin"}, {"model", "pocket"}, {"voice", "alba"}});
+        client.probe();
+        QCOMPARE(done.size(), 1); QCOMPARE(failure.size(), 0);
+        auto info = done.takeFirst()[0].toJsonObject();
+        QCOMPARE(info["models"].toArray().size(), 2);
+        QCOMPARE(info["voices"].toArray().size(), 6);
+        QCOMPARE(info["voices"].toArray().first().toObject()["id"].toString(), QString("alba"));
+        client.setProfile({{"provider", "builtin"}, {"adapter", "builtin"}, {"model", "kokoro"}, {"voice", "af_heart"}});
+        client.probe();
+        QCOMPARE(done.size(), 1); QCOMPARE(failure.size(), 0);
+        info = done.first()[0].toJsonObject();
+        QCOMPARE(info["voices"].toArray().size(), 28);
+        QCOMPARE(info["voices"].toArray().first().toObject()["id"].toString(), QString("af_heart"));
+        QVERIFY(!info["supportsTimings"].toBool());
+    }
+    void builtinRejectsInvalidSelection() {
+        TtsClient client;
+        QSignalSpy ready(&client, &TtsClient::audioReady), failure(&client, &TtsClient::error);
+        client.setProfile({{"provider", "builtin"}, {"adapter", "builtin"}, {"model", "unknown"}, {"voice", "alba"}});
+        client.synthesize("Local selection check.");
+        QCOMPARE(failure.size(), 1); QCOMPARE(ready.size(), 0);
+        QVERIFY(failure.takeFirst()[0].toString().contains("Pocket TTS or Kokoro"));
+        client.setProfile({{"provider", "builtin"}, {"adapter", "builtin"}, {"model", "kokoro"}, {"voice", "alba"}});
+        client.synthesize("Local selection check.");
+        QCOMPARE(failure.size(), 1); QCOMPARE(ready.size(), 0);
+        QVERIFY(failure.first()[0].toString().contains("bundled voice"));
+    }
+    void switchingToBuiltinSuppressesRemoteAudio() {
+        TtsClient client; client.setProfile(connection("/delay"));
+        QSignalSpy ready(&client, &TtsClient::audioReady), failure(&client, &TtsClient::error);
+        client.synthesize("Old remote text."); QTest::qWait(20);
+        client.setProfile({{"provider", "builtin"}, {"adapter", "builtin"}, {"model", "pocket"}, {"voice", "alba"}});
+        QSignalSpy done(&client, &TtsClient::probeFinished);
+        client.probe(); QCOMPARE(done.size(), 1);
+        QTest::qWait(1800);
+        QCOMPARE(ready.size(), 0); QCOMPARE(failure.size(), 0);
+    }
     void requestTimeout() {
         TtsClient client; auto profile = connection("/delay"); profile["timeoutSeconds"] = 1;
         client.setProfile(profile); QSignalSpy failure(&client, &TtsClient::error);

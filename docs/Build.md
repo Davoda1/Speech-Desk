@@ -1,6 +1,6 @@
 # Build SpeechDesk
 
-SpeechDesk 1.1.1 uses C++17, Qt, and a pinned static libsodium build. Build the crypto dependency before configuring the application. The commands below run from the repository root.
+SpeechDesk 2.0.0 uses C++17, Qt, and a pinned static libsodium build. Build the crypto dependency before configuring the application. The commands below run from the repository root.
 
 ## Requirements
 
@@ -10,7 +10,7 @@ SpeechDesk 1.1.1 uses C++17, Qt, and a pinned static libsodium build. Build the 
 - Python **3.12 or later** for the complete build and native-asset workflow. Hashing helpers use `hashlib.file_digest`, which requires at least Python 3.11; native source/bootstrap helpers require Python 3.12 for the supported archive-extraction path. Use 3.12 or later for all commands here.
 - On Windows, the Qt MinGW compiler and MSYS2's shell and `make` utilities. The release toolchain uses MinGW 13.1.0. Use the same compiler family for libsodium and SpeechDesk.
 
-The installed application does not require Python, MSYS2, or a separately installed Qt SDK. Those are build-time tools.
+The installed application bundles its own Python interpreter for offline TTS. No system Python, MSYS2, or separately installed Qt SDK is required.
 
 ## Build on Linux
 
@@ -72,3 +72,14 @@ Reconfiguring after the download registers the resource-staging target. For Wind
 ## Distribution packages
 
 Use the repository's **Release packages** workflow for Windows and Linux packages with Qt runtimes, recognition assets, source archives, and the single checksum manifest. The scripts under `packaging/` perform the corresponding staging and layout checks. Passing the fixture tests does not replace a physical microphone and speaker check on the intended desktop.
+
+## Add bundled speech assets
+
+The existing Reader speech worker and exact model/runtime pins are in `vendor/tts/`. Build the platform payload and stage it beside the development binary:
+
+```sh
+python3 vendor/tts/prepare_assets.py --platform linux-x64 --output vendor/assets/tts
+python3 packaging/stage_tts.py --assets vendor/assets/tts --platform linux --destination build/resources/tts-assets
+```
+
+Use `win32-x64` and `--platform win32` for Windows. The source archive includes reconstruction tools and required support files; runtime archives include the model weights and bundled Python. Downloads are verified by SHA-256. Release packaging stages and validates this same payload.

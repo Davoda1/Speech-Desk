@@ -31,12 +31,12 @@ private:
     QJsonArray m_profiles;
     int m_current=-1;
     class QTabWidget *m_tabs;
-    QComboBox *m_theme,*m_profilesBox,*m_provider,*m_adapter;
+    QComboBox *m_theme,*m_profilesBox,*m_provider,*m_adapter,*m_builtinModel,*m_builtinVoice;
     QLineEdit *m_name,*m_url,*m_key,*m_model,*m_voice;
     QSpinBox *m_fontSize,*m_threads,*m_chunkSize,*m_timeout;
     QCheckBox *m_follow,*m_highlight,*m_saveKey;
     QLabel *m_connectionInfo,*m_modelPackInfo,*m_providerInfo,*m_credentialInfo,*m_lifecycleInfo;
-    class QPushButton *m_unlockKey,*m_lockKey,*m_replaceKey;
+    class QPushButton *m_unlockKey,*m_lockKey,*m_replaceKey,*m_advanced;
     QString m_credentialDirectory;
     CredentialStore m_credentials;
     QMap<QString,QByteArray> m_pendingCredentials;

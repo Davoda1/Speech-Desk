@@ -4,8 +4,8 @@ Two separate packs add higher-capacity Whisper models to local dictation. Each m
 
 | Pack | Model weights | SHA-256 of weights |
 | --- | --- | --- |
-| `SpeechDesk-1.1.1-Whisper-Large-v3-Turbo-Expansion.zip` | 574,041,195 bytes | `394221709cd5ad1f40c46e6031ca61bce88931e6e088c188294c6d5a55ffa7e2` |
-| `SpeechDesk-1.1.1-Whisper-Large-v3-Expansion.zip` | 1,081,140,203 bytes | `d75795ecff3f83b5faa89d1900604ad8c780abd5739fae406de19f23ecd98ad1` |
+| `SpeechDesk-2.0.0-Whisper-Large-v3-Turbo-Expansion.zip` | 574,041,195 bytes | `394221709cd5ad1f40c46e6031ca61bce88931e6e088c188294c6d5a55ffa7e2` |
+| `SpeechDesk-2.0.0-Whisper-Large-v3-Expansion.zip` | 1,081,140,203 bytes | `d75795ecff3f83b5faa89d1900604ad8c780abd5739fae406de19f23ecd98ad1` |
 
 ## Install
 

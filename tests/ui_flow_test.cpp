@@ -294,7 +294,11 @@ private slots:
         QRect bounds;
         for(QPushButton *button:{window.m_record,window.m_cancelStt,window.m_transcribeFile,static_cast<QPushButton *>(window.m_live)})bounds=bounds.united(QRect(button->mapTo(actions,QPoint()),button->size()));
         QVERIFY(qAbs(bounds.center().x()-actions->rect().center().x())<=1);
-        // A wrapped editable selection can still be focused and edited normally.
+        // A wrapped editable service selection can still be focused and edited normally.
+        // Fresh installs now select the fixed offline preset catalog; this part
+        // specifically exercises custom service model IDs.
+        window.m_settings["profiles"]=QJsonArray{defaultServerProfile()};
+        window.m_settings["selectedProfile"]=0;window.updateProfileChoices();
         window.m_dictate->setChecked(false);
         const QString longModel="provider/"+QString("long-model-identifier-").repeated(6);
         window.m_model->setCurrentText(longModel);window.m_text->setFocus();QCoreApplication::processEvents();

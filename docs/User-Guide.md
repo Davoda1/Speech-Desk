@@ -6,6 +6,12 @@ Type or paste into the editor, or choose **Open TXT…** for a UTF-8 `.txt` or `
 
 Choose **Speak** to read all text, or select a passage first. Text used by an active task is protected from simultaneous edits. Speech is split at sentence and paragraph boundaries; long sentences are divided at the profile's section limit. The default is 500 characters. Section boundaries may affect phrasing.
 
+## Built-in speech
+
+Select **Built-in / Offline** in the existing speech profile controls. Choose **Pocket TTS** with one of six English voices, or **Kokoro** with one of 28 English voices. New installations use Pocket TTS / Alba. Upgrades preserve existing profiles and selection. The bundled models run on the CPU and need no account, network connection, server, GPU or separate Python installation. Choose another provider in Settings to use hosted or self-hosted speech.
+
+Local synthesis uses the same section playback, highlighting and Save audio controls. Stop cancels the local worker; model loading and generation can take longer on slower CPUs. Keep the complete runtime package together, including resources/tts-assets. Missing assets produce an error instead of a download.
+
 ## Listen and save audio
 
 **Pause/Resume** controls local playback. **Stop** ends playback and cancels pending client work. Pausing playback does not pause remote generation. Remote services may continue accepted requests after cancellation.

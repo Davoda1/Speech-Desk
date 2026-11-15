@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(SpeechDesk VERSION 1.1.1 LANGUAGES CXX)
+project(SpeechDesk VERSION 2.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
@@ -32,7 +32,7 @@ add_executable(SpeechDesk WIN32
     src/settingsdialog.cpp src/settingsdialog.h
     src/textsegments.cpp src/textsegments.h
     src/audiomerger.cpp src/audiomerger.h
-    src/ttsclient.cpp src/ttsclient.h
+    src/ttsclient.cpp src/localtts.cpp src/localtts.h src/ttsclient.h
     src/speechwidgets.cpp src/speechwidgets.h
     src/credentialdialogs.cpp src/credentialdialogs.h
     src/sttservice.cpp src/sttservice.h src/modelpacks.cpp src/modelpacks.h src/speechtypes.h
@@ -68,7 +68,7 @@ if(SPEECHDESK_BUILD_TESTS)
     target_include_directories(textsegments_test PRIVATE src)
     target_link_libraries(textsegments_test PRIVATE Qt6::Core Qt6::Test)
     add_test(NAME textsegments COMMAND textsegments_test)
-    add_executable(ttsclient_test tests/ttsclient_test.cpp src/ttsclient.cpp)
+    add_executable(ttsclient_test tests/ttsclient_test.cpp src/ttsclient.cpp src/localtts.cpp src/localtts.h)
     target_include_directories(ttsclient_test PRIVATE src)
     target_link_libraries(ttsclient_test PRIVATE Qt6::Core Qt6::Network Qt6::WebSockets Qt6::Test)
     add_test(NAME ttsclient COMMAND ttsclient_test)
@@ -83,7 +83,7 @@ if(SPEECHDESK_BUILD_TESTS)
     add_executable(providerprofiles_test tests/providerprofiles_test.cpp
         src/settingsdialog.cpp src/settingsdialog.h src/modelpacks.cpp src/modelpacks.h
         src/credentialdialogs.cpp src/credentialdialogs.h
-        src/ttsclient.cpp src/ttsclient.h)
+        src/ttsclient.cpp src/localtts.cpp src/localtts.h src/ttsclient.h)
     target_include_directories(providerprofiles_test PRIVATE src)
     target_link_libraries(providerprofiles_test PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::WebSockets Qt6::Test speechdesk_credentials)
     add_test(NAME providerprofiles COMMAND providerprofiles_test)
@@ -94,7 +94,7 @@ if(SPEECHDESK_BUILD_TESTS)
     add_executable(ui_flow_test tests/ui_flow_test.cpp
         src/mainwindow.cpp src/mainwindow.h src/numberededitor.cpp src/numberededitor.h
         src/settingsdialog.cpp src/settingsdialog.h src/textsegments.cpp
-        src/audiomerger.cpp src/audiomerger.h src/ttsclient.cpp src/ttsclient.h
+        src/audiomerger.cpp src/audiomerger.h src/ttsclient.cpp src/localtts.cpp src/localtts.h src/ttsclient.h
         src/speechwidgets.cpp src/speechwidgets.h
         src/credentialdialogs.cpp src/credentialdialogs.h
         src/sttservice.cpp src/sttservice.h src/modelpacks.cpp src/modelpacks.h resources/app.qrc)

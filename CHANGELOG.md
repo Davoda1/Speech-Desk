@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.0
+
+- Add bundled Pocket TTS and Kokoro offline CPU speech through existing provider controls.
+- Preserve existing profiles and reuse playback, highlighting, cancellation and WAV export.
+- Include verified model/runtime assets and refresh online/offline documentation and screenshots.
+
 ## 1.1.0
 
 - Add optional per-profile encrypted API-key storage with passphrase unlocking, explicit locking and replacement of an inaccessible credential.

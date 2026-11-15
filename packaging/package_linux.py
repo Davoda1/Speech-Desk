@@ -2,6 +2,7 @@
 """Stage the real native Linux executable and its redistributable Qt runtime."""
 import argparse,json,os,re,shutil,subprocess
 from pathlib import Path
+from stage_tts import stage as stage_tts
 p=argparse.ArgumentParser();p.add_argument('--binary',type=Path,required=True);p.add_argument('--qt',type=Path,required=True);p.add_argument('--assets',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--sodium-manifest',type=Path);args=p.parse_args()
 src=Path(__file__).resolve().parents[1];out=args.output.resolve();out.mkdir(parents=True,exist_ok=True)
 for name in ('lib','plugins','resources/bin','resources/models','licenses'): (out/name).mkdir(parents=True,exist_ok=True)
@@ -12,6 +13,7 @@ for f in (args.assets/'engines/linux').iterdir():
  if f.is_file() and not f.name.startswith('.'):shutil.copy2(f,out/'resources/bin'/f.name);os.chmod(out/'resources/bin'/f.name,0o755)
 for f in (src/'vendor/licenses').iterdir():
  if f.is_file() and not f.name.startswith('.'):shutil.copy2(f,out/'licenses'/f.name)
+stage_tts(args.assets/'tts','linux',out/'resources/tts-assets')
 plugins={'platforms':['libqxcb.so','libqoffscreen.so','libqminimal.so'],'multimedia':['libffmpegmediaplugin.so'],'iconengines':['libqsvgicon.so'],'imageformats':['libqsvg.so','libqjpeg.so','libqgif.so','libqico.so'],'tls':['libqopensslbackend.so','libqcertonlybackend.so']}
 seeds=[args.binary.resolve()]
 for directory,names in plugins.items():

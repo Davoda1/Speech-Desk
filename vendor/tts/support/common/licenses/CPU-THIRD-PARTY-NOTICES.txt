@@ -1,0 +1,14 @@
+ThreadShelf bundled CPU speech components
+
+Pocket TTS: Kyutai Labs, official v4.0.1/native asset 3.3.0, MIT.
+Pocket English October 2026 model: CC-BY-4.0; voice attribution and model card supplied.
+Preset Marius and Javert embeddings: CC0-1.0; other preset voices: CC-BY-4.0.
+Kokoro 82M v1.0 full precision model and voice pack: Apache-2.0.
+Kokoro ONNX wrapper: 0.6.1, MIT. ONNX Runtime: 1.31.1, MIT.
+eSpeak NG 1.52.0 and phonemizer 3.4.0: GPL-3.0; complete matching sources supplied in sources/.
+eSpeakng-loader 0.2.4 wrapper: MIT, bundled eSpeak binary GPL-3.0.
+Python 3.11.18 standalone runtime and included wheel dependencies retain upstream licenses in runtime directories.
+Microsoft Visual C++ redistributable runtime: Microsoft redistributable license supplied.
+
+Pinned download URLs, revisions and SHA256 digests are supplied in the source package tts/cpu/assets-manifest.json.
+No remote API, downloaded voice cloning model, or GPU dependency is used by these bundled engines.

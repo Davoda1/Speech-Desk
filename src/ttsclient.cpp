@@ -1,5 +1,7 @@
 #include "ttsclient.h"
 #include "providerlifecycle.h"
+#include "localtts.h"
+#include "builtinttscatalog.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -172,6 +174,12 @@ QJsonObject resolveSchema(const QJsonObject &document, QJsonObject schema, int d
 TtsClient::TtsClient(QObject *parent) : QObject(parent), m_network(this)
 {
     qRegisterMetaType<QVector<WordCue>>();
+    m_local = new LocalTts(this);
+    connect(m_local, &LocalTts::status, this, &TtsClient::status);
+    connect(m_local, &LocalTts::error, this, &TtsClient::error);
+    connect(m_local, &LocalTts::audioReady, this, [this](QByteArray audio) {
+        if (!m_destroying) emit audioReady(std::move(audio), "wav", {});
+    });
 }
 
 TtsClient::~TtsClient()
@@ -201,6 +209,7 @@ QJsonObject TtsClient::profile() const { return m_profile; }
 void TtsClient::cancel()
 {
     ++m_generation;
+    m_local->cancel();
     if (auto *socket = m_realtimeSocket) {
         m_realtimeSocket = nullptr;
         socket->disconnect(this);
@@ -326,6 +335,13 @@ void TtsClient::probe()
 {
     cancel();
     const auto generation = m_generation;
+    if (m_profile.value("provider").toString() == "builtin" || m_profile.value("adapter").toString() == "builtin") {
+        const auto info = builtinTtsCapabilities(m_profile.value("model").toString("pocket"));
+        emit status(tr("Bundled model and voice catalog loaded. No network discovery is needed."));
+        emit capabilities(info);
+        emit probeFinished(info);
+        return;
+    }
     QString failure;
     if (baseUrl(&failure).isEmpty()) { emit error(failure); return; }
     emit status(tr("Checking server capabilities…"));
@@ -417,6 +433,10 @@ void TtsClient::synthesize(const QString &text)
     cancel();
     const auto generation = m_generation;
     if (text.trimmed().isEmpty()) { emit error(tr("Enter some text to read.")); return; }
+    if (m_profile.value("provider").toString() == "builtin" || m_profile.value("adapter").toString() == "builtin") {
+        m_local->synthesize(m_profile, text);
+        return;
+    }
     const auto model = m_profile.value("model").toString();
     if (!ProviderLifecycle::modelAllowed(m_profile, model)) {
         emit error(tr("This OpenAI speech model retired on 6 January 2027. Select gpt-realtime-2.1-mini or another supported provider."));

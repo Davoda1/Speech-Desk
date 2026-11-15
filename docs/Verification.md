@@ -1,47 +1,35 @@
 # Verification scope
 
-## Version 1.1.1 verification scope
+## SpeechDesk 2.0.0
 
-This patch focuses on readable speech and dictation labels, a dictation selector row spanning the panel, and a compact action row centered beneath it. Geometry checks cover the inset panel at compact and wider window sizes. CI records the Windows/Linux build results, focused tests and package checks for the exact submitted commit. A screenshot documents the interface; it does not establish provider compatibility or physical audio-device operation.
+This release adds bundled Pocket TTS and Kokoro to the existing speech pipeline. The established CTest groups cover text segmentation, HTTP/WebSocket providers, cancellation, model-pack import, encrypted credentials and UI state. Focused additions exercise offline model/voice catalogs, provider switching and failure/cancellation behavior using the same test framework.
 
-## Version 1.1.0 local validation baseline
+Real CPU generation is checked separately using the pinned runtime assets. The worker and model pins come from the current ThreadShelf Reader implementation. SpeechDesk receives completed PCM16 WAV sections; it does not concatenate raw streaming chunks. Audio integrity checks cover generated WAV format, clipping/discontinuities and preservation through Qt decoding/export. The native Linux Release build used Qt 6.8.2 and pinned libsodium 1.0.22. All six CTest groups passed, including the added offline provider and transport cases. Both engines also passed generation through the actual TtsClient adapter; cancel/retry completed without stale output or leftover session folders.
 
-The following local checks were recorded for version 1.1.0. They are a historical baseline, not a claim that a later commit has passed. Consult the corresponding CI run for each release's exact results.
-
-| Local check | Result |
-| --- | --- |
-| Linux Release build, Qt 6.4.2 and pinned libsodium 1.0.22 | Passed |
-| Windows x64 cross-build, Qt 6.8.3 and MinGW GCC 13 | Passed; native Windows execution remains pending |
-| `textsegments`, `ttsclient`, `modelpacks`, `providerprofiles`, `credentialstore`, `ui_profiles` | All six focused groups passed |
-| Credential integrity and rollback | Wrong passphrase, modified ciphertext, invalid parameters, profile/origin binding, independent replacement and damaged-file rollback covered |
-| UI state and minimum size | Centered meter, Live text state, selected-profile locking and 680 × 540 layout covered |
-| Public source and documentation scan | No supplied API keys or internal workspace references found |
-
-The OpenAI Realtime adapter is tested against a deterministic local protocol fixture. No live OpenAI account request is claimed. Transcript matching compares the provider's reported text with the submitted text; it does not independently transcribe returned audio or establish pronunciation accuracy. Punctuation and numeric-format differences are deliberately rejected by the conservative check.
-
-The Windows portable package has been cross-built and its layout, dependencies and bundled model hashes checked. This is not a native Windows runtime test. Startup, encrypted-key storage and audio-device operation still need validation on Windows.
-
-No physical microphone, speaker or private speech server is available to these automated checks. The local UI checks establish layout and state behavior, not physical audio-device operation. Recognition remains local and existing model weights are unchanged.
-
-A live OpenRouter request through the production TTS client was previously verified for 1.0.0 (`elevenlabs/eleven-flash-v2.5`, voice `george`, returned MP3). That historical result does not establish new OpenAI Realtime behavior or current account availability. Direct-provider and physical-device checks must be made on the intended setup.
-
-## Automated and device checks
-
-The repository contains focused automated checks for text segmentation, speech HTTP/WebSocket adapters, cancellation, optional-model import, encrypted-credential integrity and UI state transitions. Service fixtures use synthetic audio and deterministic responses; they verify client behavior rather than real voices or provider availability.
-
-Run the standard checks with:
+## Reproduce the focused tests
 
 ```sh
 python3 vendor/tools/build_sodium.py --output build/deps/sodium --cc gcc --jobs 3
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DSPEECHDESK_BUILD_TESTS=ON
-cmake --build build --parallel 4
+cmake --build build --parallel 3
 ctest --test-dir build --output-on-failure --timeout 90
 ```
 
-Build/CI logs identify the tested commit, operating system and toolchain. A successful build is not a physical microphone/speaker test. The headless `ui_profiles` subset runs on Windows and Linux in CTest; the additional playback cases in the UI test executable require an actual or virtual audio output.
+The release workflow runs the existing native Windows/Linux builds and tests, verifies the pinned speech assets, generates real speech with both engines, checks package layout and produces one checksum manifest. Software workflow completion is recorded by GitHub after dispatch; a locally passed Linux build is not a native Windows runtime result.
 
-A live provider check establishes compatibility only for the endpoint, model, voice and options used in that request. A fixture or one provider's successful request does not establish compatibility with another service. API keys are not needed for standard CI and must never be included in logs or repository files.
+Hosted adapters use deterministic local fixtures; no live paid-provider request is claimed. Physical microphone/speaker behavior and subjective listening quality require the target audio setup. Word highlighting uses genuine provider timing data; built-in speech uses passage highlighting.
 
-Runtime release validation should confirm archive layout, included Qt/runtime dependencies, default model hashes, optional-model exclusion, executable metadata and the single release checksum file. Test microphone permission, recording and playback on the target desktop before relying on them.
+## Pre-upload audio integrity checks
 
-This project does not claim exhaustive dependency auditing, universal service compatibility, comparative model accuracy, bit-for-bit build reproducibility or testing on every supported operating-system version.
+The exact current Reader worker and model pins were used. Four multi-sentence samples exercised numbers, sibilants and pauses through the actual TtsClient adapter, then through the existing AudioMerger WAV export.
+
+| Model / voice | Audio duration | Clipped samples | Worker WAV preserved | Export sample comparison |
+| --- | ---: | ---: | --- | --- |
+| pocket-alba | 16.680 s | 0 | Byte-for-byte | Exact PCM match |
+| pocket-marius | 17.560 s | 0 | Byte-for-byte | Exact PCM match |
+| kokoro-heart | 17.941 s | 0 | Byte-for-byte | Exact PCM match |
+| kokoro-george | 19.115 s | 0 | Byte-for-byte | Exact PCM match |
+
+All four exports had zero sample discontinuity at the tested section join. Exported PCM matched an independent FFmpeg conversion sample-for-sample. Qt omits 32 resampler tail samples per section (0.667 ms at 48 kHz); their magnitude was at most one PCM16 unit. Original playback WAV files remain intact. These objective checks found no waveform corruption in the tested paths; no subjective listening assessment is claimed.
+
+Copyright © 2026 davoda1.

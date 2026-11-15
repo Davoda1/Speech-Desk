@@ -1,8 +1,8 @@
 # SpeechDesk
 
-**A native desktop reader with hosted text-to-speech and local dictation.**
+**A native desktop reader with offline and hosted text-to-speech and local dictation.**
 
-SpeechDesk 1.1.1 brings typing, text files, microphone dictation and speech playback into one editor. Choose OpenAI, ElevenLabs, OpenRouter or a compatible speech server; listen inside the application, follow the highlighted passage and save the completed reading as WAV.
+SpeechDesk 2.0.0 brings typing, text files, microphone dictation and speech playback into one editor. Choose bundled Pocket TTS or Kokoro, OpenAI, ElevenLabs, OpenRouter or a compatible speech server; listen inside the application, follow the highlighted passage and save the completed reading as WAV.
 
 [Releases](https://github.com/Davoda1/Speech-Desk/releases) · [Online manual](https://davoda1.github.io/Speech-Desk-Manual/) · [User guide](docs/User-Guide.md) · [Speech providers](docs/Server-Profiles.md) · [Optional models](docs/Optional-Models.md)
 
@@ -10,11 +10,12 @@ SpeechDesk 1.1.1 brings typing, text files, microphone dictation and speech play
 | --- | --- |
 | ![SpeechDesk dark theme](docs/extras/screenshot-dark.png) | ![SpeechDesk light theme](docs/extras/screenshot-light.png) |
 
-Version 1.1.1 refines dictation control widths and centering. The offline guide and release also include dark and light screenshots of dictation, server settings and About.
+Version 2.0.0 adds built-in CPU speech with Pocket TTS (six English voices) and Kokoro (28 English voices). Models and their runtimes are bundled; offline speech needs no account, server, GPU, system Python or first-use download. The existing editor and playback controls work with both local and hosted speech.
 
 ## Features
 
 - One editor for typed, pasted, imported and dictated text.
+- Built-in Pocket TTS and Kokoro CPU speech with 34 English voice presets.
 - OpenAI, ElevenLabs and OpenRouter profiles, plus local or remote self-hosted speech services.
 - Entirely local speech recognition with bundled Whistle and multilingual Whisper Tiny, Base and Small models.
 - Optional Whisper Large v3 Turbo and Large v3 models, imported from separate ZIP packs.
@@ -26,7 +27,7 @@ Version 1.1.1 refines dictation control widths and centering. The offline guide 
 - A centered microphone meter and a checkable Live text button for local dictation.
 - No application telemetry. API keys remain session-only unless encrypted saving is explicitly enabled.
 
-TTS requires a configured service that actually generates speech. A generic text-chat endpoint is not sufficient. Hosted services use the user's own account and may charge for requests; speech-to-text audio stays on the local computer.
+Hosted TTS requires a configured service that actually generates speech. Built-in speech works entirely offline. A generic text-chat endpoint is not sufficient. Hosted services use the user's own account and may charge for requests; speech-to-text audio stays on the local computer.
 
 ## Install
 
@@ -34,27 +35,28 @@ Choose an available package from [Releases](https://github.com/Davoda1/Speech-De
 
 | Platform | Package | Start |
 | --- | --- | --- |
-| Windows 10/11 x64 | [SpeechDesk-1.1.1-Windows-x64.zip](https://github.com/Davoda1/Speech-Desk/releases/download/v1.1.1/SpeechDesk-1.1.1-Windows-x64.zip) | Extract everything and open the root `SpeechDesk.exe` |
-| Linux x86-64 | [SpeechDesk-1.1.1-Linux-amd64.tar.gz](https://github.com/Davoda1/Speech-Desk/releases/download/v1.1.1/SpeechDesk-1.1.1-Linux-amd64.tar.gz) | Extract and run the top-level `speechdesk` executable |
-| Debian/Ubuntu amd64 | [SpeechDesk-1.1.1-Linux-amd64.deb](https://github.com/Davoda1/Speech-Desk/releases/download/v1.1.1/SpeechDesk-1.1.1-Linux-amd64.deb) | Install with a package manager; launch SpeechDesk |
+| Windows 10/11 x64 | [SpeechDesk-2.0.0-Windows-x64.zip](https://github.com/Davoda1/Speech-Desk/releases/download/v2.0.0/SpeechDesk-2.0.0-Windows-x64.zip) | Extract everything and open the root `SpeechDesk.exe` |
+| Linux x86-64 | [SpeechDesk-2.0.0-Linux-amd64.tar.gz](https://github.com/Davoda1/Speech-Desk/releases/download/v2.0.0/SpeechDesk-2.0.0-Linux-amd64.tar.gz) | Extract and run the top-level `speechdesk` executable |
+| Debian/Ubuntu amd64 | [SpeechDesk-2.0.0-Linux-amd64.deb](https://github.com/Davoda1/Speech-Desk/releases/download/v2.0.0/SpeechDesk-2.0.0-Linux-amd64.deb) | Install with a package manager; launch SpeechDesk |
 
-Runtime packages include Qt and the four default recognition models. Keep the executable, libraries, plugins and resources together. No Python or separate Qt installation is required to run a packaged application. Windows Unicode recognition paths require Windows 10 version 1903 or newer. Linux needs a graphical desktop, audio service and the system dependencies listed by the package; see [runtime details](docs/Native-Engines.md).
+Runtime packages include Qt, both offline speech models and their CPU runtimes, and the four default recognition models. Keep the executable, libraries, plugins and resources together. No Python or separate Qt installation is required to run a packaged application. Windows Unicode recognition paths require Windows 10 version 1903 or newer. Linux needs a graphical desktop, audio service and the system dependencies listed by the package; see [runtime details](docs/Native-Engines.md).
 
 ```sh
-sudo apt install ./SpeechDesk-1.1.1-Linux-amd64.deb
+sudo apt install ./SpeechDesk-2.0.0-Linux-amd64.deb
 ```
 
 The Debian package installs a real executable at `/usr/bin/speechdesk`. Portable packages start the real executable directly, without a launcher script.
 
 ## First reading
 
-1. Open **Settings → Servers** and choose a provider preset, or enter a self-hosted server address.
-2. Enter your API key when required, then select or enter a model and voice supported by that service. Enable encrypted saving only if you want to retain that profile's key between sessions; choose a strong passphrase when prompted.
-3. Use **Detect capabilities** where supported. Discovery does not generate speech or establish synthesis compatibility.
-4. Save settings, type or open text, and press **Speak**. Select a passage first to read only that selection.
-5. Use **Dictate** to insert locally recognized words into the same editor. Dictation does not start TTS automatically.
+1. Choose **Built-in / Offline** for local speech, then Pocket TTS or Kokoro and a voice. New installations start with Pocket TTS / Alba. Existing profiles and the selected provider are preserved on upgrade.
+2. For a hosted provider, open **Settings → Servers** and choose a provider preset, or enter a self-hosted server address.
+3. Enter your API key when required, then select or enter a model and voice supported by that service. Enable encrypted saving only if you want to retain that profile's key between sessions; choose a strong passphrase when prompted.
+4. Use **Detect capabilities** where supported. Discovery does not generate speech or establish synthesis compatibility.
+5. Save settings, type or open text, and press **Speak**. Select a passage first to read only that selection.
+6. Use **Dictate** to insert locally recognized words into the same editor. Dictation does not start TTS automatically.
 
-Playback is AI-generated speech. The selected TTS service receives the text requested for synthesis. Each section is buffered before playback, with the next section prefetched where possible. Stop cancels client work but cannot guarantee that a remote service stops processing or billing an accepted request.
+Playback is AI-generated speech. Built-in speech keeps text on this computer; a selected hosted TTS service receives the text requested for synthesis. Each section is buffered before playback, with the next section prefetched where possible. Stop cancels client work but cannot guarantee that a remote service stops processing or billing an accepted request.
 
 ## Build from source
 
@@ -67,7 +69,7 @@ cmake --build build --parallel 4
 ctest --test-dir build --output-on-failure --timeout 90
 ```
 
-See [build instructions](docs/Build.md) for the pinned dependency setup and Windows commands. This builds the application and fixture tests. Local dictation additionally requires the pinned recognition assets and the audio helper. On a Linux build host, run `python3 vendor/tools/bootstrap_native.py --platform all`, then `cmake --build build --target stage_resources`. [Native engines](docs/Native-Engines.md) describes acquisition, source reconstruction and staging. Build and packaging scripts live in `packaging/` and `vendor/tools/`; release workflows are defined in `.github/workflows/`. The manually dispatched **Release packages** workflow creates application packages, complete model add-ons, source archives, and one checksum manifest, then attaches them to a draft release for review.
+See [build instructions](docs/Build.md) for the pinned dependency setup and Windows commands. This builds the application and fixture tests. Local dictation additionally requires the pinned recognition assets and the audio helper. On a Linux build host, run `python3 vendor/tools/bootstrap_native.py --platform all`, then `cmake --build build --target stage_resources`. [Native engines](docs/Native-Engines.md) describes acquisition, source reconstruction and staging. Build and packaging scripts live in `packaging/` and `vendor/tools/`; release workflows are defined in `.github/workflows/`. The manually dispatched **Release packages** workflow creates application packages, complete model add-ons, source archives, and one checksum manifest, then publishes the release after the build, test, package and checksum steps succeed.
 
 ## Privacy, compatibility and support
 

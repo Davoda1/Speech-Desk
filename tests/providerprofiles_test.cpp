@@ -59,6 +59,42 @@ private slots:
         QVERIFY(!current.contains("discovery"));
         qunsetenv("SPEECHDESK_CONFIG_DIR");
     }
+    void builtinProfileOffersOfflineVoicesWithoutCredentials() {
+        QTemporaryDir config;QVERIFY(config.isValid());
+        SettingsDialog dialog(QJsonObject{},nullptr,config.filePath("credentials"));
+        auto profile=dialog.resultSettings().value("profiles").toArray().first().toObject();
+        QCOMPARE(profile.value("provider").toString(),QString("builtin"));
+        QCOMPARE(profile.value("model").toString(),QString("pocket"));
+        QCOMPARE(profile.value("voice").toString(),QString("alba"));
+        auto *model=dialog.findChild<QComboBox *>("builtinModel");
+        auto *voice=dialog.findChild<QComboBox *>("builtinVoice");
+        QVERIFY(model);QVERIFY(voice);QCOMPARE(voice->count(),6);
+        QVERIFY(!dialog.findChild<QLineEdit *>("providerAddress")->isEnabled());
+        QVERIFY(!dialog.findChild<QLineEdit *>("providerApiKey")->isEnabled());
+        model->setCurrentText("kokoro");QCOMPARE(voice->count(),28);
+        QCOMPARE(voice->currentText(),QString("af_heart"));voice->setCurrentText("bm_lewis");
+        profile=dialog.resultSettings().value("profiles").toArray().first().toObject();
+        QCOMPARE(profile.value("model").toString(),QString("kokoro"));
+        QCOMPARE(profile.value("voice").toString(),QString("bm_lewis"));
+        QVERIFY(profile.value("baseUrl").toString().isEmpty());
+        QVERIFY(profile.value("apiKey").toString().isEmpty());
+        QString error;QVERIFY2(dialog.commitChanges(&error),qPrintable(error));
+    }
+    void switchingToOfflineClearsHostedSecrets() {
+        QTemporaryDir config;QVERIFY(config.isValid());
+        auto profile=serverProfileForProvider("elevenlabs");profile["apiKey"]="test-only-secret";
+        profile["headers"]=QJsonObject{{"XI-API-KEY","test-only-secret"}};
+        SettingsDialog dialog(QJsonObject{{"profiles",QJsonArray{profile}}},nullptr,config.filePath("credentials"));
+        auto *selector=dialog.findChild<QComboBox *>("speechProvider");QVERIFY(selector);
+        const int index=selector->findData("builtin");QVERIFY(index>=0);selector->setCurrentIndex(index);
+        QVERIFY(QMetaObject::invokeMethod(selector,"activated",Qt::DirectConnection,Q_ARG(int,index)));
+        const auto current=dialog.resultSettings().value("profiles").toArray().first().toObject();
+        QCOMPARE(current.value("provider").toString(),QString("builtin"));
+        QCOMPARE(current.value("adapter").toString(),QString("builtin"));
+        QCOMPARE(current.value("id"),profile.value("id"));
+        QVERIFY(current.value("apiKey").toString().isEmpty());
+        QVERIFY(current.value("baseUrl").toString().isEmpty());QVERIFY(!current.contains("headers"));
+    }
     void changingPrivateServerAddressClearsSessionKey() {
         QTemporaryDir config;
         QVERIFY(config.isValid());qputenv("SPEECHDESK_CONFIG_DIR",config.path().toUtf8());

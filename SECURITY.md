@@ -1,15 +1,15 @@
 # Security and privacy
 
-SpeechDesk 1.1.x is the supported release line. Report security problems using the repository's private vulnerability-reporting option when it is available. If it is unavailable, open an issue requesting a private reporting channel without posting sensitive details, exploit payloads or credentials.
+SpeechDesk 2.0.x is the supported release line. Report security problems using the repository's private vulnerability-reporting option when it is available. If it is unavailable, open an issue requesting a private reporting channel without posting sensitive details, exploit payloads or credentials.
 
 ## Data handling
 
 - Speech-to-text runs locally. Microphone recordings are not sent to a hosted recognition service.
-- TTS sends the requested text and synthesis options to the selected speech service. That service controls its own logging, retention and billing.
+- Built-in TTS runs on this computer without network access. Hosted TTS sends the requested text and synthesis options to the selected speech service; that service controls its own logging, retention and billing.
 - API keys remain session-only by default. Optional encrypted storage keeps a separate credential for each profile. Settings and profile exports omit plaintext API keys and standard authentication headers, including ElevenLabs' `xi-api-key`.
 - Custom headers and request-template/body fields may be saved. Never place credentials in those fields or in URLs.
 - Text and generated audio are saved only through the explicit save actions. Temporary audio is removed on normal cleanup; abnormal termination may leave temporary files.
-- The application does not include telemetry or automatically download recognition models.
+- The application does not include telemetry or automatically download speech or recognition models.
 
 HTTP redirects are not followed. Endpoint paths and returned audio URLs must remain on the configured origin; normal TLS certificate checks remain enabled. Use HTTPS for hosted services. Review imported profiles before making a request.
 

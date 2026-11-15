@@ -1,8 +1,14 @@
 # Native engines and model provenance
 
-SpeechDesk uses local CPU recognition engines and a native microphone/audio decoder. Python is used for building and packaging, not by the installed application. Runtime packages contain four default recognition models; Git and source archives exclude downloaded model weights and generated engine binaries.
+SpeechDesk uses local CPU recognition engines and a native microphone/audio decoder. A private Python interpreter is bundled for offline TTS; no system Python installation is required. Runtime packages contain four default recognition models; Git and source archives exclude downloaded model weights and generated engine binaries.
 
-## Default models
+## Bundled speech models
+
+The built-in provider uses the same pinned worker and assets as ThreadShelf Reader: Pocket TTS standard English 100M (float32 inference; Alba, Marius, Javert, Anna, Charles and Vera) and Kokoro 82M v1.0 ONNX FP32 (28 English presets). Both run on the CPU. `vendor/tts/assets-manifest.json` records each model and runtime URL, revision, size and SHA-256; support files are pinned separately. The bundled worker, Python interpreter, ONNX Runtime and eSpeak NG require no runtime downloads.
+
+`resources/tts-assets` contains the model weights, Pocket native engine, Python runtime/packages, worker script, license notices and corresponding source archives. SpeechDesk invokes the worker with explicit paths, offline and telemetry-disabled settings and bounded output; completed PCM16 WAV sections enter the existing playback/export path. Stop cancels the worker process tree. Model setup commands are in [Build](Build.md).
+
+## Default recognition models
 
 | Model | Weight file | Bytes | License |
 | --- | --- | ---: | --- |

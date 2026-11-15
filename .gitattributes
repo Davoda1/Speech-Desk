@@ -1,0 +1,3 @@
+# Preserve hash-pinned third-party support files byte for byte.
+vendor/tts/support/** -text
+*.rtf binary

@@ -2,6 +2,7 @@
 #include "modelpacks.h"
 #include "credentialdialogs.h"
 #include "providerlifecycle.h"
+#include "builtinttscatalog.h"
 #include <QDir>
 #include <QStandardPaths>
 #include <QTabWidget>
@@ -56,7 +57,12 @@ QJsonObject defaultServerProfile()
 QJsonObject serverProfileForProvider(const QString &provider)
 {
     auto p=defaultServerProfile();
-    if(provider=="openai") {
+    if(provider=="builtin") {
+        p["provider"]="builtin";p["name"]="Built-in / Offline";p["adapter"]="builtin";
+        p["model"]="pocket";p["voice"]="alba";p["baseUrl"]="";p["apiKey"]="";
+        p["speechPath"]="";p["modelsPath"]="";p["voicesPath"]="";
+        p["discovery"]=builtinTtsCapabilities("pocket");
+    } else if(provider=="openai") {
         p["provider"]="openai";p["name"]="OpenAI";p["baseUrl"]="https://api.openai.com";
         p["adapter"]="openai";p["model"]="gpt-realtime-2.1-mini";p["voice"]="marin";p["realtimePath"]="/v1/realtime";
         p["voicesPath"]="";p["responseFormat"]="wav";
@@ -75,6 +81,10 @@ QJsonObject serverProfileForProvider(const QString &provider)
 }
 QJsonObject currentServerProfile(QJsonObject p)
 {
+    if(p.value("provider").toString()=="builtin") {
+        p["adapter"]="builtin";p["baseUrl"]="";p["apiKey"]="";
+        p["discovery"]=builtinTtsCapabilities(p.value("model").toString());
+    }
     if(!ProviderLifecycle::modelAllowed(p,p.value("model").toString())){p["model"]="";p["modelRetired"]=true;}
     if(p.contains("discovery")) {
         auto discovery=p.value("discovery").toObject();discovery["models"]=ProviderLifecycle::modelChoices(p,discovery.value("models").toArray());p["discovery"]=discovery;
@@ -110,21 +120,24 @@ SettingsDialog::SettingsDialog(const QJsonObject &settings,QWidget *parent,const
     auto row=new QHBoxLayout;m_profilesBox=new QComboBox;m_profilesBox->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);row->addWidget(m_profilesBox,1);
     auto add=new QPushButton("Add");auto remove=new QPushButton("Remove");row->addWidget(add);row->addWidget(remove);sv->addLayout(row);
     auto form=new QFormLayout;form->setSpacing(7);form->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);form->setRowWrapPolicy(QFormLayout::WrapLongRows);
-    m_provider=new QComboBox;m_provider->setObjectName("speechProvider");m_provider->addItem("Local / remote private server","selfhosted");m_provider->addItem("OpenAI","openai");m_provider->addItem("ElevenLabs","elevenlabs");m_provider->addItem("OpenRouter","openrouter");form->addRow("Provider",m_provider);
+    m_provider=new QComboBox;m_provider->setObjectName("speechProvider");m_provider->addItem("Built-in / Offline","builtin");m_provider->addItem("Local / remote private server","selfhosted");m_provider->addItem("OpenAI","openai");m_provider->addItem("ElevenLabs","elevenlabs");m_provider->addItem("OpenRouter","openrouter");form->addRow("Provider",m_provider);
     m_name=new QLineEdit;m_name->setObjectName("profileName");form->addRow("Profile name",m_name);
     m_url=new QLineEdit;m_url->setObjectName("providerAddress");m_url->setPlaceholderText("http://your-server:8000");form->addRow("Server address",m_url);
-    m_adapter=new QComboBox;m_adapter->addItem("Automatic / compatible speech API","auto");m_adapter->addItem("OpenAI-compatible speech","openai");m_adapter->addItem("vLLM-Omni","vllm");m_adapter->addItem("Kokoro-FastAPI","kokoro");m_adapter->addItem("Custom HTTP / JSON / SSE","custom");m_adapter->addItem("ElevenLabs speech","elevenlabs");m_adapter->addItem("OpenRouter speech","openrouter");form->addRow("Connection type",m_adapter);
+    m_adapter=new QComboBox;m_adapter->addItem("Automatic / compatible speech API","auto");m_adapter->addItem("OpenAI-compatible speech","openai");m_adapter->addItem("vLLM-Omni","vllm");m_adapter->addItem("Kokoro-FastAPI","kokoro");m_adapter->addItem("Custom HTTP / JSON / SSE","custom");m_adapter->addItem("ElevenLabs speech","elevenlabs");m_adapter->addItem("OpenRouter speech","openrouter");m_adapter->addItem("Bundled CPU speech","builtin");form->addRow("Connection type",m_adapter);
     m_key=new QLineEdit;m_key->setObjectName("providerApiKey");m_key->setEchoMode(QLineEdit::Password);m_key->setPlaceholderText("Kept for this session only");m_key->setToolTip("API keys stay in memory unless you explicitly save an encrypted key. Plaintext keys are never written to settings or exported profiles.");form->addRow("API key",m_key);
     auto keyOptions=new QWidget;auto keyLayout=new QVBoxLayout(keyOptions);keyLayout->setContentsMargins(0,0,0,0);keyLayout->setSpacing(6);
     m_saveKey=new QCheckBox("Save API key encrypted");m_saveKey->setObjectName("saveEncryptedApiKey");keyLayout->addWidget(m_saveKey);
     auto keyActions=new QHBoxLayout;keyActions->setSpacing(6);m_unlockKey=new QPushButton("Unlock…");m_unlockKey->setObjectName("unlockApiKey");m_lockKey=new QPushButton("Lock now");m_lockKey->setObjectName("lockApiKey");m_replaceKey=new QPushButton("Replace saved key…");m_replaceKey->setObjectName("replaceApiKey");keyActions->addWidget(m_unlockKey);keyActions->addWidget(m_lockKey);keyActions->addWidget(m_replaceKey);keyActions->addStretch();keyLayout->addLayout(keyActions);
     m_credentialInfo=new QLabel;m_credentialInfo->setObjectName("credentialStatus");m_credentialInfo->setWordWrap(true);m_credentialInfo->setProperty("muted",true);keyLayout->addWidget(m_credentialInfo);form->addRow("Key protection",keyOptions);
-    auto mv=new QWidget;auto ml=new QHBoxLayout(mv);ml->setContentsMargins(0,0,0,0);m_model=new QLineEdit;m_model->setObjectName("providerModel");m_model->setPlaceholderText("Model ID");m_voice=new QLineEdit;m_voice->setObjectName("providerVoice");m_voice->setPlaceholderText("Voice ID");ml->addWidget(m_model);ml->addWidget(m_voice);form->addRow("Model / voice",mv);
+    auto mv=new QWidget;auto ml=new QHBoxLayout(mv);ml->setContentsMargins(0,0,0,0);m_model=new QLineEdit;m_model->setObjectName("providerModel");m_model->setPlaceholderText("Model ID");m_voice=new QLineEdit;m_voice->setObjectName("providerVoice");m_voice->setPlaceholderText("Voice ID");
+    m_builtinModel=new QComboBox;m_builtinModel->setObjectName("builtinModel");m_builtinModel->addItems({"pocket","kokoro"});
+    m_builtinVoice=new QComboBox;m_builtinVoice->setObjectName("builtinVoice");
+    ml->addWidget(m_builtinModel);ml->addWidget(m_builtinVoice);ml->addWidget(m_model);ml->addWidget(m_voice);form->addRow("Model / voice",mv);
     auto limits=new QWidget;auto ll=new QHBoxLayout(limits);ll->setContentsMargins(0,0,0,0);m_timeout=new QSpinBox;m_timeout->setRange(10,1800);m_timeout->setSuffix(" s timeout");m_chunkSize=new QSpinBox;m_chunkSize->setRange(80,8000);m_chunkSize->setSuffix(" characters / section");ll->addWidget(m_timeout);ll->addWidget(m_chunkSize);form->addRow("Request limits",limits);
     sv->addLayout(form);
     m_providerInfo=new QLabel;m_providerInfo->setObjectName("providerNotice");m_providerInfo->setWordWrap(true);m_providerInfo->setProperty("muted",true);sv->addWidget(m_providerInfo);
     m_lifecycleInfo=new QLabel;m_lifecycleInfo->setObjectName("providerLifecycleNotice");m_lifecycleInfo->setWordWrap(true);m_lifecycleInfo->setProperty("muted",true);sv->addWidget(m_lifecycleInfo);
-    auto controls=new QHBoxLayout;auto test=new QPushButton("Detect capabilities");test->setProperty("accent",true);controls->addWidget(test);auto advanced=new QPushButton("Advanced…");controls->addWidget(advanced);controls->addStretch();auto import=new QPushButton("Import…");auto exportButton=new QPushButton("Export…");controls->addWidget(import);controls->addWidget(exportButton);sv->addLayout(controls);
+    auto controls=new QHBoxLayout;auto test=new QPushButton("Detect capabilities");test->setProperty("accent",true);controls->addWidget(test);auto advanced=new QPushButton("Advanced…");m_advanced=advanced;controls->addWidget(advanced);controls->addStretch();auto import=new QPushButton("Import…");auto exportButton=new QPushButton("Export…");controls->addWidget(import);controls->addWidget(exportButton);sv->addLayout(controls);
     m_connectionInfo=new QLabel("Enter a server address, then detect its models, voices and supported features. You can always set the connection type manually.");m_connectionInfo->setWordWrap(true);m_connectionInfo->setProperty("muted",true);m_connectionInfo->setMinimumHeight(36);sv->addWidget(m_connectionInfo);sv->addStretch();
     auto serversScroll=new QScrollArea;serversScroll->setFrameShape(QFrame::NoFrame);serversScroll->setWidgetResizable(true);serversScroll->setWidget(servers);m_tabs->addTab(serversScroll,"Servers");
     auto recognition=new QWidget;auto st=new QFormLayout(recognition);st->setContentsMargins(20,24,20,20);st->setSpacing(18);
@@ -133,7 +146,7 @@ SettingsDialog::SettingsDialog(const QJsonObject &settings,QWidget *parent,const
     auto packs=new QPushButton("Import model pack…");packs->setObjectName("importModelPackButton");st->addRow("Optional dictation models",packs);connect(packs,&QPushButton::clicked,this,&SettingsDialog::importModelPack);
     m_modelPackInfo=new QLabel;m_modelPackInfo->setObjectName("modelPackInfo");m_modelPackInfo->setWordWrap(true);m_modelPackInfo->setProperty("muted",true);st->addRow(m_modelPackInfo);refreshModelPacks();
     auto packNote=new QLabel("Import the complete ZIP for the model you downloaded. Installed models appear in Dictate and remain installed when this dialog closes. Larger models may work best with Live text off.");packNote->setWordWrap(true);packNote->setProperty("muted",true);st->addRow(packNote);m_tabs->addTab(recognition,"Dictation");
-    auto about=new QWidget;about->setObjectName("aboutPage");auto ab=new QVBoxLayout(about);ab->setContentsMargins(24,24,24,24);auto title=new QLabel("SpeechDesk 1.1.1");title->setProperty("heading",true);ab->addWidget(title);auto description=new QLabel("Text to speech with OpenAI, ElevenLabs, OpenRouter or your own speech server.\n\nType, paste, open a text file or dictate into one editor. Generated speech plays inside SpeechDesk with passage highlighting.\n\nWhistle and Whisper provide local dictation. Optional larger models are available as separate ZIP add-ons.\n\nCopyright (c) 2026 davoda1. MIT License.\nThird-party components retain their own licenses.\n\nNo telemetry or automatic model downloads. Speech output is AI-generated.");description->setWordWrap(true);ab->addWidget(description);
+    auto about=new QWidget;about->setObjectName("aboutPage");auto ab=new QVBoxLayout(about);ab->setContentsMargins(24,24,24,24);auto title=new QLabel("SpeechDesk 2.0.0");title->setProperty("heading",true);ab->addWidget(title);auto description=new QLabel("Offline text to speech with Pocket TTS and Kokoro, or OpenAI, ElevenLabs, OpenRouter and your own speech server.\n\nType, paste, open a text file or dictate into one editor. Generated speech plays inside SpeechDesk with passage highlighting.\n\nWhistle and Whisper provide local dictation. Optional larger models are available as separate ZIP add-ons.\n\nCopyright (c) 2026 davoda1. MIT License.\nThird-party components retain their own licenses.\n\nNo telemetry or automatic model downloads. Speech output is AI-generated.");description->setWordWrap(true);ab->addWidget(description);
     ab->addSpacing(16);
     auto manualRow=new QHBoxLayout;manualRow->setSpacing(12);
     auto manualHint=new QLabel("Open the manual website in your browser for\nsetup instructions and help using SpeechDesk.");manualHint->setObjectName("manualHint");manualHint->setProperty("muted",true);manualHint->setFixedHeight(36);manualHint->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);manualRow->addWidget(manualHint,0,Qt::AlignVCenter);
@@ -142,10 +155,14 @@ SettingsDialog::SettingsDialog(const QJsonObject &settings,QWidget *parent,const
     ab->addStretch();m_tabs->addTab(about,"About");
     auto buttons=new QDialogButtonBox(QDialogButtonBox::Save|QDialogButtonBox::Cancel);outer->addWidget(buttons);
     connect(buttons,&QDialogButtonBox::accepted,this,&SettingsDialog::saveAndAccept);connect(buttons,&QDialogButtonBox::rejected,this,&QDialog::reject);
-    m_profiles=settings.value("profiles").toArray();if(m_profiles.isEmpty())m_profiles.append(defaultServerProfile());refreshProfiles(qBound(0,settings.value("selectedProfile").toInt(),int(m_profiles.size())-1));
+    m_profiles=settings.value("profiles").toArray();if(m_profiles.isEmpty())m_profiles.append(serverProfileForProvider("builtin"));refreshProfiles(qBound(0,settings.value("selectedProfile").toInt(),int(m_profiles.size())-1));
     connect(m_profilesBox,&QComboBox::currentIndexChanged,this,[this](int idx){storeProfile();loadProfile(idx);});
     connect(m_provider,&QComboBox::activated,this,&SettingsDialog::applyProvider);
     connect(m_model,&QLineEdit::textChanged,this,[this]{updateProviderInfo();});
+    connect(m_builtinModel,&QComboBox::currentTextChanged,this,[this](const QString &model){
+        m_model->setText(model);QSignalBlocker block(m_builtinVoice);m_builtinVoice->clear();m_builtinVoice->addItems(builtinTtsVoiceIds(model));m_voice->setText(m_builtinVoice->currentText());
+    });
+    connect(m_builtinVoice,&QComboBox::currentTextChanged,m_voice,&QLineEdit::setText);
     connect(m_key,&QLineEdit::textEdited,this,[this]{refreshCredentialControls();});
     connect(m_unlockKey,&QPushButton::clicked,this,[this]{unlockCurrentCredential();});
     connect(m_lockKey,&QPushButton::clicked,this,&SettingsDialog::lockCurrentCredential);
@@ -180,6 +197,7 @@ SettingsDialog::SettingsDialog(const QJsonObject &settings,QWidget *parent,const
     connect(&m_probe,&TtsClient::error,m_connectionInfo,&QLabel::setText);
     connect(&m_probe,&TtsClient::probeFinished,this,[this](const QJsonObject &info){
         if(m_current<0)return;auto p=m_profiles[m_current].toObject();p["discovery"]=info;p["discoveryBaseUrl"]=p["baseUrl"];p["discoverySpeechPath"]=p.value("speechPath").toString("/v1/audio/speech");m_profiles[m_current]=p;
+        if(p.value("provider").toString()=="builtin"){m_connectionInfo->setText(QString("Bundled CPU speech · %1 model(s), %2 voice(s) for %3. No network connection is used.").arg(info.value("models").toArray().size()).arg(info.value("voices").toArray().size()).arg(p.value("model").toString()));return;}
         QString message=info.value("reachable").toBool()?"Server responded. ":"No compatible discovery response. ";
         message+=QString("%1 model(s), %2 voice(s). ").arg(info.value("models").toArray().size()).arg(info.value("voices").toArray().size());
         message+=info.value("speechEndpointKnown").toBool()?"Speech endpoint found in the server description.":"Speech generation still needs a successful request; manual configuration remains available.";
@@ -203,11 +221,12 @@ void SettingsDialog::loadProfile(int index)
     m_key->setText(p.value("apiKey").toString());
     const bool modelAllowed=!p.value("modelRetired").toBool()&&ProviderLifecycle::modelAllowed(p,p.value("model").toString());
     m_model->setText(modelAllowed?p.value("model").toString():QString());m_model->setPlaceholderText(modelAllowed?"Model ID":"Retired model — choose replacement");m_voice->setText(p.value("voice").toString());
+    {QSignalBlocker b1(m_builtinModel),b2(m_builtinVoice);m_builtinModel->setCurrentText(p.value("model").toString());m_builtinVoice->clear();m_builtinVoice->addItems(builtinTtsVoiceIds(p.value("model").toString()));m_builtinVoice->setCurrentText(p.value("voice").toString());}
     m_adapter->setCurrentIndex(qMax(0,m_adapter->findData(p.value("adapter").toString("auto"))));
     m_timeout->setValue(p.value("timeoutSeconds").toInt(180));
     updateProviderInfo();
     m_chunkSize->setValue(p.value("maxChars").toInt(500));
-    m_connectionInfo->setText("Detect models and voices, or enter their IDs. Detection does not generate speech.");
+    m_connectionInfo->setText(provider=="builtin"?"Choose Pocket TTS or Kokoro and an English preset voice. Both run offline on your CPU.":"Detect models and voices, or enter their IDs. Detection does not generate speech.");
     m_connectionInfo->setToolTip({});refreshCredentialControls();
 }
 void SettingsDialog::storeProfile()
@@ -220,6 +239,7 @@ void SettingsDialog::storeProfile()
     p["apiKey"]=m_key->text();p["model"]=m_model->text().trimmed();p["voice"]=m_voice->text().trimmed();
     if(!p.value("model").toString().isEmpty()&&ProviderLifecycle::modelAllowed(p,p.value("model").toString()))p.remove("modelRetired");
     p["timeoutSeconds"]=m_timeout->value();p["maxChars"]=m_chunkSize->value();
+    if(p.value("provider").toString()=="builtin")p=currentServerProfile(p);
     m_profiles[m_current]=p;m_profilesBox->setItemText(m_current,p["name"].toString());
 }
 void SettingsDialog::applyProvider(int index)
@@ -234,16 +254,19 @@ void SettingsDialog::applyProvider(int index)
     auto p=serverProfileForProvider(provider);
     p["id"]=previous.value("id");
     const QString name=m_name->text().trimmed();
-    if(!name.isEmpty()&&!QStringList{"My speech server","New speech profile","OpenAI","ElevenLabs","OpenRouter"}.contains(name))p["name"]=name;
+    if(!name.isEmpty()&&!QStringList{"My speech server","New speech profile","Built-in / Offline","OpenAI","ElevenLabs","OpenRouter"}.contains(name))p["name"]=name;
     m_profiles[m_current]=p;
     refreshProfiles(m_current);
-    m_connectionInfo->setText("Provider preset applied. Enter this service's API key and review its model and voice before speaking.");
+    m_connectionInfo->setText(provider=="builtin"?"Offline preset applied. Choose a bundled model and voice; no API key is needed.":"Provider preset applied. Enter this service's API key and review its model and voice before speaking.");
 }
 void SettingsDialog::updateProviderInfo()
 {
     const QString provider=m_provider->currentData().toString();
-    const bool hosted=provider!="selfhosted";
-    m_adapter->setEnabled(!hosted);m_url->setReadOnly(hosted);
+    const bool builtin=provider=="builtin";
+    const bool hosted=provider!="selfhosted"&&!builtin;
+    m_model->setVisible(!builtin);m_voice->setVisible(!builtin);m_builtinModel->setVisible(builtin);m_builtinVoice->setVisible(builtin);
+    m_url->setEnabled(!builtin);m_key->setEnabled(!builtin);m_saveKey->setEnabled(!builtin);m_advanced->setEnabled(!builtin);
+    m_adapter->setEnabled(!hosted&&!builtin);m_url->setReadOnly(hosted);
     m_chunkSize->setMaximum(provider=="openai"?4096:8000);
 
     m_url->setToolTip(hosted?"This preset uses the provider's service address. Use a private-server profile for another endpoint.":"Address of your speech service. Changing it clears the current API key.");
@@ -260,7 +283,7 @@ void SettingsDialog::updateProviderInfo()
     m_lifecycleInfo->setText(legacy
         ?(!hiddenRetired&&ProviderLifecycle::modelAllowed(profile,displayedModel)?"This OpenAI Speech API model retires on 6 January 2027. Select gpt-realtime-2.1-mini to use OpenAI Realtime.":"This OpenAI Speech API model is retired and cannot be used. Select gpt-realtime-2.1-mini or another supported model.")
         :"OpenAI Realtime · SpeechDesk reads your text using the selected model and voice.");
-    m_providerInfo->setText(hosted
+    m_providerInfo->setText(builtin?"Text stays on this computer. Pocket TTS and Kokoro generate English speech locally on the CPU. Models and runtimes are bundled.":hosted
         ?QString("Text is sent to %1 for AI-generated speech; API usage may incur charges. Dictation stays on this computer.").arg(m_provider->currentText())
         :"Text is sent to your configured service for AI-generated speech. Dictation stays on this computer.");
 }
@@ -280,6 +303,8 @@ void SettingsDialog::stageCredentialRemoval(const QString &id)
 void SettingsDialog::refreshCredentialControls()
 {
     if(m_current<0||m_current>=m_profiles.size())return;
+    const bool builtin=m_provider->currentData().toString()=="builtin";
+    if(builtin){QSignalBlocker blocked(m_saveKey);m_saveKey->setChecked(false);m_unlockKey->setEnabled(false);m_lockKey->setEnabled(false);m_replaceKey->setEnabled(false);m_key->setPlaceholderText("Not needed for offline speech");m_credentialInfo->setText("No API key or account is required.");return;}
     const QString id=m_profiles[m_current].toObject().value("id").toString();
     const bool saved=hasSavedCredential(id),unlocked=!m_key->text().trimmed().isEmpty();
     QSignalBlocker blocked(m_saveKey);m_saveKey->setChecked(saved);
@@ -294,6 +319,7 @@ bool SettingsDialog::unlockCurrentCredential()
 {
     if(m_current<0||m_current>=m_profiles.size())return false;
     storeProfile();const auto profile=m_profiles[m_current].toObject();const auto id=profile.value("id").toString();
+    if(profile.value("provider").toString()=="builtin")return true;
     if(!m_key->text().trimmed().isEmpty()||!hasSavedCredential(id))return true;
     QString key;
     if(!unlockCredentialForProfile(this,profile,m_credentialDirectory,&key,m_pendingCredentials.value(id)))return false;
@@ -326,6 +352,7 @@ bool SettingsDialog::commitChanges(QString *error)
     storeProfile();const auto settings=resultSettings();
     for(const auto &entry:settings.value("profiles").toArray()) {
         const auto profile=entry.toObject();
+        if(profile.value("provider").toString()=="builtin"&&!builtinTtsVoiceIds(profile.value("model").toString()).contains(profile.value("voice").toString())) {if(error)*error="Choose a bundled model and one of its preset voices.";return false;}
         if(!ProviderLifecycle::modelAllowed(profile,profile.value("model").toString())) {
             if(error)*error=QString("The profile %1 uses a retired OpenAI model. Choose gpt-realtime-2.1-mini or another supported model before saving.").arg(profile.value("name").toString("Speech profile"));
             return false;

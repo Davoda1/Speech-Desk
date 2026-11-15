@@ -11,6 +11,7 @@
 
 class QNetworkReply;
 class QWebSocket;
+class LocalTts;
 
 // Async, single-operation speech client. Starting a probe or synthesis cancels
 // the previous operation; cancellation never emits stale audio or probe results.
@@ -49,6 +50,7 @@ private:
     bool m_destroying = false;
     QString m_detectedAdapter;
     QWebSocket *m_realtimeSocket = nullptr;
+    LocalTts *m_local;
 
     void synthesizeRealtime(const QString &text, quint64 generation);
     QUrl baseUrl(QString *failure = nullptr) const;

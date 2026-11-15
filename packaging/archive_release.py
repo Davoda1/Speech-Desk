@@ -17,7 +17,7 @@ VERSION = re.search(r'project\(SpeechDesk VERSION ([0-9.]+)', (ROOT/'CMakeLists.
 PREFIX = f'SpeechDesk-{VERSION}'
 
 def runtime_files(root):
-    return sorted(p for p in root.rglob('*') if p.is_file() and not any(part.startswith('.') for part in p.relative_to(root).parts))
+    return sorted(p for p in root.rglob('*') if p.is_file() and ('tts-assets' in p.relative_to(root).parts or not any(part.startswith('.') for part in p.relative_to(root).parts)))
 
 def source_files():
     try:
@@ -31,7 +31,7 @@ def source_files():
     for name in ['src', 'tests', 'resources', 'docs', 'packaging', '.github', 'vendor']:
         for file in (ROOT/name).rglob('*'):
             relative = file.relative_to(ROOT)
-            if file.is_file() and not set(relative.parts).intersection({'assets','engines','models','__pycache__'}) and file.suffix not in {'.pyc','.log'}:
+            if file.is_file() and not set(relative.parts).intersection({'assets','__pycache__'}) and not (len(relative.parts)>1 and relative.parts[:2] in {('vendor','engines'),('vendor','models')}) and file.suffix not in {'.pyc','.log'}:
                 files.append(file)
     files += [p for p in ROOT.iterdir() if p.is_file() and (p.suffix in {'.md','.txt'} or p.name in {'.gitignore','.gitattributes'})]
     return sorted(set(files))
@@ -83,13 +83,15 @@ def validate_runtime(root, platform):
     if not binary.is_file() or binary.is_symlink():
         raise RuntimeError('A real executable must be at the archive root')
     for file in runtime_files(root):
-        if file.suffix.lower() in {'.sh','.cmd','.bat','.ps1','.sha256'}:
+        if file.suffix.lower() in {'.sh','.cmd','.bat','.ps1','.sha256'} and 'tts-assets' not in file.relative_to(root).parts:
             raise RuntimeError('Unexpected launcher or per-file checksum: '+file.name)
         if file.name.startswith('ggml-large-'):
             raise RuntimeError('Optional model weights must not enter the runtime')
     for model in ['whistle.cact','ggml-tiny-q5_1.bin','ggml-base-q5_1.bin','ggml-small-q5_1.bin']:
         if not (root/'resources/models'/model).is_file():
             raise RuntimeError('Missing included model: '+model)
+    from stage_tts import validate_staged
+    validate_staged(root/'resources/tts-assets', 'win32' if platform=='windows' else 'linux')
     if not list(root.glob('Qt6Core.dll')) and not list((root/'lib').glob('libQt6Core.so*')):
         raise RuntimeError('Qt Core runtime is missing')
     if not list(root.glob('Qt6WebSockets.dll')) and not list((root/'lib').glob('libQt6WebSockets.so*')):

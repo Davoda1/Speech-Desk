@@ -18,7 +18,7 @@ shutil.copy2(args.portable/'speechdesk', binary)
 binary.chmod(0o755)
 runtime = out/'usr/lib/speechdesk'
 for name in ('lib', 'plugins', 'resources', 'licenses'):
-    shutil.copytree(args.portable/name, runtime/name, dirs_exist_ok=True, ignore=shutil.ignore_patterns('.*'))
+    shutil.copytree(args.portable/name, runtime/name, dirs_exist_ok=True, ignore=None if name=='resources' else shutil.ignore_patterns('.*'))
 shutil.copy2(args.portable/'runtime-manifest.json', runtime/'runtime-manifest.json')
 for name in ('native-assets.json', 'optional-models.json', 'native-build-manifest.json'):
     if (args.portable/name).is_file():
@@ -50,9 +50,9 @@ Maintainer: davoda1
 Installed-Size: 0
 Depends: libc6 (>= 2.34), libstdc++6 (>= 11), libgcc-s1, libgomp1, libasound2 | libasound2t64, libpulse0, libfontconfig1, libfreetype6, libglib2.0-0 | libglib2.0-0t64, libdbus-1-3, libgl1, libegl1, libopengl0, libx11-6, libx11-xcb1, libxext6, libxrender1, libxrandr2, libxcb1, libxcb-cursor0, libxcb-icccm4, libxcb-image0, libxcb-keysyms1, libxcb-randr0, libxcb-render-util0, libxcb-render0, libxcb-shape0, libxcb-shm0, libxcb-sync1, libxcb-util1, libxcb-xfixes0, libxcb-xkb1, libxkbcommon0, libxkbcommon-x11-0, libssl3 | libssl3t64, zlib1g
 Description: Text to speech with integrated offline dictation
- SpeechDesk reads text through a configured speech server with playback
- highlighting. Type, paste, load TXT or dictate into one editor. Whistle and
- Whisper Tiny, Base and Small are bundled. Optional models import separately.
+ SpeechDesk reads text with bundled Pocket TTS and Kokoro CPU models or a
+ configured speech server, with playback highlighting. Type, paste, load TXT
+ or dictate into one editor. Whistle and Whisper Tiny, Base and Small are bundled. Optional models import separately.
  Qt 6.8.3 and FFmpeg multimedia runtimes are included.
 ''')
 print(str(out.resolve()))
